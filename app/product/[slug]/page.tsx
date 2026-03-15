@@ -8,43 +8,23 @@ import { Footer } from '@/components/layout/footer'
 import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
-// Ported and adapted getProductBySlug for detail page (adding placeholder for now if data.ts is updated)
-async function getProduct(slug: string) {
-  // Try to use real data
-  // For now, returning mock for development as DB is likely empty
+import { getProductBySlug, getRelatedProducts } from '@/lib/data'
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const product = await getProductBySlug(params.slug)
+  if (!product) return { title: 'Product Not Found | Binary Electronics' }
+  
   return {
-    id: 'prod_1',
-    name: 'MacBook Pro M3 Max | 16-inch Platinum',
-    slug: slug,
-    description: 'The most advanced chips ever built for a personal computer. M3 Max brings massive CPU and GPU performance to power through the most demanding workflows.',
-    price: 345000,
-    comparePrice: 380000,
-    rating: 5,
-    reviewsCount: 124,
-    images: [
-      'https://images.unsplash.com/photo-1517336715481-4d9e50ef50c2?q=80&w=1000',
-      'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1000',
-      'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?q=80&w=1000'
-    ],
-    category: 'Computing',
-    brand: 'Apple',
-    stock: 12,
-    specs: {
-      "Processor": "Apple M3 Max 16-core CPU",
-      "Graphics": "40-core GPU",
-      "Memory": "128GB Unified Memory",
-      "Storage": "2TB SSD Capacity",
-      "Display": "16.2-inch Liquid Retina XDR",
-      "Battery": "Up to 22 hours"
-    },
-    warranty: "1 Year International",
-    sku: "MBP-M3-16-PLT"
+    title: `${product.name} | Binary Electronics`,
+    description: product.description,
   }
 }
 
 export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const product = await getProduct(params.slug)
+  const product = await getProductBySlug(params.slug)
   if (!product) notFound()
+
+  const relatedProducts = await getRelatedProducts(product.categoryId, product.id, 4)
 
   return (
     <div className="flex flex-col">
@@ -53,7 +33,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <div className="flex items-center gap-2 text-xs text-text-muted mb-8 uppercase tracking-widest font-bold">
           <span className="hover:text-primary-500 cursor-pointer">Store</span>
           <span>/</span>
-          <span className="hover:text-primary-500 cursor-pointer">{product.category}</span>
+          <span className="hover:text-primary-500 cursor-pointer">{product.categoryName}</span>
           <span>/</span>
           <span className="text-text-primary">{product.name}</span>
         </div>
@@ -159,7 +139,11 @@ export default async function ProductPage({ params }: { params: { slug: string }
         </div>
       </div>
 
-      <div className="h-20" />
+      <div className="container mx-auto px-4 py-20 border-t border-primary-500/5">
+        <h3 className="text-2xl font-display font-black uppercase mb-12">Related <span className="text-gradient">Products</span></h3>
+        <FeaturedProducts products={relatedProducts} />
+      </div>
+
       <Footer />
     </div>
   )

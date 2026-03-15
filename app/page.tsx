@@ -10,20 +10,6 @@ export const revalidate = 60;
 export default async function Home() {
   const products = await getNewArrivals(8);
   
-  // Mock data if DB is empty
-  const mockProducts = [
-    { id: '1', name: 'MacBook Pro M3 Max', price: 345000, oldPrice: 380000, image: 'https://images.unsplash.com/photo-1517336715481-4d9e50ef50c2?q=80&w=400', slug: 'macbook-pro-m3', rating: 5, reviews: 124, isNew: true },
-    { id: '2', name: 'iPhone 15 Pro Titanium', price: 165000, oldPrice: 175000, image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba3f21?q=80&w=400', slug: 'iphone-15-pro', rating: 4, reviews: 86 },
-    { id: '3', name: 'Sony WH-1000XM5', price: 38000, oldPrice: 42000, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400', slug: 'sony-wh1000xm5', rating: 5, reviews: 342 },
-    { id: '4', name: 'ROG Zephyrus G14', price: 210000, image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=400', slug: 'rog-zephyrus-g14', rating: 4, reviews: 54, isNew: true },
-    { id: '5', name: 'Logitech G Pro X Superlight', price: 12500, image: 'https://images.unsplash.com/photo-1527814050087-379371546a30?q=80&w=400', slug: 'g-pro-x-superlight', rating: 5, reviews: 215 },
-    { id: '6', name: 'Samsung Odyssey Neo G9', price: 185000, oldPrice: 205000, image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=400', slug: 'odyssey-neo-g9', rating: 4, reviews: 32 },
-    { id: '7', name: 'Keychron Q1 Pro', price: 18500, image: 'https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?q=80&w=400', slug: 'keychron-q1-pro', rating: 5, reviews: 89, isNew: true },
-    { id: '8', name: 'DJI Mavic 3 Pro', price: 245000, oldPrice: 265000, image: 'https://images.unsplash.com/photo-1473968512647-3e44a224fe8f?q=80&w=400', slug: 'dji-mavic-3-pro', rating: 5, reviews: 12 },
-  ]
-
-  const displayProducts = products.length > 0 ? products : (mockProducts as any);
-
   return (
     <div className="flex flex-col">
       <Hero />
@@ -58,7 +44,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <FeaturedProducts products={displayProducts} />
+      <FeaturedProducts products={products} />
 
       {/* Newsletter Section */}
       <section className="container mx-auto px-4 py-24">

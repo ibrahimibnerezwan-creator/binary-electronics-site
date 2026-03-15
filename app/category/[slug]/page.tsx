@@ -5,17 +5,25 @@ import { Button } from '@/components/ui/button'
 import { Sliders } from 'lucide-react' // Mock icon for filter toggle
 import { cn } from '@/lib/utils'
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  // Real data would come from data.ts
-  const categoryName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1)
+import { getCategoryBySlug, getProductsByCategory } from '@/lib/data'
+import { notFound } from 'next/navigation'
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const category = await getCategoryBySlug(params.slug)
+  if (!category) return { title: 'Category Not Found | Binary Electronics' }
   
-  // Mock products for the category
-  const products = [
-    { id: '1', name: 'Product Alpha', price: 45000, oldPrice: 55000, image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?q=80&w=400', slug: 'p-alpha', rating: 5, reviews: 12 },
-    { id: '2', name: 'Product Beta', price: 95000, image: 'https://images.unsplash.com/photo-1517336715481-4d9e50ef50c2?q=80&w=400', slug: 'p-beta', rating: 4, reviews: 45 },
-    { id: '3', name: 'Product Gamma', price: 12500, oldPrice: 15000, image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba3f21?q=80&w=400', slug: 'p-gamma', rating: 5, reviews: 8 },
-    { id: '4', name: 'Product Delta', price: 215000, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400', slug: 'p-delta', rating: 5, reviews: 102 },
-  ]
+  return {
+    title: `${category.name} | Binary Electronics`,
+    description: `Browse the latest ${category.name} from Binary Electronics.`,
+  }
+}
+
+export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  const category = await getCategoryBySlug(params.slug)
+  if (!category) notFound()
+
+  const products = await getProductsByCategory(category.id)
+  const categoryName = category.name
 
   return (
     <div className="flex flex-col">
