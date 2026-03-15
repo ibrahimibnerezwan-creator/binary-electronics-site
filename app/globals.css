@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* === Binary Electronics: "Warm Luxury" Palette === */
+  --color-primary-400: hsl(20 90% 58%);
+  --color-primary-500: hsl(20 90% 50%);
+  --color-primary-600: hsl(20 90% 42%);
+
+  --color-accent-400: hsl(35 80% 58%);
+  --color-accent-500: hsl(35 80% 50%);
+
+  --color-bg-void: hsl(20 15% 6%);
+  --color-bg-base: hsl(20 12% 9%);
+  --color-bg-elevated: hsl(20 10% 12%);
+  --color-bg-hover: hsl(20 10% 16%);
+
+  --color-text-primary: hsl(35 20% 95%);
+  --color-text-secondary: hsl(20 10% 70%);
+  --color-text-muted: hsl(20 8% 45%);
+
+  --color-border-default: hsl(20 10% 18%);
+  --color-border-subtle: hsl(20 10% 14%);
+
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+}
+
+/* === Base Resets === */
+body {
+  background-color: var(--color-bg-void);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Glass Utilities === */
+.glass {
+  background: hsla(20, 12%, 10%, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-card {
+  background: hsla(20, 12%, 10%, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1.5rem;
+  border: 1px solid hsla(20, 90%, 50%, 0.05);
+}
+
+/* === Gradient Text === */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(20 90% 50%), hsl(35 80% 50%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === Animations === */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes reveal-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
+.animate-reveal-up {
+  animation: reveal-up 0.6s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-void);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-500);
+  border-radius: 3px;
+}
