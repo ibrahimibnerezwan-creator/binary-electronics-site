@@ -6,7 +6,8 @@ import {
   TrendingUp, 
   ArrowUpRight, 
   ArrowDownRight,
-  Clock
+  Clock,
+  ChevronRight
 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 

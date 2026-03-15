@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { Footer } from '@/components/layout/footer'
 import { FeaturedProducts } from '@/components/home/featured-products'
 import { Button } from '@/components/ui/button'
-import { Slider } from 'lucide-react' // Mock icon for filter toggle
+import { Sliders } from 'lucide-react' // Mock icon for filter toggle
 import { cn } from '@/lib/utils'
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {

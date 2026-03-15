@@ -5,8 +5,7 @@ import { ProductGallery } from '@/components/product/product-gallery'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Footer } from '@/components/layout/footer'
-import { formatPrice } from '@/lib/utils'
-import { getProductBySlug, getRelatedProducts } from '@/lib/data'
+import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
 // Ported and adapted getProductBySlug for detail page (adding placeholder for now if data.ts is updated)
