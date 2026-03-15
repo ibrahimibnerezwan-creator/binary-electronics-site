@@ -13,7 +13,7 @@ export function WhatsAppCTA() {
       className="fixed bottom-8 right-8 z-50"
     >
       <Link
-        href="https://wa.me/8801234567890"
+        href="https://wa.me/8801700000000"
         target="_blank"
         className="group relative flex items-center justify-center w-16 h-16 rounded-full bg-[#25D366] text-white shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] transition-all duration-300"
       >

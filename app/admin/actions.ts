@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { categories } from '@/db/schema'
+import { categories, products } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -39,5 +39,15 @@ export async function deleteCategory(id: string) {
         return { error: 'Failed to delete category' }
     }
     
-    revalidatePath('/admin/categories')
+revalidatePath('/admin/categories')
+}
+
+export async function deleteProduct(id: string) {
+    try {
+        await db.delete(products).where(eq(products.id, id))
+    } catch (e) {
+        return { error: 'Failed to delete product' }
+    }
+    
+    revalidatePath('/admin/products')
 }

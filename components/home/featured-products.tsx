@@ -41,7 +41,7 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
   )
 }
 
-function ProductCard({ product, index }: { product: Product, index: number }) {
+export function ProductCard({ product, index }: { product: Product, index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}

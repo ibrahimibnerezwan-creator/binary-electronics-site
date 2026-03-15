@@ -35,25 +35,31 @@ export function Footer() {
           {/* Links */}
           <div>
             <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Quick Links</h4>
-            <ul className="flex flex-col gap-4">
-              {['Home', 'New Arrivals', 'Best Sellers', 'Discount Deals', 'Brands'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-text-secondary hover:text-primary-500 transition-colors">{item}</Link>
+              {[
+                { name: 'Home', href: '/' },
+                { name: 'New Arrivals', href: '/#new-arrivals' },
+                { name: 'Categories', href: '/categories' },
+                { name: 'Products', href: '/products' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-text-secondary hover:text-primary-500 transition-colors">{item.name}</Link>
                 </li>
               ))}
-            </ul>
           </div>
 
           {/* Support */}
           <div>
             <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Support</h4>
-            <ul className="flex flex-col gap-4">
-              {['Contact Us', 'Shipping Policy', 'Returns & Refunds', 'Privacy Policy', 'Terms of Service'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-text-secondary hover:text-primary-500 transition-colors">{item}</Link>
+              {[
+                { name: 'Contact Us', href: '/contact' },
+                { name: 'Shipping Policy', href: '/shipping-policy' },
+                { name: 'Privacy Policy', href: '/privacy-policy' },
+                { name: 'About Us', href: '/about' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-text-secondary hover:text-primary-500 transition-colors">{item.name}</Link>
                 </li>
               ))}
-            </ul>
           </div>
 
           {/* Contact */}

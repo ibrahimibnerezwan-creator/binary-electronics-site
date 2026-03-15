@@ -11,7 +11,8 @@ import {
   Image as ImageIcon,
   ArrowUpRight,
   MoreVertical,
-  Layers
+  Layers,
+  ChevronRight
 } from 'lucide-react'
 import { deleteCategory } from '@/app/admin/actions'
 
@@ -33,7 +34,7 @@ export default async function AdminCategoriesPage() {
                 </Link>
             </div>
 
-            {/* Quick Stats Overlay (Optional visual) */}
+            {/* Quick Stats Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                <Card className="p-6 bg-primary-500/5 border-primary-500/10 flex items-center gap-4">
                   <div className="p-3 rounded-xl glass text-primary-500"><Layers size={24}/></div>
@@ -47,7 +48,7 @@ export default async function AdminCategoriesPage() {
             {/* Categories Table */}
             <Card className="overflow-hidden border-primary-500/5">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-bg-elevated/50 border-b border-primary-500/10">
                                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Collection</th>
@@ -96,16 +97,16 @@ export default async function AdminCategoriesPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <Link href={`/admin/categories/${category.id}`}>
-                                                    <Button size="icon" variant="secondary" className="h-10 w-10 rounded-xl glass border-primary-500/10 hover:text-primary-500">
-                                                        <Edit size={18} />
-                                                    </Button>
+                                                <Link href={`/admin/categories`}>
+                                                    <div className="p-2 text-text-secondary hover:text-primary-500 hover:glass rounded-lg transition-all" title="View details (Coming soon)">
+                                                        <ChevronRight size={18} />
+                                                    </div>
                                                 </Link>
                                                 <form action={async (formData) => {
                                                     'use server'
                                                     await deleteCategory(category.id)
                                                 }}>
-                                                    <Button type="submit" size="icon" variant="secondary" className="h-10 w-10 rounded-xl glass border-red-500/10 hover:text-red-500 group-hover:bg-red-500/10 transition-all">
+                                                    <Button type="submit" size="icon" variant="secondary" className="h-10 w-10 rounded-xl glass border-red-500/10 hover:text-red-500 transition-all">
                                                         <Trash2 size={18} />
                                                     </Button>
                                                 </form>

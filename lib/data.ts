@@ -104,6 +104,49 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
   }
 }
 
+export async function getAllProducts(): Promise<ProductForCard[]> {
+  try {
+    const rows = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        slug: products.slug,
+        price: products.price,
+        comparePrice: products.comparePrice,
+        stock: products.stock,
+        imageUrl: productImages.url,
+        categoryName: categories.name,
+      })
+      .from(products)
+      .leftJoin(productImages, eq(productImages.productId, products.id))
+      .leftJoin(categories, eq(categories.id, products.categoryId))
+      .orderBy(desc(products.createdAt));
+
+    const seen = new Set<string>();
+    const result: ProductForCard[] = [];
+    for (const row of rows) {
+      if (seen.has(row.id)) continue;
+      seen.add(row.id);
+      result.push({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        price: row.price,
+        oldPrice: row.comparePrice ?? undefined,
+        image: row.imageUrl || 'https://via.placeholder.com/400',
+        category: row.categoryName || 'Uncategorized',
+        stock: row.stock,
+        rating: 5,
+        reviews: 0,
+      });
+    }
+    return result;
+  } catch (e) {
+    console.error('Error fetching all products:', e);
+    return [];
+  }
+}
+
 export async function getAllCategoriesWithCount() {
   return db.select({
     id: categories.id,

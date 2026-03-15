@@ -19,6 +19,7 @@ import { Card } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatPrice, cn } from '@/lib/utils'
+import { deleteProduct } from '@/app/admin/actions'
 
 interface AdminProductsListProps {
   products: any[]
@@ -130,12 +131,18 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
                        <Link href={`/product/${product.slug}`} target="_blank" className="p-2 text-text-muted hover:text-primary-500 hover:glass rounded-lg transition-all" title="View Store Page">
                          <ExternalLink size={18} />
                        </Link>
-                       <button className="p-2 text-text-muted hover:text-accent-500 hover:glass rounded-lg transition-all" title="Edit Product">
-                         <Edit size={18} />
-                       </button>
-                       <button className="p-2 text-text-muted hover:text-red-500 hover:glass rounded-lg transition-all" title="Delete Product">
-                         <Trash2 size={18} />
-                       </button>
+                       <Link href={`/admin/products`}>
+                          <Button size="icon" variant="ghost" className="h-9 w-9 text-text-muted hover:text-primary-500 hover:bg-primary-500/10">
+                            <Edit size={16} />
+                          </Button>
+                       </Link>
+                       <form action={async () => {
+                         await deleteProduct(product.id)
+                       }}>
+                         <Button type="submit" size="icon" variant="ghost" className="h-9 w-9 text-text-muted hover:text-red-500 hover:bg-red-500/10">
+                           <Trash2 size={16} />
+                         </Button>
+                       </form>
                     </div>
                   </td>
                 </tr>

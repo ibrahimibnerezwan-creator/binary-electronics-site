@@ -20,9 +20,9 @@ export function Header() {
   }, [])
 
   const navLinks = [
-    { name: 'Products', href: '/products' },
     { name: 'Categories', href: '/categories' },
-    { name: 'Deals', href: '/#deals' },
+    { name: 'Products', href: '/products' },
+    { name: 'Deals', href: '/#featured' },
     { name: 'Contact', href: '/contact' },
   ]
 
