@@ -1,4 +1,5 @@
 import { getUsers } from '@/lib/data'
+export const dynamic = 'force-dynamic'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 

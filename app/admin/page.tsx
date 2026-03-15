@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card'
+export const dynamic = 'force-dynamic'
 import { 
   ShoppingCart, 
   Package, 

@@ -1,4 +1,5 @@
 import { getAllReviews } from '@/lib/data'
+export const dynamic = 'force-dynamic'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Star, MessageSquare, Clock, User, Package, Reply } from 'lucide-react'

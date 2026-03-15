@@ -1,4 +1,5 @@
 import { getStoreSettings } from '@/lib/data'
+export const dynamic = 'force-dynamic'
 import { updateSettings } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+export const dynamic = 'force-dynamic'
 import { getAllCategoriesWithCount } from '@/lib/data'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'

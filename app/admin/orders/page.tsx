@@ -1,4 +1,5 @@
 import { getAllOrders } from '@/lib/data'
+export const dynamic = 'force-dynamic'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
