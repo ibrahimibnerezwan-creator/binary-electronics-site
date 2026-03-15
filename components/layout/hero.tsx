@@ -38,16 +38,16 @@ export function Hero() {
           </p>
 
           <div className="flex flex-wrap items-center gap-4 mt-4">
-            <Link href="/products">
-              <Button size="lg" className="gap-2 group">
+            <Button size="lg" className="gap-2 group" asChild>
+              <Link href="/products">
                 Explore Store <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            <Link href="/products">
-              <Button variant="outline" size="lg">
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/products">
                 Flash Deals
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           {/* Trust Badges */}
