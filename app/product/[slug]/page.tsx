@@ -1,7 +1,9 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { Star, Shield, Truck, RefreshCcw, ShoppingCart, Zap, Heart, Share2 } from 'lucide-react'
 import { ProductGallery } from '@/components/product/product-gallery'
+import { AddToCartButton } from '@/components/product/add-to-cart-button'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Footer } from '@/components/layout/footer'
@@ -31,9 +33,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
       <div className="container mx-auto px-4 py-12">
         {/* Breadcrumbs Placeholder */}
         <div className="flex items-center gap-2 text-xs text-text-muted mb-8 uppercase tracking-widest font-bold">
-          <span className="hover:text-primary-500 cursor-pointer">Store</span>
+          <Link href="/products" className="hover:text-primary-500 transition-colors">Store</Link>
           <span>/</span>
-          <span className="hover:text-primary-500 cursor-pointer">{product.categoryName}</span>
+          <Link href={`/category/${product.category?.slug}`} className="hover:text-primary-500 transition-colors uppercase">{product.categoryName}</Link>
           <span>/</span>
           <span className="text-text-primary">{product.name}</span>
         </div>
@@ -109,19 +111,15 @@ export default async function ProductPage({ params }: { params: { slug: string }
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="flex-grow h-16 gap-3 text-lg font-black uppercase tracking-widest shadow-2xl">
-                <ShoppingCart size={24} /> Add to Cart
-              </Button>
-              <div className="flex gap-4">
-                <Button variant="secondary" size="icon" className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10">
-                  <Heart size={24} />
-                </Button>
-                <Button variant="secondary" size="icon" className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10">
-                  <Share2 size={24} />
-                </Button>
-              </div>
-            </div>
+            <AddToCartButton 
+              product={{
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0],
+                slug: product.slug
+              }} 
+            />
 
             {/* Spec Cards */}
             <div className="mt-8">

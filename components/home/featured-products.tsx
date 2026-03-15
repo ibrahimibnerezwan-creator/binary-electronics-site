@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/utils'
+import { useCart } from '@/lib/cart-context'
 
 interface Product {
   id: string
@@ -35,13 +36,30 @@ export function FeaturedProducts({ products }: { products: Product[] }) {
       </div>
 
       <div className="mt-16 flex justify-center">
-        <Button variant="outline" size="lg" className="rounded-full px-12">View All Products</Button>
+        <Link href="/products">
+          <Button variant="outline" size="lg" className="rounded-full px-12">View All Products</Button>
+        </Link>
       </div>
     </section>
   )
 }
 
 export function ProductCard({ product, index }: { product: Product, index: number }) {
+  const { addItem } = useCart()
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image,
+      slug: product.slug
+    })
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -72,10 +90,17 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
 
         {/* Quick Actions */}
         <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity bg-bg-void/40 backdrop-blur-sm duration-300">
-           <Button variant="secondary" size="icon" className="rounded-full">
-             <Eye size={18} />
-           </Button>
-           <Button variant="primary" size="icon" className="rounded-full">
+           <Link href={`/product/${product.slug}`}>
+             <Button variant="secondary" size="icon" className="rounded-full">
+               <Eye size={18} />
+             </Button>
+           </Link>
+           <Button 
+            variant="primary" 
+            size="icon" 
+            className="rounded-full"
+            onClick={handleAddToCart}
+           >
              <ShoppingCart size={18} />
            </Button>
         </div>
@@ -105,7 +130,14 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
               <span className="text-sm text-text-muted line-through">{formatPrice(product.oldPrice)}</span>
             )}
           </div>
-          <Button variant="ghost" size="sm" className="h-8">Add +</Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8"
+            onClick={handleAddToCart}
+          >
+            Add +
+          </Button>
         </div>
       </div>
     </motion.div>

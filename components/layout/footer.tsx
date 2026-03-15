@@ -25,7 +25,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-4">
               {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <Link key={i} href="#" className="w-10 h-10 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all">
+                <Link key={i} href="#" target="_blank" className="w-10 h-10 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all">
                   <Icon size={18} />
                 </Link>
               ))}
@@ -84,8 +84,14 @@ export function Footer() {
 
         <div className="pt-8 border-t border-primary-500/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-muted">
           <p>© {currentYear} Binary Electronics. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <Image src="https://via.placeholder.com/200x40" alt="Payment Methods" width={200} height={40} className="grayscale opacity-50" />
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Secure Payments:</span>
+            <div className="flex items-center gap-4">
+              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-rose-500 tracking-tighter shadow-inner">bKash</div>
+              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-orange-500 tracking-tighter shadow-inner">Nagad</div>
+              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-primary-500 tracking-tighter shadow-inner">COD</div>
+              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-white tracking-tighter shadow-inner">VISA/MC</div>
+            </div>
           </div>
         </div>
       </div>

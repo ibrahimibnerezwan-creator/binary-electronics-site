@@ -2,19 +2,21 @@ import { Hero } from '@/components/layout/hero'
 import { Footer } from '@/components/layout/footer'
 import { CategoryGrid } from '@/components/home/category-grid'
 import { FeaturedProducts } from '@/components/home/featured-products'
+import { NewsletterForm } from '@/components/home/newsletter-form'
 import { WhatsAppCTA } from '@/components/layout/whatsapp-cta'
-import { getNewArrivals } from '@/lib/data'
+import { getNewArrivals, getAllCategoriesWithCount } from '@/lib/data'
 
 export const revalidate = 60;
 
 export default async function Home() {
   const products = await getNewArrivals(8);
+  const categories = await getAllCategoriesWithCount();
   
   return (
     <div className="flex flex-col">
       <Hero />
       
-      <CategoryGrid />
+      <CategoryGrid categories={categories} />
 
       {/* Trust Quote / Stats */}
       <section className="bg-bg-void py-24 border-y border-primary-500/5 relative overflow-hidden">
@@ -55,14 +57,7 @@ export default async function Home() {
            <h2 className="text-4xl lg:text-6xl font-display font-black leading-tight">JOIN THE <br/><span className="text-gradient">BINARY REVOLUTION</span></h2>
            <p className="text-text-secondary max-w-xl">Subscribe to get early access to flash sales, exclusive discounts, and the latest tech reviews.</p>
            
-           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-             <input 
-               type="email" 
-               placeholder="Enter your email" 
-               className="flex-grow h-14 rounded-full bg-bg-primary border border-primary-500/20 px-8 text-sm focus:outline-none focus:border-primary-500 transition-all"
-             />
-             <button className="h-14 px-8 rounded-full bg-primary-500 text-white font-bold hover:bg-primary-600 transition-all">Subscribe</button>
-           </div>
+           <NewsletterForm />
         </div>
       </section>
 

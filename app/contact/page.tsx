@@ -1,12 +1,27 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Footer } from '@/components/layout/footer'
 
 export default function ContactPage() {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('loading')
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    setStatus('success')
+    setTimeout(() => setStatus('idle'), 3000)
+    
+    const formData = new FormData(e.target as HTMLFormElement)
+    console.log('Contact form submitted:', Object.fromEntries(formData))
+  }
+
   return (
     <div className="flex flex-col">
       <div className="container mx-auto px-4 py-20 relative overflow-hidden">
@@ -88,7 +103,7 @@ export default function ContactPage() {
                {/* Ambient Glow */}
                <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary-500/10 rounded-full blur-[80px]" />
                
-               <form className="relative z-10 flex flex-col gap-8">
+               <form onSubmit={handleSubmit} className="relative z-10 flex flex-col gap-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                      <div className="flex flex-col gap-3">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Your Name</label>
@@ -114,8 +129,17 @@ export default function ContactPage() {
                      ></textarea>
                   </div>
 
-                  <Button size="lg" className="h-16 w-full text-lg font-black uppercase tracking-[0.2em] gap-3">
-                    <Send size={20} /> Send Message
+                  <Button 
+                    type="submit"
+                    size="lg" 
+                    disabled={status !== 'idle'}
+                    className="h-16 w-full text-lg font-black uppercase tracking-[0.2em] gap-3"
+                  >
+                    {status === 'loading' ? 'Sending...' : status === 'success' ? 'Message Sent!' : (
+                      <>
+                        <Send size={20} /> Send Message
+                      </>
+                    )}
                   </Button>
 
                   <div className="flex items-center justify-center gap-2 mt-4 text-[10px] font-bold tracking-widest text-text-muted uppercase">

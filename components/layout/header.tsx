@@ -64,9 +64,9 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <button className="p-2 text-text-secondary hover:text-primary-500 transition-colors">
+          <Link href="/products" className="p-2 text-text-secondary hover:text-primary-500 transition-colors">
             <Search size={20} />
-          </button>
+          </Link>
           <Link href="/cart" className="relative p-2 text-text-secondary hover:text-primary-500 transition-colors">
             <ShoppingCart size={20} />
             {cartCount > 0 && (
