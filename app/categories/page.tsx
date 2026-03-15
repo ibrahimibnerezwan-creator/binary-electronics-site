@@ -1,7 +1,7 @@
 import { Footer } from '@/components/layout/footer'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import { Laptop, Smartphone, Headphones, Watch, Camera, CPU, MousePointer, Monitor } from 'lucide-react'
+import { Laptop, Smartphone, Headphones, Watch, Camera, Cpu, MousePointer, Monitor } from 'lucide-react'
 
 const categories = [
   { name: 'Computing', icon: Laptop, count: 124, slug: 'computing', desc: 'Powerful laptops and desktops for every need.' },
@@ -9,7 +9,7 @@ const categories = [
   { name: 'Audio', icon: Headphones, count: 42, slug: 'audio', desc: 'Immersive sound from premium headphones and speakers.' },
   { name: 'Smartwatch', icon: Watch, count: 28, slug: 'smartwatch', desc: 'Stay connected with stylish wearables.' },
   { name: 'Camera', icon: Camera, count: 115, slug: 'camera', desc: 'Capture every moment with professional optics.' },
-  { name: 'Components', icon: CPU, count: 56, slug: 'components', desc: 'High-performance parts for your custom build.' },
+  { name: 'Components', icon: Cpu, count: 56, slug: 'components', desc: 'High-performance parts for your custom build.' },
   { name: 'Accessories', icon: MousePointer, count: 215, slug: 'accessories', desc: 'Essential add-ons for your favorite devices.' },
   { name: 'Displays', icon: Monitor, count: 32, slug: 'displays', desc: 'Crystal clear monitors and home cinema setups.' },
 ]

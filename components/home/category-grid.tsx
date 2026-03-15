@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Laptop, Smartphone, Headphones, Watch, Camera, CPU } from 'lucide-react'
+import { Laptop, Smartphone, Headphones, Watch, Camera, Cpu } from 'lucide-react'
 
 const categories = [
   { name: 'Computing', icon: Laptop, count: 124, slug: 'computing', color: 'bg-blue-500' },
@@ -10,7 +10,7 @@ const categories = [
   { name: 'Audio', icon: Headphones, count: 42, slug: 'audio', color: 'bg-purple-500' },
   { name: 'Smartwatch', icon: Watch, count: 28, slug: 'smartwatch', color: 'bg-orange-500' },
   { name: 'Camera', icon: Camera, count: 15, slug: 'camera', color: 'bg-pink-500' },
-  { name: 'Components', icon: CPU, count: 56, slug: 'components', color: 'bg-cyan-500' },
+  { name: 'Components', icon: Cpu, count: 56, slug: 'components', color: 'bg-cyan-500' },
 ]
 
 export function CategoryGrid() {
