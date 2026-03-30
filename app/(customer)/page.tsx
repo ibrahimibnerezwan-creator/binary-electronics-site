@@ -1,9 +1,7 @@
 import { Hero } from '@/components/layout/hero'
-import { Footer } from '@/components/layout/footer'
 import { CategoryGrid } from '@/components/home/category-grid'
 import { FeaturedProducts } from '@/components/home/featured-products'
 import { NewsletterForm } from '@/components/home/newsletter-form'
-import { WhatsAppCTA } from '@/components/layout/whatsapp-cta'
 import { getNewArrivals, getAllCategoriesWithCount } from '@/lib/data'
 
 export const revalidate = 60;
@@ -60,9 +58,6 @@ export default async function Home() {
            <NewsletterForm />
         </div>
       </section>
-
-      <Footer />
-      <WhatsAppCTA />
     </div>
   )
 }

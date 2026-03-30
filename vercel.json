@@ -1,0 +1,12 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "installCommand": "npm install",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "images": {
+    "sizes": [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    "domains": ["binary-electronics-site.vercel.app", "binary-electronics-anwar.r2.cloudflarestorage.com"],
+    "minimumCacheTTL": 60
+  }
+}

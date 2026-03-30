@@ -15,16 +15,29 @@ interface CheckoutData {
     transactionId?: string
     items: Array<{ id: string, quantity: number, price: number }>
     total: number
+    honeypot?: string
 }
 
 export async function placeOrder(data: CheckoutData) {
     try {
+        // Honeypot check
+        if (data.honeypot) {
+            console.warn('Honeypot triggered, possible bot order.')
+            return { error: 'Invalid submission' }
+        }
+
         const user = await getCurrentUser()
         const orderId = crypto.randomUUID()
 
         // 1. Validate input
         if (!data.customerName || !data.customerPhone || !data.address || !data.shippingCity || !data.paymentMethod) {
             return { error: 'All fields are required.' }
+        }
+
+        // Phone validation (Bangladesh format: 01XXXXXXXXX)
+        const phoneRegex = /^(?:\+88|88)?(01[3-9]\d{8})$/
+        if (!phoneRegex.test(data.customerPhone.replace(/\s/g, ''))) {
+            return { error: 'Please provide a valid Bangladesh phone number (e.g., 01712345678).' }
         }
 
         if (data.items.length === 0) {

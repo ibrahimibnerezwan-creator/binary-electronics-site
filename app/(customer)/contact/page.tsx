@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Footer } from '@/components/layout/footer'
 
 export default function ContactPage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
@@ -65,7 +64,7 @@ export default function ContactPage() {
                    </div>
                    <div className="flex flex-col gap-1">
                      <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Call Us</span>
-                     <span className="text-xl font-bold">+880 1234 567890</span>
+                     <span className="text-xl font-bold">+880 1911-857987</span>
                    </div>
                 </div>
 
@@ -151,7 +150,6 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   )
 }

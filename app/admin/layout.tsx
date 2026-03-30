@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { 
   LayoutDashboard, 
@@ -33,6 +33,22 @@ const adminNav = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'DELETE',
+      })
+      if (res.ok) {
+        router.push('/admin/login')
+        router.refresh()
+      }
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-bg-void flex overflow-hidden">
@@ -91,13 +107,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Footer / User Session */}
           <div className="p-4 border-t border-primary-500/10">
-            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-text-muted hover:bg-red-500/10 hover:text-red-500 transition-all group">
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-text-muted hover:bg-red-500/10 hover:text-red-500 transition-all group"
+            >
               <LogOut size={22} />
               {isSidebarOpen && <span className="font-bold text-sm">Sign Out</span>}
             </button>
           </div>
         </div>
       </aside>
+
 
       {/* Main Content Area */}
       <main className="flex-grow flex flex-col h-screen overflow-hidden">

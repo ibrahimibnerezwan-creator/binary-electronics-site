@@ -12,7 +12,7 @@ export default function CartPage() {
     const { cart, removeItem, updateQuantity, cartTotal, cartCount } = useCart()
 
     return (
-        <main className="pt-32 pb-20 min-h-screen relative overflow-hidden">
+        <div className="py-12 min-h-screen relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-500/5 rounded-full blur-[100px] pointer-events-none -z-10" />
@@ -148,6 +148,6 @@ export default function CartPage() {
                     </div>
                 )}
             </div>
-        </main>
+        </div>
     )
 }

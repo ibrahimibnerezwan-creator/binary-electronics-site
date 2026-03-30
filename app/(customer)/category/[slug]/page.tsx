@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Footer } from '@/components/layout/footer'
 import { FeaturedProducts } from '@/components/home/featured-products'
 import { Button } from '@/components/ui/button'
 import { Sliders } from 'lucide-react' // Mock icon for filter toggle
@@ -95,7 +94,6 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         </div>
       </div>
 
-      <Footer />
     </div>
   )
 }

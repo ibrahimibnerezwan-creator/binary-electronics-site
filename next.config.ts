@@ -14,16 +14,45 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'pub-*.r2.dev', // Placeholder for Cloudflare R2
+        hostname: 'binary-electronics-anwar.r2.cloudflarestorage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'pub-*.r2.dev',
       }
     ],
   },
-  // Optimize for modern web features
-  experimental: {
-    // serverActions: true, // Enabled by default in newer Next.js
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+        ],
+      },
+    ];
   },
-  // Ensure we can use the lucide icons with proper tree shaking
   transpilePackages: ['lucide-react'],
 };
+
 
 export default nextConfig;

@@ -6,7 +6,6 @@ import { ProductGallery } from '@/components/product/product-gallery'
 import { AddToCartButton } from '@/components/product/add-to-cart-button'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Footer } from '@/components/layout/footer'
 import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
@@ -142,7 +141,6 @@ export default async function ProductPage({ params }: { params: { slug: string }
         <FeaturedProducts products={relatedProducts} />
       </div>
 
-      <Footer />
     </div>
   )
 }

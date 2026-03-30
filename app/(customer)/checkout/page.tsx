@@ -1,7 +1,7 @@
 import { getStoreSettings } from '@/lib/data'
 import { getCurrentUser } from '@/lib/auth'
 import CheckoutClient from './checkout-client'
-import { Footer } from '@/components/layout/footer'
+
 
 export const dynamic = 'force-dynamic'
 
@@ -10,7 +10,7 @@ export default async function CheckoutPage() {
     const user = await getCurrentUser()
 
     return (
-        <main className="min-h-screen pt-32 pb-20 relative overflow-hidden">
+        <div className="min-h-screen py-12 relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-primary-500/5 rounded-full blur-[160px] pointer-events-none -z-10" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent-500/5 rounded-full blur-[140px] pointer-events-none -z-10" />
@@ -30,10 +30,6 @@ export default async function CheckoutPage() {
                     />
                 </div>
             </div>
-            
-            <div className="mt-20 border-t border-primary-500/5">
-                <Footer />
-            </div>
-        </main>
+        </div>
     )
 }

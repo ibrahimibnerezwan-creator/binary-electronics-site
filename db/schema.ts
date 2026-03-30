@@ -127,6 +127,13 @@ export const wishlists = sqliteTable('wishlists', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
 
+// ==================== NEWSLETTER ====================
+export const newsletter = sqliteTable('newsletter', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+
 // ==================== RELATIONS ====================
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
