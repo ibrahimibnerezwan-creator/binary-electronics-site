@@ -26,7 +26,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
 
   return (
     <div className="flex flex-col">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-32 pb-24">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12 border-b border-primary-500/10 pb-12">
           <div className="flex flex-col gap-4">
@@ -89,7 +89,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                 </div>
              </div>
              
-             <FeaturedProducts products={products as any} />
+             <FeaturedProducts products={products as any} noLayout />
            </div>
         </div>
       </div>

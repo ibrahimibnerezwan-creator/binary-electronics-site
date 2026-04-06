@@ -21,7 +21,17 @@ interface Product {
   isNew?: boolean
 }
 
-export function FeaturedProducts({ products }: { products: Product[] }) {
+export function FeaturedProducts({ products, noLayout = false }: { products: Product[], noLayout?: boolean }) {
+  if (noLayout) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {products.map((product, i) => (
+          <ProductCard key={product.id} product={product} index={i} />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <section className="container mx-auto px-4 py-20">
       <div className="flex flex-col gap-2 mb-12">
@@ -69,7 +79,7 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
       className="group glass-card overflow-hidden flex flex-col"
     >
       {/* Image Area */}
-      <div className="relative aspect-square bg-bg-void/50 overflow-hidden">
+      <div className="relative aspect-[4/5] w-full bg-bg-void/50 overflow-hidden">
         {product.isNew && (
           <Badge className="absolute top-4 left-4 z-10" variant="gold">NEW</Badge>
         )}
@@ -84,7 +94,7 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
             src={product.image}
             alt={product.name}
             fill
-            className="object-contain p-6 group-hover:scale-110 transition-transform duration-500"
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
           />
         </Link>
 

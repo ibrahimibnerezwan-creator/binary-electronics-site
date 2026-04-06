@@ -29,7 +29,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
   return (
     <div className="flex flex-col">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pt-32 pb-24">
         {/* Breadcrumbs Placeholder */}
         <div className="flex items-center gap-2 text-xs text-text-muted mb-8 uppercase tracking-widest font-bold">
           <Link href="/products" className="hover:text-primary-500 transition-colors">Store</Link>
@@ -138,7 +138,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
       <div className="container mx-auto px-4 py-20 border-t border-primary-500/5">
         <h3 className="text-2xl font-display font-black uppercase mb-12">Related <span className="text-gradient">Products</span></h3>
-        <FeaturedProducts products={relatedProducts} />
+        <FeaturedProducts products={relatedProducts as any} noLayout />
       </div>
 
     </div>

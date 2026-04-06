@@ -15,7 +15,7 @@ export default async function ProductsPage() {
     ])
 
     return (
-        <div className="py-12">
+        <div className="pt-32 pb-12">
             <div className="container mx-auto px-4">
                 {/* Header */}
                 <div className="flex flex-col gap-4 mb-12">

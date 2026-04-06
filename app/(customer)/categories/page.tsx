@@ -1,4 +1,3 @@
-import { Footer } from '@/components/layout/footer'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { Laptop, Smartphone, Headphones, Watch, Camera, Cpu, MousePointer, Monitor } from 'lucide-react'
@@ -17,7 +16,7 @@ const categories = [
 export default function CategoriesPage() {
   return (
     <div className="flex flex-col">
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 pt-32 pb-20">
         <div className="flex flex-col gap-4 mb-20 text-center max-w-2xl mx-auto">
           <h1 className="text-5xl lg:text-7xl font-display font-black uppercase tracking-tight">SHOP BY <br/><span className="text-gradient">CATEGORY</span></h1>
           <p className="text-lg text-text-secondary">Discover innovation across our wide range of premium electronics categories.</p>
@@ -42,8 +41,6 @@ export default function CategoriesPage() {
           ))}
         </div>
       </div>
-
-      <Footer />
     </div>
   )
 }

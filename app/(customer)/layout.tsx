@@ -10,7 +10,7 @@ export default function CustomerLayout({
   return (
     <>
       <Header />
-      <main className="pt-20">
+      <main>
         {children}
       </main>
       <Footer />

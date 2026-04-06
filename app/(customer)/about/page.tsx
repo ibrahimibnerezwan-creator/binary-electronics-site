@@ -3,13 +3,12 @@
 import { motion } from 'framer-motion'
 import { Award, ShieldCheck, Zap, Heart, Users, Globe } from 'lucide-react'
 import Image from 'next/image'
-import { Footer } from '@/components/layout/footer'
 
 export default function AboutPage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 bg-bg-void z-0">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-500/10 rounded-full blur-[160px]" />
           <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent-500/10 rounded-full blur-[140px]" />
@@ -97,7 +96,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <Footer />
     </div>
   )
 }

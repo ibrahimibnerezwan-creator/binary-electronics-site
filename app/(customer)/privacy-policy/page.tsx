@@ -1,12 +1,11 @@
 'use client'
 
-import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="flex flex-col">
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 pt-32 pb-20">
          <motion.div 
            initial={{ opacity: 0 }}
            animate={{ opacity: 1 }}
@@ -55,7 +54,6 @@ export default function PrivacyPolicyPage() {
             </div>
          </motion.div>
       </section>
-      <Footer />
     </div>
   )
 }

@@ -35,6 +35,7 @@ export function Footer() {
           {/* Links */}
           <div>
             <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Quick Links</h4>
+            <ul className="flex flex-col gap-3">
               {[
                 { name: 'Home', href: '/' },
                 { name: 'New Arrivals', href: '/#new-arrivals' },
@@ -45,11 +46,13 @@ export function Footer() {
                   <Link href={item.href} className="text-text-secondary hover:text-primary-500 transition-colors">{item.name}</Link>
                 </li>
               ))}
+            </ul>
           </div>
 
           {/* Support */}
           <div>
             <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Support</h4>
+            <ul className="flex flex-col gap-3">
               {[
                 { name: 'Contact Us', href: '/contact' },
                 { name: 'Shipping Policy', href: '/shipping-policy' },
@@ -60,6 +63,7 @@ export function Footer() {
                   <Link href={item.href} className="text-text-secondary hover:text-primary-500 transition-colors">{item.name}</Link>
                 </li>
               ))}
+            </ul>
           </div>
 
           {/* Contact */}

@@ -9,6 +9,10 @@
   --color-accent-400: hsl(35 80% 58%);
   --color-accent-500: hsl(35 80% 50%);
 
+  --color-gold-400: hsl(45 90% 55%);
+  --color-gold-500: hsl(45 85% 46%);
+  --color-gold-600: hsl(45 85% 38%);
+
   --color-bg-void: hsl(20 15% 6%);
   --color-bg-base: hsl(20 12% 9%);
   --color-bg-elevated: hsl(20 10% 12%);

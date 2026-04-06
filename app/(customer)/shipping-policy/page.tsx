@@ -1,13 +1,12 @@
 'use client'
 
-import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import { Truck, Clock, Shield, MapPin } from 'lucide-react'
 
 export default function ShippingPolicyPage() {
   return (
     <div className="flex flex-col">
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 pt-32 pb-20">
          <motion.div 
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
@@ -79,7 +78,6 @@ export default function ShippingPolicyPage() {
             </div>
          </motion.div>
       </section>
-      <Footer />
     </div>
   )
 }

@@ -22,13 +22,13 @@ export function ProductGallery({ images }: { images: string[] }) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
             transition={{ duration: 0.4 }}
-            className="w-full h-full p-12"
+            className="w-full h-full bg-bg-void/50"
           >
             <Image
               src={displayImages[active]}
               alt="Product"
               fill
-              className="object-contain"
+              className="object-cover"
             />
           </motion.div>
         </AnimatePresence>
@@ -69,7 +69,7 @@ export function ProductGallery({ images }: { images: string[] }) {
                 active === i ? 'border-primary-500' : 'border-transparent opacity-60 hover:opacity-100'
               )}
             >
-              <Image src={img} alt={`Thumb ${i}`} fill className="object-contain p-2" />
+              <Image src={img} alt={`Thumb ${i}`} fill className="object-cover" />
             </button>
           ))}
         </div>

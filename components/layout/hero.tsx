@@ -1,121 +1,226 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ArrowRight, Zap, ShieldCheck, RefreshCcw } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+// Placeholder images for electronics
+const heroSlides = [
+  {
+    image: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?q=80&w=2000&auto=format&fit=crop",
+    title: "ELEVATE\nYOUR VISION",
+    subtitle: "Experience the next generation of premium electronics. From high-end computing to immersive audio."
+  },
+  {
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2000&auto=format&fit=crop",
+    title: "NEXT GEN\nGAMING",
+    subtitle: "Push your limits with cutting edge hardware built for ultimate performance."
+  },
+  {
+    image: "https://images.unsplash.com/photo-1628233348123-289569cead72?q=80&w=2000&auto=format&fit=crop",
+    title: "IMMERSIVE\nAUDIO",
+    subtitle: "Hear every detail with high-fidelity sound systems and premium wearables."
+  }
+]
 
 export function Hero() {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [direction, setDirection] = useState(1) // 1 = forward, -1 = backward
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
+
+  const navigate = useCallback((dir: number) => {
+    setDirection(dir)
+    setCurrentSlide((prev) => {
+      const next = prev + dir
+      if (next < 0) return heroSlides.length - 1
+      if (next >= heroSlides.length) return 0
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    if (reducedMotion) return
+    const timer = setInterval(() => navigate(1), 6000)
+    return () => clearInterval(timer)
+  }, [reducedMotion, navigate])
+
+  const activeContent = heroSlides[currentSlide]
+
+  // Framer Motion variants
+  const imageVariants: Variants = {
+    enter: (dir: number) => ({
+      clipPath: dir > 0
+        ? 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)'
+        : 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)',
+      scale: 1.1,
+    }),
+    center: {
+      clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+      scale: 1,
+      transition: {
+        clipPath: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+        scale: { duration: 8, ease: 'linear' },
+      },
+    },
+    exit: (dir: number) => ({
+      clipPath: dir > 0
+        ? 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)'
+        : 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)',
+      transition: {
+        clipPath: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+      },
+    }),
+  }
+
+  const textContainerVariants: Variants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.08, delayChildren: 0.4 } },
+    exit: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
+  }
+
+  const textLineVariants: Variants = {
+    hidden: { y: 100, opacity: 0, skewY: 4 },
+    visible: { y: 0, opacity: 1, skewY: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+    exit: { y: -60, opacity: 0, transition: { duration: 0.4, ease: [0.55, 0, 1, 0.45] } },
+  }
+
+  const subtitleVariants: Variants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.7 } },
+    exit: { y: -20, opacity: 0, transition: { duration: 0.3 } },
+  }
+
+  const ctaVariants: Variants = {
+    hidden: { y: 40, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.9 } },
+    exit: { y: -15, opacity: 0, transition: { duration: 0.2 } },
+  }
+
+  const titleLines = activeContent.title.split('\n')
+
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-10 overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
-        <div className="absolute top-1/4 right-0 w-[800px] h-[800px] bg-primary-500/10 rounded-full blur-[160px]" />
-        <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-accent-500/10 rounded-full blur-[160px]" />
-      </div>
-
-      <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Text Content */}
+    <section className="relative h-screen flex items-end overflow-hidden bg-bg-void">
+      {/* Background Images */}
+      <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="flex flex-col gap-6"
+          key={currentSlide}
+          custom={direction}
+          variants={reducedMotion ? undefined : imageVariants}
+          initial={reducedMotion ? undefined : "enter"}
+          animate="center"
+          exit={reducedMotion ? undefined : "exit"}
+          className="absolute inset-0"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-primary-500/20 w-fit">
-            <span className="flex h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
-            <span className="text-xs font-bold uppercase tracking-widest text-primary-400">New arrivals available</span>
-          </div>
-
-          <h1 className="text-5xl lg:text-7xl font-display font-black leading-tight">
-            ELEVATE <br />
-            <span className="text-gradient">YOUR VISION</span>
-          </h1>
-
-          <p className="text-lg text-text-secondary max-w-lg leading-relaxed">
-            Experience the next generation of premium electronics. From high-end computing to immersive audio, Binary Electronics brings you the world's most innovative technology.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 mt-4">
-            <Button size="lg" className="gap-2 group" asChild>
-              <Link href="/products">
-                Explore Store <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/products">
-                Flash Deals
-              </Link>
-            </Button>
-          </div>
-
-          {/* Trust Badges */}
-          <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-primary-500/10">
-            <div className="flex flex-col gap-1">
-              <Zap size={20} className="text-primary-500" />
-              <span className="text-sm font-bold">Fast Delivery</span>
-              <span className="text-xs text-text-muted">Nationwide shipping</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <ShieldCheck size={20} className="text-accent-500" />
-              <span className="text-sm font-bold">Genuine Warranty</span>
-              <span className="text-xs text-text-muted">Official products</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <RefreshCcw size={20} className="text-gold-500" />
-              <span className="text-sm font-bold">7-Day Returns</span>
-              <span className="text-xs text-text-muted">No-hassle policy</span>
-            </div>
-          </div>
+          <Image
+            src={activeContent.image}
+            alt={titleLines.join(' ')}
+            fill
+            className="object-cover"
+            priority={currentSlide === 0}
+            sizes="100vw"
+            quality={85}
+          />
+          {/* Overlays for dark theme readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-bg-void via-bg-void/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-bg-void/80 via-bg-void/20 to-transparent" />
         </motion.div>
+      </AnimatePresence>
 
-        {/* Visual Content - Product Showcase */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="relative aspect-square lg:aspect-auto lg:h-[600px] flex items-center justify-center"
-        >
-          {/* Main Product Image (Placeholder - high end drone or something) */}
-          <div className="relative w-full h-[80%] lg:h-full group">
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary-500/20 to-transparent rounded-full blur-[100px] group-hover:scale-110 transition-transform duration-700" />
-            <Image
-              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop"
-              alt="Premium Product"
-              fill
-              className="object-contain animate-float"
-            />
-            
-            {/* Floating Info Pods */}
-            <motion.div 
-               animate={{ y: [0, -15, 0] }}
-               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-               className="absolute top-1/4 -right-4 glass p-4 rounded-2xl border border-primary-500/20 shadow-2xl hidden md:block"
+      {/* Content */}
+      <div className="relative z-10 w-full px-6 md:px-16 pb-28 md:pb-20">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            variants={textContainerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="max-w-4xl"
+          >
+            {/* Kicker */}
+            <motion.span
+              variants={subtitleVariants}
+              className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full text-[10px] font-black tracking-[0.35em] uppercase mb-6 glass text-primary-400 border-primary-500/20"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-500">
-                  <span className="text-[10px] font-bold">AI</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase font-bold text-primary-500">Smart Features</span>
-                  <span className="text-xs font-bold">Enabled</span>
-                </div>
-              </div>
-            </motion.div>
+              <span className="flex h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
+              New arrivals available
+            </motion.span>
 
-            <motion.div 
-               animate={{ y: [0, 15, 0] }}
-               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-               className="absolute bottom-1/4 -left-4 glass p-4 rounded-2xl border border-accent-500/20 shadow-2xl hidden md:block"
+            {/* Title */}
+            <div className="overflow-hidden">
+              {titleLines.map((line, i) => (
+                <motion.h1
+                  key={`${currentSlide}-${i}`}
+                  variants={textLineVariants}
+                  className="font-display font-black text-white leading-[0.95] tracking-tight text-5xl md:text-7xl lg:text-8xl"
+                >
+                  {i === titleLines.length - 1 ? <span className="text-gradient">{line}</span> : line}
+                </motion.h1>
+              ))}
+            </div>
+
+            {/* Subtitle */}
+            <motion.p
+              variants={subtitleVariants}
+              className="mt-6 text-text-secondary max-w-lg leading-relaxed text-lg"
             >
-              <div className="flex flex-col">
-                <span className="text-[10px] uppercase font-bold text-accent-500">Premium Build</span>
-                <span className="text-xs font-bold">Titanium Alloy</span>
-              </div>
+              {activeContent.subtitle}
+            </motion.p>
+
+            {/* CTA */}
+            <motion.div variants={ctaVariants} className="mt-10 flex flex-wrap items-center gap-4">
+              <a
+                href="/products"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-primary-500 px-8 text-sm font-bold uppercase text-black hover:bg-primary-400 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,100,0,0.3)]"
+              >
+                Explore Store
+              </a>
+              <a
+                href="/categories"
+                className="inline-flex h-12 items-center justify-center rounded-full border border-primary-500/30 px-8 text-sm font-bold uppercase text-white hover:bg-primary-500/10 transition-colors glass"
+              >
+                Categories
+              </a>
             </motion.div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Arrows */}
+        <div className="absolute bottom-8 right-6 md:right-16 flex items-center gap-4">
+          <span className="text-text-muted text-xs tracking-widest tabular-nums font-bold">
+            {String(currentSlide + 1).padStart(2, '0')}
+            <span className="mx-1.5 text-text-muted/50">/</span>
+            {String(heroSlides.length).padStart(2, '0')}
+          </span>
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 text-text-muted hover:text-white transition-colors"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={() => navigate(1)}
+            className="p-2 text-text-muted hover:text-white transition-colors"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary-500/10">
+          <motion.div
+            key={currentSlide}
+            className="h-full bg-primary-500"
+            initial={{ width: '0%' }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 6, ease: 'linear' }}
+          />
+        </div>
       </div>
     </section>
   )

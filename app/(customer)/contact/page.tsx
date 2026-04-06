@@ -23,7 +23,7 @@ export default function ContactPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="container mx-auto px-4 py-20 relative overflow-hidden">
+      <div className="container mx-auto px-4 pt-32 pb-20 relative overflow-hidden">
         {/* Abstract Background Decoration */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary-500/5 rounded-full blur-[160px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent-500/5 rounded-full blur-[160px] pointer-events-none" />
