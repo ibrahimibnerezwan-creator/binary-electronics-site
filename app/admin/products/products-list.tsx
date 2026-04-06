@@ -36,38 +36,37 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-display font-black uppercase tracking-tight">PRODUCTS</h1>
-          <p className="text-text-secondary">Manage your inventory and product listings</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-1">
+        <div className="flex flex-col gap-1 lg:gap-2">
+          <h1 className="text-3xl lg:text-4xl font-display font-black uppercase tracking-tight">PRODUCTS</h1>
+          <p className="text-xs lg:text-sm text-text-secondary">Manage your inventory and listings</p>
         </div>
-        <Link href="/admin/products/new">
-          <Button className="gap-2 h-14 px-8 rounded-2xl shadow-xl shadow-primary-500/20">
-            <Plus size={20} /> Add New Product
+        <Link href="/admin/products/new" className="w-full md:w-auto">
+          <Button className="w-full md:w-auto gap-2 h-12 lg:h-14 px-8 rounded-xl lg:rounded-2xl shadow-xl shadow-primary-500/20 text-sm">
+            <Plus size={20} /> Add Product
           </Button>
         </Link>
       </div>
 
-      <Card className="p-4 flex flex-col md:flex-row gap-4 items-center bg-bg-elevated/30 border-primary-500/5">
+      <Card className="p-3 lg:p-4 flex flex-col lg:flex-row gap-3 lg:gap-4 items-center bg-bg-elevated/30 border-primary-500/5">
          <div className="relative flex-grow w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
             <Input 
-              placeholder="Search products, SKU, or categories..." 
-              className="pl-12 h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500"
+              placeholder="Search products..." 
+              className="pl-12 h-11 lg:h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
          </div>
-         <div className="flex gap-4 w-full md:w-auto">
-            <Button variant="secondary" className="gap-2 h-12 rounded-xl border border-primary-500/10">
-              <Filter size={18} /> Filters
+         <div className="flex gap-2 lg:gap-4 w-full lg:w-auto">
+            <Button variant="secondary" className="flex-1 lg:flex-none gap-2 h-11 lg:h-12 rounded-xl border border-primary-500/10 text-xs">
+              <Filter size={16} /> Filters
             </Button>
-            <div className="flex-grow md:hidden" />
-            <select className="h-12 bg-bg-void/40 border border-primary-500/10 rounded-xl px-4 text-sm font-bold focus:outline-none focus:border-primary-500">
-               <option>Sort by: Newest</option>
-               <option>Price: Low to High</option>
-               <option>Price: High to Low</option>
-               <option>Stock: Low to High</option>
+            <select className="flex-1 lg:flex-none h-11 lg:h-12 bg-bg-void/40 border border-primary-500/10 rounded-xl px-3 text-xs font-bold focus:outline-none focus:border-primary-500 cursor-pointer">
+               <option>Newest First</option>
+               <option>Price: Low-High</option>
+               <option>Price: High-Low</option>
+               <option>Low Stock</option>
             </select>
          </div>
       </Card>
@@ -126,21 +125,22 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
                     {product.status === 'low_stock' && <Badge className="bg-orange-500/10 text-orange-500 border-orange-500/20 gap-1"><Clock size={12}/> Low Stock</Badge>}
                     {product.status === 'out_of_stock' && <Badge className="bg-red-500/10 text-red-500 border-red-500/20 gap-1"><XCircle size={12}/> Out of Stock</Badge>}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                       <Link href={`/product/${product.slug}`} target="_blank" className="p-2 text-text-muted hover:text-primary-500 hover:glass rounded-lg transition-all" title="View Store Page">
-                         <ExternalLink size={18} />
+                   <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1 lg:gap-2">
+                       <Link href={`/product/${product.slug}`} target="_blank" className="p-2 text-text-muted hover:text-primary-500 transition-all" title="View Store Page">
+                         <ExternalLink size={16} />
                        </Link>
-                       <Link href={`/admin/products`}>
-                          <Button size="icon" variant="ghost" className="h-9 w-9 text-text-muted hover:text-primary-500 hover:bg-primary-500/10">
-                            <Edit size={16} />
-                          </Button>
-                       </Link>
+                       {/* Note: Edit functionality will be implemented in future tasks */}
+                       <Button size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-primary-500 hover:bg-primary-500/10" disabled>
+                         <Edit size={14} />
+                       </Button>
                        <form action={async () => {
-                         await deleteProduct(product.id)
+                         if (confirm('Are you sure you want to delete this product?')) {
+                            await deleteProduct(product.id)
+                         }
                        }}>
-                         <Button type="submit" size="icon" variant="ghost" className="h-9 w-9 text-text-muted hover:text-red-500 hover:bg-red-500/10">
-                           <Trash2 size={16} />
+                         <Button type="submit" size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-red-500 hover:bg-red-500/10">
+                           <Trash2 size={14} />
                          </Button>
                        </form>
                     </div>

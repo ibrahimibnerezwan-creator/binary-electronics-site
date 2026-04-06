@@ -72,20 +72,21 @@ export function ProductForm({ categories, brands }: ProductFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-5xl mx-auto flex flex-col gap-8 pb-20">
+    <form onSubmit={onSubmit} className="max-w-5xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20">
       <div className="flex flex-col gap-6">
-        <Link href="/admin/products" className="flex items-center gap-2 text-primary-500 font-bold text-xs uppercase tracking-widest hover:underline">
-          <ChevronLeft size={16} /> Back to Products
+        <Link href="/admin/products" className="flex items-center gap-2 text-primary-500 font-bold text-[10px] lg:text-xs uppercase tracking-widest hover:underline px-1">
+          <ChevronLeft size={14} className="lg:hidden" />
+          <ChevronLeft size={16} className="hidden lg:block" /> Back to Products
         </Link>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 px-1">
           <div className="flex flex-col gap-2">
-            <h1 className="text-4xl font-display font-black uppercase tracking-tight">ADD NEW <span className="text-gradient">PRODUCT</span></h1>
-            <p className="text-text-secondary">Fill in the details to list a new item on Binary Electronics</p>
+            <h1 className="text-2xl lg:text-4xl font-display font-black uppercase tracking-tight">ADD NEW <span className="text-gradient">PRODUCT</span></h1>
+            <p className="text-xs lg:text-sm text-text-secondary">Fill in the details to list a new item</p>
           </div>
-          <div className="flex gap-4">
-             <Button type="button" variant="secondary" onClick={() => router.back()} className="h-14 px-8 rounded-2xl glass border-primary-500/10">Discard</Button>
-             <Button disabled={loading || uploading} className="h-14 px-10 rounded-2xl shadow-xl shadow-primary-500/20 gap-2">
-               {loading ? <Loader2 className="animate-spin" size={20}/> : <Save size={20} />} 
+          <div className="flex gap-3 w-full md:w-auto">
+             <Button type="button" variant="secondary" onClick={() => router.back()} className="flex-1 md:flex-none h-12 lg:h-14 px-6 lg:px-8 rounded-xl lg:rounded-2xl glass border-primary-500/10 text-xs lg:text-sm">Discard</Button>
+             <Button disabled={loading || uploading} className="flex-[2] md:flex-none h-12 lg:h-14 px-8 lg:px-10 rounded-xl lg:rounded-2xl shadow-xl shadow-primary-500/20 gap-2 text-xs lg:text-sm">
+               {loading ? <Loader2 className="animate-spin" size={18}/> : <Save size={18} />} 
                Publish Product
              </Button>
           </div>
@@ -94,105 +95,107 @@ export function ProductForm({ categories, brands }: ProductFormProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 flex flex-col gap-8">
-          <Card className="p-8 flex flex-col gap-8 bg-bg-elevated/30 border-primary-500/5">
-             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-6">
-               <div className="p-2 rounded-lg glass text-primary-500"><Info size={20}/></div>
-               <h3 className="font-display font-black uppercase tracking-widest text-sm">General Information</h3>
+          <Card className="p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-bg-elevated/30 border-primary-500/5">
+             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-5 lg:pb-6">
+               <div className="p-2 rounded-lg glass text-primary-500"><Info size={18} className="lg:hidden"/><Info size={20} className="hidden lg:block"/></div>
+               <h3 className="font-display font-black uppercase tracking-widest text-xs lg:text-sm">General Information</h3>
              </div>
 
              <div className="grid grid-cols-1 gap-6">
                 <div className="flex flex-col gap-3">
-                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Product Name</label>
-                   <Input name="name" required placeholder="e.g. MacBook Pro M3 Max" className="h-14 bg-bg-void/40 border-primary-500/10" />
+                   <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Product Name</label>
+                   <Input name="name" required placeholder="e.g. MacBook Pro M3 Max" className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
                 </div>
 
                 <div className="flex flex-col gap-3">
-                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Description</label>
+                   <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Description</label>
                    <textarea 
                      name="description"
                      required
-                     rows={8}
+                     rows={6}
                      placeholder="Write a detailed product description..."
-                     className="w-full rounded-2xl border border-primary-500/10 bg-bg-void/40 p-6 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500/50 transition-all resize-none"
+                     className="w-full rounded-xl lg:rounded-2xl border border-primary-500/10 bg-bg-void/40 p-4 lg:p-6 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500/50 transition-all resize-none"
                    ></textarea>
                 </div>
              </div>
           </Card>
 
-          <Card className="p-8 flex flex-col gap-8 bg-bg-elevated/30 border-primary-500/5">
-             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-6">
-               <div className="p-2 rounded-lg glass text-accent-500"><ImageIcon size={20}/></div>
-               <h3 className="font-display font-black uppercase tracking-widest text-sm">Product Images</h3>
+          <Card className="p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-bg-elevated/30 border-primary-500/5">
+             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-5 lg:pb-6">
+               <div className="p-2 rounded-lg glass text-accent-500"><ImageIcon size={18} className="lg:hidden"/><ImageIcon size={20} className="hidden lg:block"/></div>
+               <h3 className="font-display font-black uppercase tracking-widest text-xs lg:text-sm">Product Images</h3>
              </div>
 
-             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+             <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-4">
                 {images.map((url, i) => (
-                  <div key={i} className="relative aspect-square rounded-2xl glass border border-primary-500/10 overflow-hidden">
-                    <img src={url} alt="Product" className="w-full h-full object-cover" />
+                  <div key={i} className="relative aspect-square rounded-xl lg:rounded-2xl glass border border-primary-500/10 overflow-hidden group">
+                    <img src={url} alt="Product" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                     <button 
                       type="button"
                       onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
-                      className="absolute top-2 right-2 p-1 rounded-full bg-red-500 text-white shadow-lg shadow-red-500/20"
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-red-500 text-white shadow-lg shadow-red-500/20 active:scale-95 transition-transform"
                     >
                       <X size={12}/>
                     </button>
                   </div>
                 ))}
                 
-                <label className="aspect-square rounded-2xl glass border-2 border-dashed border-primary-500/20 flex flex-col items-center justify-center gap-2 text-text-muted hover:text-primary-500 hover:border-primary-500/40 transition-all cursor-pointer">
-                   {uploading ? <Loader2 className="animate-spin" size={32}/> : <Plus size={32} />}
-                   <span className="text-[10px] font-bold uppercase">{uploading ? 'Uploading...' : 'Upload'}</span>
-                   <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
-                </label>
+                {images.length < 5 && (
+                  <label className="aspect-square rounded-xl lg:rounded-2xl glass border-2 border-dashed border-primary-500/20 flex flex-col items-center justify-center gap-2 text-text-muted hover:text-primary-500 hover:border-primary-500/40 transition-all cursor-pointer active:scale-95">
+                     {uploading ? <Loader2 className="animate-spin" size={24}/> : <Plus size={24} />}
+                     <span className="text-[8px] lg:text-[10px] font-bold uppercase">{uploading ? 'Uploading...' : 'Upload'}</span>
+                     <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
+                  </label>
+                )}
              </div>
-             <p className="text-[10px] text-text-muted uppercase tracking-widest text-center">Recommended size: 1000x1000px. Max 5 images.</p>
+             <p className="text-[8px] lg:text-[10px] text-text-muted uppercase tracking-widest text-center">Recommended: 1000x1000px. Max 5 images.</p>
           </Card>
 
-          <Card className="p-8 flex flex-col gap-8 bg-bg-elevated/30 border-primary-500/5">
-             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-6">
-               <div className="p-2 rounded-lg glass text-primary-500"><BarChart2 size={20}/></div>
-               <h3 className="font-display font-black uppercase tracking-widest text-sm">Inventory & Pricing</h3>
+          <Card className="p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-bg-elevated/30 border-primary-500/5">
+             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-5 lg:pb-6">
+               <div className="p-2 rounded-lg glass text-primary-500"><BarChart2 size={18} className="lg:hidden"/><BarChart2 size={20} className="hidden lg:block"/></div>
+               <h3 className="font-display font-black uppercase tracking-widest text-xs lg:text-sm">Inventory & Pricing</h3>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:gap-8">
                 <div className="flex flex-col gap-3">
-                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Regular Price (৳)</label>
-                   <Input name="price" type="number" step="0.01" required placeholder="0.00" className="h-14 bg-bg-void/40 border-primary-500/10" />
+                   <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Regular Price (৳)</label>
+                   <Input name="price" type="number" step="0.01" required placeholder="0.00" className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
                 </div>
                 <div className="flex flex-col gap-3">
-                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Sale Price (৳)</label>
-                   <Input name="comparePrice" type="number" step="0.01" placeholder="0.00" className="h-14 bg-bg-void/40 border-primary-500/10" />
+                   <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Sale Price (৳)</label>
+                   <Input name="comparePrice" type="number" step="0.01" placeholder="0.00" className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
                 </div>
                 <div className="flex flex-col gap-3">
-                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">SKU Code</label>
-                   <Input name="sku" placeholder="IPH-15-TIT" className="h-14 bg-bg-void/40 border-primary-500/10" />
+                   <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">SKU Code</label>
+                   <Input name="sku" placeholder="IPH-15-TIT" className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
                 </div>
                 <div className="flex flex-col gap-3">
-                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Stock Quantity</label>
-                   <Input name="stock" type="number" required placeholder="0" className="h-14 bg-bg-void/40 border-primary-500/10" />
+                   <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Stock Quantity</label>
+                   <Input name="stock" type="number" required placeholder="0" className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
                 </div>
              </div>
           </Card>
         </div>
 
         <div className="flex flex-col gap-8">
-           <Card className="p-8 flex flex-col gap-8 bg-bg-elevated/30 border-primary-500/5">
-              <div className="flex items-center gap-3 border-b border-primary-500/10 pb-6">
-                <div className="p-2 rounded-lg glass text-gold-500"><Tag size={20}/></div>
-                <h3 className="font-display font-black uppercase tracking-widest text-sm">Organization</h3>
+           <Card className="p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-bg-elevated/30 border-primary-500/5">
+              <div className="flex items-center gap-3 border-b border-primary-500/10 pb-5 lg:pb-6">
+                <div className="p-2 rounded-lg glass text-gold-500"><Tag size={18} className="lg:hidden"/><Tag size={20} className="hidden lg:block"/></div>
+                <h3 className="font-display font-black uppercase tracking-widest text-xs lg:text-sm">Organization</h3>
               </div>
 
               <div className="flex flex-col gap-6">
                  <div className="flex flex-col gap-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Category</label>
-                    <select name="categoryId" className="h-14 bg-bg-void/40 border border-primary-500/10 rounded-2xl px-4 text-sm font-bold focus:outline-none focus:border-primary-500">
+                    <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Category</label>
+                    <select name="categoryId" className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
                        <option>Select Category</option>
                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                  </div>
                  <div className="flex flex-col gap-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Brand</label>
-                    <select name="brandId" className="h-14 bg-bg-void/40 border border-primary-500/10 rounded-2xl px-4 text-sm font-bold focus:outline-none focus:border-primary-500">
+                    <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Brand</label>
+                    <select name="brandId" className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
                        <option>Select Brand</option>
                        {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                     </select>
@@ -200,16 +203,16 @@ export function ProductForm({ categories, brands }: ProductFormProps) {
               </div>
            </Card>
 
-           <Card className="p-8 flex flex-col gap-8 bg-bg-elevated/30 border-primary-500/5">
-              <div className="flex items-center gap-3 border-b border-primary-500/10 pb-6">
-                <div className="p-2 rounded-lg glass text-primary-500"><Save size={20}/></div>
-                <h3 className="font-display font-black uppercase tracking-widest text-sm">Status</h3>
+           <Card className="p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-bg-elevated/30 border-primary-500/5">
+              <div className="flex items-center gap-3 border-b border-primary-500/10 pb-5 lg:pb-6">
+                <div className="p-2 rounded-lg glass text-primary-500"><Save size={18} className="lg:hidden"/><Save size={20} className="hidden lg:block"/></div>
+                <h3 className="font-display font-black uppercase tracking-widest text-xs lg:text-sm">Status</h3>
               </div>
 
               <div className="flex flex-col gap-4">
                  <div className="flex flex-col gap-3">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Featured Product</label>
-                    <select name="isFeatured" className="h-14 bg-bg-void/40 border border-primary-500/10 rounded-2xl px-4 text-sm font-bold focus:outline-none focus:border-primary-500">
+                    <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Featured Product</label>
+                    <select name="isFeatured" className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
                        <option value="false">No</option>
                        <option value="true">Yes (Show on Homepage)</option>
                     </select>

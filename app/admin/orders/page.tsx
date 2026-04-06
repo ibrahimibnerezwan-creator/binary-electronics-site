@@ -35,28 +35,28 @@ export default async function AdminOrdersPage() {
     return (
         <div className="flex flex-col gap-8">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-display font-black uppercase tracking-tight">ORDERS</h1>
-                <p className="text-text-secondary">Manage customer orders and fulfillment</p>
+            <div className="flex flex-col gap-1 lg:gap-2 px-1">
+                <h1 className="text-3xl lg:text-4xl font-display font-black uppercase tracking-tight">ORDERS</h1>
+                <p className="text-xs lg:text-sm text-text-secondary">Manage customer orders and fulfillment</p>
             </div>
 
             {/* Quick Stats Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card className="p-6 glass border-primary-500/5">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-primary-500/10 text-primary-500"><ShoppingBag size={24}/></div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                <Card className="p-4 lg:p-6 glass border-primary-500/5">
+                    <div className="flex items-center gap-3 lg:gap-4">
+                        <div className="p-2 lg:p-3 rounded-xl bg-primary-500/10 text-primary-500"><ShoppingBag size={20} className="lg:hidden"/><ShoppingBag size={24} className="hidden lg:block"/></div>
                         <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Total Orders</p>
-                            <p className="text-2xl font-black text-white">{orders.length}</p>
+                            <p className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted">Total</p>
+                            <p className="text-xl lg:text-2xl font-black text-white">{orders.length}</p>
                         </div>
                     </div>
                 </Card>
-                <Card className="p-6 glass border-amber-500/5">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500"><Clock size={24}/></div>
+                <Card className="p-4 lg:p-6 glass border-amber-500/5">
+                    <div className="flex items-center gap-3 lg:gap-4">
+                        <div className="p-2 lg:p-3 rounded-xl bg-amber-500/10 text-amber-500"><Clock size={20} className="lg:hidden"/><Clock size={24} className="hidden lg:block"/></div>
                         <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Pending</p>
-                            <p className="text-2xl font-black text-white">{orders.filter(o => o.status === 'pending').length}</p>
+                            <p className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted">Pending</p>
+                            <p className="text-xl lg:text-2xl font-black text-white">{orders.filter(o => o.status === 'pending').length}</p>
                         </div>
                     </div>
                 </Card>
@@ -88,46 +88,47 @@ export default async function AdminOrdersPage() {
                             ) : (
                                 orders.map((order) => (
                                     <tr key={order.id} className="hover:bg-primary-500/5 transition-colors group">
-                                        <td className="px-6 py-6">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="font-black text-white">#{order.id.slice(0, 8).toUpperCase()}</span>
-                                                <span className="text-[10px] text-text-muted uppercase tracking-widest">
+                                        <td className="px-4 lg:px-6 py-4 lg:py-6">
+                                            <div className="flex flex-col gap-0.5 lg:gap-1">
+                                                <span className="font-black text-white text-xs lg:text-sm tracking-tight border-b border-primary-500/20 w-fit pb-0.5 mb-1 group-hover:border-primary-500 transition-colors">#{order.id.slice(0, 8).toUpperCase()}</span>
+                                                <span className="text-[8px] lg:text-[10px] text-text-muted uppercase font-bold tracking-widest">
                                                     {new Date(order.createdAt!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <User size={12} className="text-primary-500" />
-                                                    <span className="font-bold text-sm text-white">{order.customerName}</span>
+                                        <td className="px-4 lg:px-6 py-4 lg:py-6">
+                                            <div className="flex flex-col gap-0.5 lg:gap-1">
+                                                <div className="flex items-center gap-1.5 lg:gap-2">
+                                                    <User size={10} className="text-primary-500" />
+                                                    <span className="font-bold text-xs lg:text-sm text-white">{order.customerName}</span>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <MapPin size={12} className="text-text-muted" />
-                                                    <span className="text-xs text-text-secondary">{order.shippingCity}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-6">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="font-black text-primary-500">{formatPrice(order.total)}</span>
-                                                <div className="flex items-center gap-2">
-                                                    <CreditCard size={12} className="text-accent-500" />
-                                                    <span className="text-[10px] text-text-muted uppercase tracking-widest">{order.paymentMethod}</span>
+                                                <div className="flex items-center gap-1.5 lg:gap-2">
+                                                    <MapPin size={10} className="text-text-muted" />
+                                                    <span className="text-[10px] lg:text-xs text-text-secondary">{order.shippingCity}</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
-                                            <Badge className={`rounded-lg px-3 py-1 text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}>
+                                        <td className="px-4 lg:px-6 py-4 lg:py-6">
+                                            <div className="flex flex-col gap-0.5 lg:gap-1">
+                                                <span className="font-black text-primary-500 text-xs lg:text-sm">{formatPrice(order.total)}</span>
+                                                <div className="flex items-center gap-1.5 lg:gap-2">
+                                                    <CreditCard size={10} className="text-accent-500" />
+                                                    <span className="text-[8px] lg:text-[10px] text-text-muted uppercase font-bold tracking-widest">{order.paymentMethod}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 lg:px-6 py-4 lg:py-6">
+                                            <Badge className={`rounded-lg px-2 lg:px-3 py-0.5 lg:py-1 text-[8px] lg:text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}>
                                                 {order.status}
                                             </Badge>
                                         </td>
-                                        <td className="px-6 py-6 text-right">
-                                            <div className="flex items-center justify-end gap-3">
+                                        <td className="px-4 lg:px-6 py-4 lg:py-6 text-right">
+                                            <div className="flex items-center justify-end gap-2 lg:gap-3">
                                                 <SteadfastButton orderId={order.id} trackingId={order.courierTrackingId} />
                                                 <Link href={`/admin/orders`}>
-                                                    <div className="p-2 text-text-secondary hover:text-primary-500 hover:glass rounded-lg transition-all" title="View details (Coming soon)">
-                                                        <ChevronRight size={18} />
+                                                    <div className="p-1.5 lg:p-2 text-text-muted hover:text-primary-500 hover:glass rounded-lg transition-all" title="View details (Coming soon)">
+                                                        <ChevronRight size={16} className="lg:hidden" />
+                                                        <ChevronRight size={18} className="hidden lg:block" />
                                                     </div>
                                                 </Link>
                                             </div>

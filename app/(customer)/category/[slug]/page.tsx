@@ -30,24 +30,24 @@ export default async function CategoryPage({ params }: { params: { slug: string 
   const categoryName = category.name
 
   return (
-    <div className="pt-32 pb-24 font-mono">
+    <div className="pt-24 md:pt-32 pb-16 md:pb-24 font-mono">
       <div className="container mx-auto px-4">
         {/* Header Section */}
-        <div className="relative mb-20 animate-reveal-up">
-          <div className="flex flex-col md:flex-row justify-between items-end gap-10">
-            <div className="flex flex-col gap-6">
-              <div className="inline-flex items-center gap-3 px-3 py-1 bg-primary-500/10 border border-primary-500/20 text-primary-500 text-[10px] font-bold uppercase tracking-[0.4em]">
-                <Activity size={14} className="animate-pulse" /> CLASS: {category.slug.toUpperCase()}
+        <div className="relative mb-12 md:mb-20 animate-reveal-up">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 md:gap-10">
+            <div className="flex flex-col gap-4 md:gap-6 w-full">
+              <div className="inline-flex items-center gap-3 px-3 py-1 bg-primary-500/10 border border-primary-500/20 text-primary-500 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.4em] w-fit">
+                <Activity size={12} className="animate-pulse" /> CLASS: {category.slug.toUpperCase()}
               </div>
-              <h1 className="text-6xl md:text-8xl font-display font-black leading-tight uppercase tracking-tighter text-white">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black leading-none uppercase tracking-tighter text-white">
                 {categoryName.split(' ')[0]} <br />
                 <span className="text-gradient">{categoryName.split(' ').slice(1).join(' ') || 'MODE'}</span>
               </h1>
             </div>
-            <div className="flex flex-col gap-4 items-end text-right max-w-sm">
-              <div className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-1 w-full">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted/60">SECTOR_LOADED</p>
-                <p className="text-sm text-text-secondary leading-relaxed uppercase tracking-wider">
+            <div className="flex flex-col gap-4 items-start md:items-end text-left md:text-right w-full md:max-w-sm">
+              <div className="p-4 bg-white/5 border border-white/10 rounded-none flex flex-col gap-1 w-full backdrop-blur-sm">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted/60">SECTOR_LOADED</p>
+                <p className="text-xs md:text-sm text-text-secondary leading-relaxed uppercase tracking-wider">
                   Accessing <span className="text-primary-500 font-bold">{products.length}</span> units within the <span className="text-white">{categoryName}</span> subsystem.
                 </p>
               </div>
@@ -55,7 +55,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
           </div>
           {/* Scanning Line */}
           <div className="absolute -bottom-6 left-0 w-full h-[1px] bg-primary-500/20">
-            <div className="w-1/3 h-full bg-primary-500 animate-scan" />
+            <div className="w-1/2 md:w-1/3 h-full bg-primary-500 animate-scan" />
           </div>
         </div>
 
