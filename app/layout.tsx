@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
-import { Sora, DM_Sans } from 'next/font/google'
+import { Sora, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import { Providers } from './providers'
 import './globals.css'
 
 const sora = Sora({ subsets: ['latin'], variable: '--font-display' })
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body' })
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 import { getStoreSettings } from '@/lib/data'
+
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getStoreSettings()
@@ -52,7 +55,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${sora.variable} ${dmSans.variable} font-body min-h-screen bg-bg-primary text-text-primary overflow-x-hidden binary-bg`} suppressHydrationWarning>
+      <body className={`${sora.variable} ${dmSans.variable} ${jetbrainsMono.variable} font-body min-h-screen bg-bg-void text-text-primary overflow-x-hidden digital-noise`} suppressHydrationWarning>
+        <div className="fixed inset-0 -z-50 tech-grid pointer-events-none opacity-40 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]" />
         <Providers>
           {children}
         </Providers>
@@ -96,9 +100,9 @@ export default function RootLayout({
         )}
 
         {/* Dynamic Background Glow */}
-        <div className="fixed inset-0 -z-50 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-[120px] animate-float mr-[-300px]" />
-          <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-accent-500/5 rounded-full blur-[120px] animate-float ml-[-300px]" style={{ animationDelay: '2s' }} />
+        <div className="fixed inset-0 -z-40 pointer-events-none overflow-hidden">
+          <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary-500/10 rounded-full blur-[120px] animate-float" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent-500/10 rounded-full blur-[120px] animate-float" style={{ animationDelay: '2s' }} />
         </div>
       </body>
     </html>

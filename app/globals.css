@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* === Binary Electronics: "Warm Luxury" Palette === */
-  --color-primary-400: hsl(20 90% 58%);
-  --color-primary-500: hsl(20 90% 50%);
-  --color-primary-600: hsl(20 90% 42%);
+  /* === Binary Electronics: "Cyber-Flux" Digital Palette === */
+  --color-primary-400: hsl(190 100% 60%);
+  --color-primary-500: hsl(190 100% 50%);
+  --color-primary-600: hsl(190 100% 40%);
 
-  --color-accent-400: hsl(35 80% 58%);
-  --color-accent-500: hsl(35 80% 50%);
+  --color-accent-400: hsl(280 100% 75%);
+  --color-accent-500: hsl(280 100% 65%);
 
-  --color-gold-400: hsl(45 90% 55%);
-  --color-gold-500: hsl(45 85% 46%);
-  --color-gold-600: hsl(45 85% 38%);
+  --color-gold-400: hsl(150 100% 65%);
+  --color-gold-500: hsl(150 100% 55%);
+  --color-gold-600: hsl(150 100% 45%);
 
-  --color-bg-void: hsl(20 15% 6%);
-  --color-bg-base: hsl(20 12% 9%);
-  --color-bg-elevated: hsl(20 10% 12%);
-  --color-bg-hover: hsl(20 10% 16%);
+  --color-bg-void: hsl(222 25% 4%);
+  --color-bg-base: hsl(222 25% 6%);
+  --color-bg-elevated: hsl(222 20% 10%);
+  --color-bg-hover: hsl(222 20% 14%);
 
-  --color-text-primary: hsl(35 20% 95%);
-  --color-text-secondary: hsl(20 10% 70%);
-  --color-text-muted: hsl(20 8% 45%);
+  --color-text-primary: hsl(190 20% 95%);
+  --color-text-secondary: hsl(210 15% 75%);
+  --color-text-muted: hsl(210 10% 50%);
 
-  --color-border-default: hsl(20 10% 18%);
-  --color-border-subtle: hsl(20 10% 14%);
+  --color-border-default: hsl(190 50% 15%);
+  --color-border-subtle: hsl(190 50% 10%);
 
   --font-display: var(--font-display-family);
   --font-body: var(--font-body-family);
@@ -40,22 +40,45 @@ body {
 
 /* === Glass Utilities === */
 .glass {
-  background: hsla(20, 12%, 10%, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: hsla(222, 25%, 6%, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsla(190, 100%, 50%, 0.05);
 }
 
 .glass-card {
-  background: hsla(20, 12%, 10%, 0.5);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 1.5rem;
-  border: 1px solid hsla(20, 90%, 50%, 0.05);
+  background: hsla(222, 25%, 8%, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  border: 1px solid hsla(190, 100%, 50%, 0.1);
+  box-shadow: 0 0 40px -10px hsla(190, 100%, 50%, 0.05);
+}
+
+/* === Digital Overlays === */
+.tech-grid {
+  background-image: 
+    linear-gradient(to right, hsla(190, 100%, 50%, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, hsla(190, 100%, 50%, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.digital-noise {
+  position: relative;
+}
+.digital-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+  pointer-events: none;
+  z-index: 50;
 }
 
 /* === Gradient Text === */
 .text-gradient {
-  background: linear-gradient(135deg, hsl(20 90% 50%), hsl(35 80% 50%));
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -67,9 +90,9 @@ body {
   100% { background-position: 200% 0; }
 }
 
-@keyframes reveal-up {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
 }
 
 @keyframes float {
@@ -77,9 +100,13 @@ body {
   50% { transform: translateY(-10px); }
 }
 
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.4; }
-  100% { transform: scale(1.6); opacity: 0; }
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
 }
 
 .animate-shimmer {
@@ -87,26 +114,38 @@ body {
   background-size: 200% 100%;
 }
 
-.animate-reveal-up {
-  animation: reveal-up 0.6s ease-out forwards;
+.animate-scan {
+  position: relative;
+  overflow: hidden;
+}
+.animate-scan::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--color-primary-500), transparent);
+  animation: scan 3s linear infinite;
+  opacity: 0.5;
+}
+
+.animate-glitch:hover {
+  animation: glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
 }
 
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
 /* === Scrollbar === */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
   background: var(--color-bg-void);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-primary-500);
-  border-radius: 3px;
+  border-radius: 10px;
 }

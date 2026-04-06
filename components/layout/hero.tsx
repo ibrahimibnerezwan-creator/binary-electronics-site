@@ -3,30 +3,33 @@
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Cpu, Zap, Activity } from 'lucide-react'
 
 // Placeholder images for electronics
 const heroSlides = [
   {
     image: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?q=80&w=2000&auto=format&fit=crop",
     title: "ELEVATE\nYOUR VISION",
-    subtitle: "Experience the next generation of premium electronics. From high-end computing to immersive audio."
+    subtitle: "Experience the next generation of premium electronics. From high-end computing to immersive audio.",
+    code: "NODE_01 // LINK_ESTABLISHED"
   },
   {
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=2000&auto=format&fit=crop",
     title: "NEXT GEN\nGAMING",
-    subtitle: "Push your limits with cutting edge hardware built for ultimate performance."
+    subtitle: "Push your limits with cutting edge hardware built for ultimate performance.",
+    code: "G_PRO // OPTIMIZED_LINK"
   },
   {
     image: "https://images.unsplash.com/photo-1628233348123-289569cead72?q=80&w=2000&auto=format&fit=crop",
     title: "IMMERSIVE\nAUDIO",
-    subtitle: "Hear every detail with high-fidelity sound systems and premium wearables."
+    subtitle: "Hear every detail with high-fidelity sound systems and premium wearables.",
+    code: "AUDIO_X // HIGH_RES_SYNC"
   }
 ]
 
 export function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [direction, setDirection] = useState(1) // 1 = forward, -1 = backward
+  const [direction, setDirection] = useState(1) 
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
@@ -51,7 +54,6 @@ export function Hero() {
 
   const activeContent = heroSlides[currentSlide]
 
-  // Framer Motion variants
   const imageVariants: Variants = {
     enter: (dir: number) => ({
       clipPath: dir > 0
@@ -95,16 +97,10 @@ export function Hero() {
     exit: { y: -20, opacity: 0, transition: { duration: 0.3 } },
   }
 
-  const ctaVariants: Variants = {
-    hidden: { y: 40, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.9 } },
-    exit: { y: -15, opacity: 0, transition: { duration: 0.2 } },
-  }
-
   const titleLines = activeContent.title.split('\n')
 
   return (
-    <section className="relative h-screen flex items-end overflow-hidden bg-bg-void">
+    <section className="relative h-screen flex items-end overflow-hidden bg-[#020408] font-mono">
       {/* Background Images */}
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <motion.div
@@ -120,19 +116,38 @@ export function Hero() {
             src={activeContent.image}
             alt={titleLines.join(' ')}
             fill
-            className="object-cover"
+            className="object-cover opacity-60"
             priority={currentSlide === 0}
             sizes="100vw"
             quality={85}
           />
-          {/* Overlays for dark theme readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-bg-void via-bg-void/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-bg-void/80 via-bg-void/20 to-transparent" />
+          {/* Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#020408] via-[#020408]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#020408]/90 via-transparent to-transparent" />
+          
+          {/* Tech Grid Overlay */}
+          <div className="absolute inset-0 tech-grid opacity-[0.08] pointer-events-none" />
+          
+          {/* Scanning Line */}
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-primary-500/30 animate-scan z-20 pointer-events-none shadow-[0_0_15px_rgba(var(--color-primary-500),0.5)]" />
         </motion.div>
       </AnimatePresence>
 
+      {/* Floating Meta-info (Top Right) */}
+      <div className="absolute top-28 right-8 z-30 hidden md:flex flex-col items-end gap-1 text-[10px] text-primary-500/40 uppercase tracking-widest font-black">
+        <div className="flex items-center gap-2">
+          <Activity size={10} className="animate-pulse" /> SYSTEM_OS: v4.2.0-STABLE
+        </div>
+        <div className="flex items-center gap-2">
+          <Cpu size={10} /> CORE_TEMP: 32°C
+        </div>
+        <div className="mt-4 flex items-center gap-2 text-primary-500/60 bg-primary-500/5 px-2 py-1 border border-primary-500/10 backdrop-blur-sm">
+          <Zap size={10} className="fill-current" /> {activeContent.code}
+        </div>
+      </div>
+
       {/* Content */}
-      <div className="relative z-10 w-full px-6 md:px-16 pb-28 md:pb-20">
+      <div className="relative z-30 w-full px-6 md:px-16 pb-28 md:pb-20">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -143,13 +158,15 @@ export function Hero() {
             className="max-w-4xl"
           >
             {/* Kicker */}
-            <motion.span
+            <motion.div
               variants={subtitleVariants}
-              className="inline-flex items-center gap-2 py-1.5 px-5 rounded-full text-[10px] font-black tracking-[0.35em] uppercase mb-6 glass text-primary-400 border-primary-500/20"
+              className="flex items-center gap-4 mb-8"
             >
-              <span className="flex h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
-              New arrivals available
-            </motion.span>
+              <div className="h-[1px] w-12 bg-primary-500/50" />
+              <span className="text-[11px] font-black tracking-[0.4em] uppercase text-primary-500 italic">
+                ESTABLISHING_LINK... OK
+              </span>
+            </motion.div>
 
             {/* Title */}
             <div className="overflow-hidden">
@@ -157,9 +174,9 @@ export function Hero() {
                 <motion.h1
                   key={`${currentSlide}-${i}`}
                   variants={textLineVariants}
-                  className="font-display font-black text-white leading-[0.95] tracking-tight text-5xl md:text-7xl lg:text-8xl"
+                  className="font-display font-black text-white leading-[0.85] tracking-tighter text-6xl md:text-8xl lg:text-[10rem] uppercase"
                 >
-                  {i === titleLines.length - 1 ? <span className="text-gradient">{line}</span> : line}
+                  {i === titleLines.length - 1 ? <span className="text-gradient decoration-primary-500">{line}</span> : line}
                 </motion.h1>
               ))}
             </div>
@@ -167,61 +184,90 @@ export function Hero() {
             {/* Subtitle */}
             <motion.p
               variants={subtitleVariants}
-              className="mt-6 text-text-secondary max-w-lg leading-relaxed text-lg"
+              className="mt-8 text-text-muted/80 max-w-xl leading-relaxed text-sm md:text-base border-l-2 border-primary-500/20 pl-6 backdrop-blur-sm bg-primary-500/5 py-4 rounded-r-lg"
             >
               {activeContent.subtitle}
             </motion.p>
 
             {/* CTA */}
-            <motion.div variants={ctaVariants} className="mt-10 flex flex-wrap items-center gap-4">
+            <motion.div variants={subtitleVariants} className="mt-12 flex flex-wrap items-center gap-6">
               <a
                 href="/products"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-primary-500 px-8 text-sm font-bold uppercase text-black hover:bg-primary-400 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,100,0,0.3)]"
+                className="group relative inline-flex h-14 items-center justify-center overflow-hidden bg-primary-500 px-10 text-xs font-black uppercase text-black transition-all hover:bg-white"
               >
-                Explore Store
+                <span className="relative z-10 flex items-center gap-3">
+                  ACCESS CATALOGUE <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </a>
               <a
                 href="/categories"
-                className="inline-flex h-12 items-center justify-center rounded-full border border-primary-500/30 px-8 text-sm font-bold uppercase text-white hover:bg-primary-500/10 transition-colors glass"
+                className="group inline-flex h-14 items-center justify-center border border-primary-500/20 px-10 text-xs font-black uppercase text-white hover:bg-primary-500/10 transition-all backdrop-blur-md"
               >
-                Categories
+                BROWSE_CATEGORIES
               </a>
             </motion.div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Arrows */}
-        <div className="absolute bottom-8 right-6 md:right-16 flex items-center gap-4">
-          <span className="text-text-muted text-xs tracking-widest tabular-nums font-bold">
-            {String(currentSlide + 1).padStart(2, '0')}
-            <span className="mx-1.5 text-text-muted/50">/</span>
-            {String(heroSlides.length).padStart(2, '0')}
-          </span>
+        {/* Navigation Indicators */}
+        <div className="absolute bottom-10 left-16 hidden lg:flex items-center gap-8">
+          {heroSlides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setDirection(i > currentSlide ? 1 : -1);
+                setCurrentSlide(i);
+              }}
+              className="group flex flex-col gap-2"
+            >
+              <div className="text-[10px] font-black text-primary-500/40 group-hover:text-primary-500 transition-colors tracking-widest">
+                0{i + 1}
+              </div>
+              <div className={`h-[2px] w-12 transition-all duration-500 ${i === currentSlide ? 'bg-primary-500 w-24' : 'bg-primary-500/10'}`} />
+            </button>
+          ))}
+        </div>
+
+        {/* Navigation Arrows (Mobile and Desktop) */}
+        <div className="absolute bottom-8 right-6 md:right-16 flex items-center gap-2">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 text-text-muted hover:text-white transition-colors"
+            className="p-4 border border-primary-500/10 hover:border-primary-500/50 text-primary-500/40 hover:text-primary-500 transition-all bg-primary-500/5 backdrop-blur-md"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => navigate(1)}
-            className="p-2 text-text-muted hover:text-white transition-colors"
+            className="p-4 border border-primary-500/10 hover:border-primary-500/50 text-primary-500/40 hover:text-primary-500 transition-all bg-primary-500/5 backdrop-blur-md"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={20} />
           </button>
         </div>
 
-        {/* Progress Bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary-500/10">
-          <motion.div
-            key={currentSlide}
-            className="h-full bg-primary-500"
-            initial={{ width: '0%' }}
-            animate={{ width: '100%' }}
-            transition={{ duration: 6, ease: 'linear' }}
-          />
+        {/* Bottom Metadata */}
+        <div className="absolute bottom-8 left-6 md:left-24 hidden md:flex items-center gap-12 text-[8px] text-primary-500/20 font-black uppercase tracking-[0.5em]">
+          <span>Lat: 23.8103° N</span>
+          <span>Lon: 90.4125° E</span>
+          <span className="text-primary-500/40">Encryption: AES-SHA-256</span>
         </div>
       </div>
     </section>
+  )
+}
+
+function ArrowRight(props: any) {
+  return (
+    <svg 
+      {...props} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="3" 
+      strokeLinecap="square" 
+      strokeLinejoin="miter"
+    >
+      <path d="M5 12h14M12 5l7 7-7 7" />
+    </svg>
   )
 }
