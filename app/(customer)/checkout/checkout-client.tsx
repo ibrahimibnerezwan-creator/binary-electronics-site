@@ -38,8 +38,12 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
         transactionId: '',
     })
 
-    const shippingCost = formData.shippingCity.toLowerCase() === 'dhaka' ? 60 : 120
-    const tax = cartTotal * 0.05
+    const sInside = parseFloat(settings.shipping_inside_dhaka || '60')
+    const sOutside = parseFloat(settings.shipping_outside_dhaka || '120')
+    const vatRate = parseFloat(settings.vat_percentage || '0') / 100
+
+    const shippingCost = formData.shippingCity.toLowerCase() === 'dhaka' ? sInside : sOutside
+    const tax = cartTotal * vatRate
     const finalTotal = cartTotal + shippingCost + tax
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -161,8 +165,8 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                                     onChange={handleInputChange} 
                                     className="w-full h-14 px-6 bg-bg-void/40 border-primary-500/10 text-white border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all font-bold appearance-none cursor-pointer"
                                 >
-                                    <option value="Dhaka">Dhaka City (৳60)</option>
-                                    <option value="Outside Dhaka">Outside Dhaka (৳120)</option>
+                                    <option value="Dhaka">Dhaka City (৳{sInside})</option>
+                                    <option value="Outside Dhaka">Outside Dhaka (৳{sOutside})</option>
                                 </select>
                             </div>
                         </div>
@@ -206,14 +210,20 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                                     <h3 className="text-[#e2136e] font-black uppercase text-sm tracking-widest flex items-center gap-3"><CheckCircle2 size={20} /> bkash Instructions</h3>
                                     <div className="flex flex-col gap-4 text-sm text-text-secondary leading-relaxed">
                                         <p>1. Open bKash app and select <strong className="text-white">Send Money</strong>.</p>
-                                        <p>2. To: <strong className="text-white text-xl font-mono px-4 py-2 bg-white/5 rounded-xl border border-white/10 mt-2 block w-fit">{settings.bkash_number || '01700000000'}</strong></p>
+                                        <p>
+                                            2. To: {settings.bkash_number ? (
+                                                <strong className="text-white text-xl font-mono px-4 py-2 bg-white/5 rounded-xl border border-white/10 mt-2 block w-fit">{settings.bkash_number}</strong>
+                                            ) : (
+                                                <span className="text-red-500 font-bold block mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">⚠️ bKash payment is currently unavailable (Number not configured).</span>
+                                            )}
+                                        </p>
                                         <p>3. Amount: <strong className="text-white text-lg font-mono">{formatPrice(finalTotal)}</strong></p>
                                         <p>4. Enter your TrxID below to confirm.</p>
                                     </div>
                                     
                                     <div className="pt-4 border-t border-white/5">
-                                        <Label htmlFor="transactionId" className="text-[10px] font-bold uppercase tracking-widest text-[#e2136e]">bKash TrxID</Label>
-                                        <Input id="transactionId" name="transactionId" placeholder="e.g. 9J2A4HRXZ" value={formData.transactionId} onChange={handleInputChange} className="h-14 mt-2 bg-bg-void border-[#e2136e]/30 text-white focus:ring-[#e2136e]/50 font-mono uppercase tracking-[0.2em]" />
+                                        <Label htmlFor="transactionId" className={`text-[10px] font-bold uppercase tracking-widest ${settings.bkash_number ? 'text-[#e2136e]' : 'text-gray-600'}`}>bKash TrxID</Label>
+                                        <Input id="transactionId" name="transactionId" placeholder={settings.bkash_number ? "e.g. 9J2A4HRXZ" : "PAYMENT UNAVAILABLE"} disabled={!settings.bkash_number} value={formData.transactionId} onChange={handleInputChange} className="h-14 mt-2 bg-bg-void border-[#e2136e]/30 text-white focus:ring-[#e2136e]/50 font-mono uppercase tracking-[0.2em] disabled:opacity-50" />
                                     </div>
                                 </div>
                             )}
@@ -223,14 +233,20 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                                     <h3 className="text-[#f37021] font-black uppercase text-sm tracking-widest flex items-center gap-3"><CheckCircle2 size={20} /> Nagad Instructions</h3>
                                     <div className="flex flex-col gap-4 text-sm text-text-secondary leading-relaxed">
                                         <p>1. Open Nagad app and select <strong className="text-white">Send Money</strong>.</p>
-                                        <p>2. To: <strong className="text-white text-xl font-mono px-4 py-2 bg-white/5 rounded-xl border border-white/10 mt-2 block w-fit">{settings.nagad_number || '01800000000'}</strong></p>
+                                        <p>
+                                            2. To: {settings.nagad_number ? (
+                                                <strong className="text-white text-xl font-mono px-4 py-2 bg-white/5 rounded-xl border border-white/10 mt-2 block w-fit">{settings.nagad_number}</strong>
+                                            ) : (
+                                                <span className="text-red-500 font-bold block mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">⚠️ Nagad payment is currently unavailable (Number not configured).</span>
+                                            )}
+                                        </p>
                                         <p>3. Amount: <strong className="text-white text-lg font-mono">{formatPrice(finalTotal)}</strong></p>
                                         <p>4. Enter your TrxID below to confirm.</p>
                                     </div>
                                     
                                     <div className="pt-4 border-t border-white/5">
-                                        <Label htmlFor="transactionId" className="text-[10px] font-bold uppercase tracking-widest text-[#f37021]">Nagad TrxID</Label>
-                                        <Input id="transactionId" name="transactionId" placeholder="e.g. ABC123XYZ" value={formData.transactionId} onChange={handleInputChange} className="h-14 mt-2 bg-bg-void border-[#f37021]/30 text-white focus:ring-[#f37021]/50 font-mono uppercase tracking-[0.2em]" />
+                                        <Label htmlFor="transactionId" className={`text-[10px] font-bold uppercase tracking-widest ${settings.nagad_number ? 'text-[#f37021]' : 'text-gray-600'}`}>Nagad TrxID</Label>
+                                        <Input id="transactionId" name="transactionId" placeholder={settings.nagad_number ? "e.g. ABC123XYZ" : "PAYMENT UNAVAILABLE"} disabled={!settings.nagad_number} value={formData.transactionId} onChange={handleInputChange} className="h-14 mt-2 bg-bg-void border-[#f37021]/30 text-white focus:ring-[#f37021]/50 font-mono uppercase tracking-[0.2em] disabled:opacity-50" />
                                     </div>
                                 </div>
                             )}

@@ -204,19 +204,66 @@ export default async function SettingsPage() {
                         <h2 className="text-xl font-display font-black uppercase tracking-tight">Social Media</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {['Facebook', 'Instagram', 'YouTube', 'TikTok'].map((social) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                        {['Facebook', 'Instagram', 'YouTube', 'TikTok', 'Twitter', 'LinkedIn'].map((social) => (
                             <div key={social} className="flex flex-col gap-2">
-                                <Label htmlFor={social.toLowerCase()} className="text-[10px] font-bold uppercase tracking-widest text-text-muted">{social} URL</Label>
+                                <Label htmlFor={social.toLowerCase()} className="text-xs font-bold uppercase tracking-widest text-text-muted">{social} URL</Label>
                                 <Input 
                                     id={social.toLowerCase()} 
                                     name={social.toLowerCase()} 
                                     placeholder={`https://${social.toLowerCase()}.com/...`}
                                     defaultValue={settings[social.toLowerCase()]} 
-                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500" 
+                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-xs" 
                                 />
                             </div>
                         ))}
+                    </div>
+                </Card>
+
+                {/* Financials & Logistics */}
+                <Card className="p-8 border-primary-500/10 bg-bg-elevated/30">
+                    <div className="flex items-center gap-3 text-gold-500 mb-8 pb-4 border-b border-primary-500/10">
+                        <div className="p-2 glass rounded-lg border-gold-500/10">
+                            <Truck size={20} />
+                        </div>
+                        <h2 className="text-xl font-display font-black uppercase tracking-tight">Financials & Logistics</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="shipping_inside_dhaka" className="text-xs font-bold uppercase tracking-widest text-text-muted">Shipping (Inside Dhaka) ৳</Label>
+                            <Input 
+                                id="shipping_inside_dhaka" 
+                                name="shipping_inside_dhaka" 
+                                type="number"
+                                placeholder="60"
+                                defaultValue={settings.shipping_inside_dhaka || '60'} 
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="shipping_outside_dhaka" className="text-xs font-bold uppercase tracking-widest text-text-muted">Shipping (Outside Dhaka) ৳</Label>
+                            <Input 
+                                id="shipping_outside_dhaka" 
+                                name="shipping_outside_dhaka" 
+                                type="number"
+                                placeholder="120"
+                                defaultValue={settings.shipping_outside_dhaka || '120'} 
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="vat_percentage" className="text-xs font-bold uppercase tracking-widest text-text-muted">VAT Percentage (%)</Label>
+                            <Input 
+                                id="vat_percentage" 
+                                name="vat_percentage" 
+                                type="number"
+                                step="0.01"
+                                placeholder="0"
+                                defaultValue={settings.vat_percentage || '0'} 
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                            />
+                        </div>
                     </div>
                 </Card>
 

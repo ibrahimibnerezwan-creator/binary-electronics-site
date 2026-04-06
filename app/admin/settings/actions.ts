@@ -8,9 +8,10 @@ import { revalidatePath } from 'next/cache'
 export async function updateSettings(formData: FormData) {
     const keys = [
         'storeName', 'storeDescription', 'phone', 'email', 'address', 'whatsapp', 'facebook',
-        'instagram', 'youtube', 'tiktok',
+        'instagram', 'youtube', 'tiktok', 'twitter', 'linkedin',
         'bkash_number', 'nagad_number',
-        'steadfast_api_key', 'steadfast_secret_key'
+        'steadfast_api_key', 'steadfast_secret_key',
+        'shipping_inside_dhaka', 'shipping_outside_dhaka', 'vat_percentage'
     ]
     
     for (const key of keys) {

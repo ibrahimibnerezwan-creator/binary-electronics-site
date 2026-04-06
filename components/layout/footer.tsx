@@ -2,7 +2,7 @@
  
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail } from 'lucide-react'
+import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, Globe, Linkedin } from 'lucide-react'
 import { useSettings } from '@/lib/settings-context'
 
 export function Footer() {
@@ -14,7 +14,9 @@ export function Footer() {
     { Icon: Instagram, url: settings.instagram },
     { Icon: Youtube, url: settings.youtube },
     { Icon: Twitter, url: settings.twitter },
-  ].filter(link => link.url && link.url !== '#')
+    { Icon: Globe, url: settings.tiktok, label: 'TikTok' },
+    { Icon: Globe, url: settings.linkedin, label: 'LinkedIn' },
+  ].filter(link => link.url && link.url !== '#' && link.url !== '')
 
   return (
     <footer className="relative bg-bg-void pt-20 pb-10 overflow-hidden">

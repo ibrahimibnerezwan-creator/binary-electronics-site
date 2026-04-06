@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube, Linkedin, Network, Cpu, ShieldCheck } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube, Linkedin, Network, Cpu, ShieldCheck, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -27,7 +27,8 @@ export function ContactForm({ settings }: ContactFormProps) {
     { Icon: Instagram, href: settings.instagram },
     { Icon: Youtube, href: settings.youtube },
     { Icon: Linkedin, href: settings.linkedin },
-  ].filter(link => link.href)
+    { Icon: Globe, href: settings.tiktok },
+  ].filter(link => link.href && link.href !== '#' && link.href !== '')
 
   return (
     <div className="flex flex-col lg:flex-row gap-16 items-start font-mono">

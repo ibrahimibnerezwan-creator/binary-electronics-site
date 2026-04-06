@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (username === adminUser && password === adminPassword) {
       await login({ 
         id: 'admin-1', 
-        email: 'admin@binaryelectronics.com.bd', 
+        email: `${adminUser}@binaryelectronics.com.bd`, 
         name: 'Admin' 
       });
       return NextResponse.json({ success: true });

@@ -3,7 +3,7 @@ import { db } from '@/db'
 import { products, categories } from '@/db/schema'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://binary-electronics-site.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://binary-electronics-site.vercel.app'
 
   // Fetch all products
   const allProducts = await db.select({ slug: products.slug, updatedAt: products.updatedAt }).from(products)
