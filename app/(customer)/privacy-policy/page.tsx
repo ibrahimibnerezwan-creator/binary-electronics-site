@@ -1,8 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useSettings } from '@/lib/settings-context'
 
 export default function PrivacyPolicyPage() {
+  const settings = useSettings()
+  const storeName = settings.storeName || 'Binary Electronics'
   return (
     <div className="flex flex-col">
       <section className="container mx-auto px-4 pt-32 pb-20">
@@ -21,7 +24,7 @@ export default function PrivacyPolicyPage() {
                <section className="flex flex-col gap-4">
                   <h3 className="text-2xl font-display font-black uppercase tracking-tight text-text-primary">DATA COLLECTION</h3>
                   <p>
-                     When you visit Binary Electronics, we collect certain information about your device, your interaction with the Site, and information necessary to process your purchases. We may also collect additional information if you contact us for customer support.
+                     When you visit {storeName}, we collect certain information about your device, your interaction with the Site, and information necessary to process your purchases. We may also collect additional information if you contact us for customer support.
                   </p>
                </section>
 

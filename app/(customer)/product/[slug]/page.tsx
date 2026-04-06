@@ -9,14 +9,19 @@ import { Badge } from '@/components/ui/badge'
 import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
-import { getProductBySlug, getRelatedProducts } from '@/lib/data'
+import { getProductBySlug, getRelatedProducts, getStoreSettings } from '@/lib/data'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug)
-  if (!product) return { title: 'Product Not Found | Binary Electronics' }
+  const [product, settings] = await Promise.all([
+    getProductBySlug(params.slug),
+    getStoreSettings()
+  ])
+
+  const storeName = settings.storeName || 'Binary Electronics'
+  if (!product) return { title: `Product Not Found | ${storeName}` }
   
   return {
-    title: `${product.name} | Binary Electronics`,
+    title: `${product.name} | ${storeName}`,
     description: product.description,
   }
 }

@@ -6,34 +6,43 @@ import './globals.css'
 const sora = Sora({ subsets: ['latin'], variable: '--font-display' })
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body' })
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://binary-electronics-site.vercel.app'),
-  title: {
-    default: 'Binary Electronics | Premium Gadgets & Parts in Bangladesh',
-    template: '%s | Binary Electronics'
-  },
-  description: 'Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered. Best tech prices in Bangladesh.',
-  keywords: ['electronics', 'gadgets', 'Bangladesh', 'Multiplan Center', 'tech accessories', 'high-end computing'],
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://binary-electronics-site.vercel.app',
-    siteName: 'Binary Electronics',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Binary Electronics',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Binary Electronics',
-    description: 'Premium gadgets and components at the best prices.',
-    images: ['/og-image.png'],
-  },
+import { getStoreSettings } from '@/lib/data'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getStoreSettings()
+  const storeName = settings.storeName || 'Binary Electronics'
+  const storeDescription = settings.storeDescription || 'Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered. Best tech prices in Bangladesh.'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://binary-electronics-site.vercel.app'
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${storeName} | Premium Gadgets & Parts in Bangladesh`,
+      template: `%s | ${storeName}`
+    },
+    description: storeDescription,
+    keywords: ['electronics', 'gadgets', 'Bangladesh', 'Multiplan Center', 'tech accessories', 'high-end computing'],
+    openGraph: {
+      type: 'website',
+      locale: 'en_US',
+      url: siteUrl,
+      siteName: storeName,
+      images: [
+        {
+          url: '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: storeName,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: storeName,
+      description: storeDescription,
+      images: ['/og-image.png'],
+    },
+  }
 }
 
 export default function RootLayout({

@@ -4,16 +4,21 @@ import { Button } from '@/components/ui/button'
 import { Sliders } from 'lucide-react' // Mock icon for filter toggle
 import { cn } from '@/lib/utils'
 
-import { getCategoryBySlug, getProductsByCategory } from '@/lib/data'
+import { getCategoryBySlug, getProductsByCategory, getStoreSettings } from '@/lib/data'
 import { notFound } from 'next/navigation'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const category = await getCategoryBySlug(params.slug)
-  if (!category) return { title: 'Category Not Found | Binary Electronics' }
+  const [category, settings] = await Promise.all([
+    getCategoryBySlug(params.slug),
+    getStoreSettings()
+  ])
+  
+  const storeName = settings.storeName || 'Binary Electronics'
+  if (!category) return { title: `Category Not Found | ${storeName}` }
   
   return {
-    title: `${category.name} | Binary Electronics`,
-    description: `Browse the latest ${category.name} from Binary Electronics.`,
+    title: `${category.name} | ${storeName}`,
+    description: `Browse the latest ${category.name} from ${storeName}.`,
   }
 }
 

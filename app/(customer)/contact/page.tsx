@@ -2,11 +2,13 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube, Linkedin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useSettings } from '@/lib/settings-context'
 
 export default function ContactPage() {
+  const settings = useSettings()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,6 +22,14 @@ export default function ContactPage() {
     const formData = new FormData(e.target as HTMLFormElement)
     console.log('Contact form submitted:', Object.fromEntries(formData))
   }
+
+  const socialLinks = [
+    { Icon: Facebook, href: settings.facebook },
+    { Icon: Twitter, href: settings.twitter },
+    { Icon: Instagram, href: settings.instagram },
+    { Icon: Youtube, href: settings.youtube },
+    { Icon: Linkedin, href: settings.linkedin },
+  ].filter(link => link.href)
 
   return (
     <div className="flex flex-col">
@@ -48,48 +58,62 @@ export default function ContactPage() {
               </div>
 
               <div className="flex flex-col gap-10 mt-8">
-                <div className="flex gap-6 items-start">
-                   <div className="w-14 h-14 rounded-3xl glass border border-primary-500/10 flex items-center justify-center text-primary-500 shrink-0">
-                     <Mail size={24} />
-                   </div>
-                   <div className="flex flex-col gap-1">
-                     <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Email Us</span>
-                     <span className="text-xl font-bold">support@binaryelectronics.com</span>
-                   </div>
-                </div>
+                {settings.email && (
+                  <div className="flex gap-6 items-start">
+                    <div className="w-14 h-14 rounded-3xl glass border border-primary-500/10 flex items-center justify-center text-primary-500 shrink-0">
+                      <Mail size={24} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Email Us</span>
+                      <span className="text-xl font-bold">{settings.email}</span>
+                    </div>
+                  </div>
+                )}
                 
-                <div className="flex gap-6 items-start">
-                   <div className="w-14 h-14 rounded-3xl glass border border-primary-500/10 flex items-center justify-center text-accent-500 shrink-0">
-                     <Phone size={24} />
-                   </div>
-                   <div className="flex flex-col gap-1">
-                     <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Call Us</span>
-                     <span className="text-xl font-bold">+880 1911-857987</span>
-                   </div>
-                </div>
+                {settings.phone && (
+                  <div className="flex gap-6 items-start">
+                    <div className="w-14 h-14 rounded-3xl glass border border-primary-500/10 flex items-center justify-center text-accent-500 shrink-0">
+                      <Phone size={24} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Call Us</span>
+                      <span className="text-xl font-bold">{settings.phone}</span>
+                    </div>
+                  </div>
+                )}
 
-                <div className="flex gap-6 items-start">
-                   <div className="w-14 h-14 rounded-3xl glass border border-primary-500/10 flex items-center justify-center text-primary-500 shrink-0">
-                     <MapPin size={24} />
-                   </div>
-                   <div className="flex flex-col gap-1">
-                     <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Our Store</span>
-                     <span className="text-xl font-bold">Level-5, Multiplan Center, Dhaka, BD</span>
-                   </div>
-                </div>
+                {settings.address && (
+                  <div className="flex gap-6 items-start">
+                    <div className="w-14 h-14 rounded-3xl glass border border-primary-500/10 flex items-center justify-center text-primary-500 shrink-0">
+                      <MapPin size={24} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-bold uppercase tracking-widest text-text-muted">Our Store</span>
+                      <span className="text-xl font-bold">{settings.address}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 mt-16 pt-16 border-t border-primary-500/10">
-               <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Follow our journey</span>
-               <div className="flex items-center gap-4">
-                  {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                    <button key={i} className="w-12 h-12 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all">
+            {socialLinks.length > 0 && (
+              <div className="flex flex-col gap-6 mt-16 pt-16 border-t border-primary-500/10">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Follow our journey</span>
+                <div className="flex items-center gap-4">
+                  {socialLinks.map(({ Icon, href }, i) => (
+                    <a 
+                      key={i} 
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-12 h-12 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all"
+                    >
                       <Icon size={20} />
-                    </button>
+                    </a>
                   ))}
-               </div>
-            </div>
+                </div>
+              </div>
+            )}
           </motion.div>
 
           {/* Right Side: Form */}

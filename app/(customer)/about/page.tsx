@@ -3,8 +3,13 @@
 import { motion } from 'framer-motion'
 import { Award, ShieldCheck, Zap, Heart, Users, Globe } from 'lucide-react'
 import Image from 'next/image'
+import { useSettings } from '@/lib/settings-context'
 
 export default function AboutPage() {
+  const settings = useSettings()
+  const storeName = settings.storeName || 'Binary Electronics'
+  const storeDescription = settings.storeDescription || 'We are not just a store. We are a destination for tech enthusiasts who demand the absolute best in innovation, luxury, and performance.'
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -22,10 +27,10 @@ export default function AboutPage() {
           >
             <span className="text-xs font-bold uppercase tracking-[0.5em] text-primary-500">Our Story</span>
             <h1 className="text-6xl lg:text-8xl font-display font-black leading-tight uppercase tracking-tight">
-              THE <span className="text-gradient">BINARY</span> <br /> REVOLUTION
+              THE <span className="text-gradient">{(storeName.split(' ')[0] || 'BINARY').toUpperCase()}</span> <br /> REVOLUTION
             </h1>
             <p className="text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed mt-4">
-              We are not just a store. We are a destination for tech enthusiasts who demand the absolute best in innovation, luxury, and performance.
+              {storeDescription}
             </p>
           </motion.div>
         </div>
@@ -47,13 +52,13 @@ export default function AboutPage() {
             <h2 className="text-4xl font-display font-black uppercase tracking-tight">CRAFTING <span className="text-primary-500">EXCELLENCE</span></h2>
             <div className="flex flex-col gap-6 text-text-secondary leading-relaxed text-lg">
               <p>
-                Founded in Dhaka with a vision to redefine the electronics shopping experience, Binary Electronics was born out of a simple need: a platform that treats technology as a form of art.
+                Founded with a vision to redefine the electronics shopping experience, {storeName} was born out of a simple need: a platform that treats technology as a form of art.
               </p>
               <p>
-                Every product in our collection is handpicked by our team of engineers to ensure it meets our strict "Binary Standard" — perfect performance, stunning design, and bulletproof reliability.
+                Every product in our collection is handpicked by our team of experts to ensure it meets our strict standard — perfect performance, stunning design, and bulletproof reliability.
               </p>
               <p>
-                Today, we serve thousands of customers across Bangladesh, providing them with more than just gadgets — we provide the tools to build their future.
+                Today, we serve thousands of customers, providing them with more than just gadgets — we provide the tools to build their future.
               </p>
             </div>
             

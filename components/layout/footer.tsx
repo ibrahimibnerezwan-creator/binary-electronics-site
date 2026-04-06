@@ -1,9 +1,18 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail } from 'lucide-react'
+import { useSettings } from '@/lib/settings-context'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const settings = useSettings()
+
+  const socialLinks = [
+    { Icon: Facebook, url: settings.facebook },
+    { Icon: Instagram, url: settings.instagram },
+    { Icon: Youtube, url: settings.youtube },
+    { Icon: Twitter, url: settings.twitter },
+  ].filter(link => link.url && link.url !== '#')
 
   return (
     <footer className="relative bg-bg-void pt-20 pb-10 overflow-hidden">
@@ -16,20 +25,29 @@ export function Footer() {
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex items-center gap-2">
               <div className="relative w-10 h-10">
-                <Image src="/logo.png" alt="Binary Electronics" fill className="object-contain" />
+                <Image src="/logo.png" alt={settings.storeName || "Binary Electronics"} fill className="object-contain" />
               </div>
-              <span className="text-2xl font-display font-bold text-gradient">BINARY</span>
+              <span className="text-2xl font-display font-bold text-gradient">
+                {settings.storeName?.split(' ')[0] || "BINARY"}
+              </span>
             </Link>
             <p className="text-text-secondary leading-relaxed">
-              Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered.
+              {settings.storeDescription || "Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered."}
             </p>
-            <div className="flex items-center gap-4">
-              {[Facebook, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <Link key={i} href="#" target="_blank" className="w-10 h-10 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all">
-                  <Icon size={18} />
-                </Link>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="flex items-center gap-4">
+                {socialLinks.map(({ Icon, url }, i) => (
+                  <Link 
+                    key={i} 
+                    href={url} 
+                    target="_blank" 
+                    className="w-10 h-10 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all"
+                  >
+                    <Icon size={18} />
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Links */}
@@ -72,22 +90,22 @@ export function Footer() {
             <ul className="flex flex-col gap-6">
               <li className="flex gap-3">
                 <MapPin className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">Level-5, Multiplan Center, Dhaka, Bangladesh</span>
+                <span className="text-text-secondary">{settings.address || "Level-5, Multiplan Center, Dhaka, Bangladesh"}</span>
               </li>
               <li className="flex gap-3">
                 <Phone className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">+880 1911-857987</span>
+                <span className="text-text-secondary">{settings.phone || "+880 1911-857987"}</span>
               </li>
               <li className="flex gap-3">
                 <Mail className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">support@binaryelectronics.com</span>
+                <span className="text-text-secondary">{settings.email || "support@binary-electronics.com"}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="pt-8 border-t border-primary-500/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-muted">
-          <p>© {currentYear} Binary Electronics. All rights reserved.</p>
+          <p>© {currentYear} {settings.storeName || "Binary Electronics"}. All rights reserved.</p>
           <div className="flex flex-col md:flex-row items-center gap-6">
             <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Secure Payments:</span>
             <div className="flex items-center gap-4">

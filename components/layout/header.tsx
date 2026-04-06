@@ -6,12 +6,14 @@ import { Search, ShoppingCart, User, Menu, X } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/lib/cart-context'
+import { useSettings } from '@/lib/settings-context'
 import { cn } from '@/lib/utils'
 
 export function Header() {
+  const settings = useSettings()
+  const { cartCount } = useCart()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { cartCount } = useCart()
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10)
@@ -39,13 +41,13 @@ export function Header() {
           <div className="relative w-10 h-10">
             <Image
               src="/logo.png"
-              alt="Binary Electronics"
+              alt={settings.storeName || "Binary Electronics"}
               fill
               className="object-contain group-hover:scale-110 transition-transform duration-300"
             />
           </div>
           <span className="text-xl font-display font-bold tracking-tight text-gradient">
-            BINARY
+            {settings.storeName?.split(' ')[0] || "BINARY"}
           </span>
         </Link>
 

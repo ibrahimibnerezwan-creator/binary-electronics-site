@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { updateSettings } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { 
@@ -50,6 +51,17 @@ export default async function SettingsPage() {
                                 name="storeName" 
                                 defaultValue={settings.storeName || "Binary Electronics"} 
                                 className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-2 md:col-span-2">
+                            <Label htmlFor="storeDescription" className="text-xs font-bold uppercase tracking-widest text-text-muted">Store Description / Brand Story</Label>
+                            <Textarea 
+                                id="storeDescription" 
+                                name="storeDescription" 
+                                placeholder="Your ultimate destination for premium electronics..."
+                                defaultValue={settings.storeDescription} 
+                                className="min-h-[120px] bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-medium" 
                             />
                         </div>
 

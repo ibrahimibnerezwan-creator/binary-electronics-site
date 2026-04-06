@@ -3,8 +3,14 @@
 import { motion } from 'framer-motion'
 import { MessageSquare } from 'lucide-react'
 import Link from 'next/link'
+import { useSettings } from '@/lib/settings-context'
 
 export function WhatsAppCTA() {
+  const settings = useSettings()
+  const whatsappNumber = settings.whatsapp || '8801911857987'
+  // Remove any non-numeric characters for the tel link
+  const cleanNumber = whatsappNumber.replace(/\D/g, '')
+
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
@@ -13,7 +19,7 @@ export function WhatsAppCTA() {
       className="fixed bottom-8 right-8 z-50"
     >
       <Link
-        href="https://wa.me/8801911857987"
+        href={`https://wa.me/${cleanNumber}`}
         target="_blank"
         className="group relative flex items-center justify-center w-16 h-16 rounded-full bg-[#25D366] text-white shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] transition-all duration-300"
       >

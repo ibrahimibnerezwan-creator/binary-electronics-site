@@ -4,12 +4,15 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { useSettings } from '@/lib/settings-context'
 import { Mail, Lock, User, Phone, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default function RegisterPage() {
+  const settings = useSettings()
+  const storeName = settings.storeName || 'Binary Electronics'
   const [isLoading, setIsLoading] = useState(false)
 
   async function onSubmit(e: React.FormEvent) {
@@ -34,7 +37,7 @@ export default function RegisterPage() {
           <CardHeader className="pt-10 pb-6 flex flex-col items-center text-center gap-4">
             <Link href="/" className="mb-2">
               <div className="relative w-12 h-12">
-                <Image src="/logo.png" alt="Binary Electronics" fill className="object-contain" />
+                <Image src="/logo.png" alt={storeName} fill className="object-contain" />
               </div>
             </Link>
             <h1 className="text-3xl font-display font-black tracking-tight tracking-tight uppercase">CREATE <span className="text-primary-500 text-gradient">ACCOUNT</span></h1>
