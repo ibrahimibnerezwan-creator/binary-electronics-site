@@ -9,7 +9,7 @@ export async function createProduct(formData: any) {
   try {
     const id = uuidv4();
     const name = formData.get('name');
-    const slug = name.toLowerCase().replace(/[^a-z0-0]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') + '-' + id.slice(0, 4);
+    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') + '-' + id.slice(0, 4);
     const description = formData.get('description');
     const price = parseFloat(formData.get('price'));
     const comparePrice = formData.get('comparePrice') ? parseFloat(formData.get('comparePrice')) : null;

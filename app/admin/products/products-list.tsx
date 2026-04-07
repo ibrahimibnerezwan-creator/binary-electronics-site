@@ -127,22 +127,26 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
                   </td>
                    <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-1 lg:gap-2">
-                       <Link href={`/product/${product.slug}`} target="_blank" className="p-2 text-text-muted hover:text-primary-500 transition-all" title="View Store Page">
+                       <Link href={`/product/${product.slug}`} target="_blank" rel="noopener noreferrer" className="p-2 text-text-muted hover:text-primary-500 transition-all" title="View Store Page">
                          <ExternalLink size={16} />
                        </Link>
                        {/* Note: Edit functionality will be implemented in future tasks */}
                        <Button size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-primary-500 hover:bg-primary-500/10" disabled>
                          <Edit size={14} />
                        </Button>
-                       <form action={async () => {
-                         if (confirm('Are you sure you want to delete this product?')) {
-                            await deleteProduct(product.id)
-                         }
-                       }}>
-                         <Button type="submit" size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-red-500 hover:bg-red-500/10">
-                           <Trash2 size={14} />
-                         </Button>
-                       </form>
+                       <Button 
+                         type="button" 
+                         size="icon" 
+                         variant="ghost" 
+                         className="h-8 w-8 text-text-muted hover:text-red-500 hover:bg-red-500/10"
+                         onClick={async () => {
+                           if (confirm('Are you sure you want to delete this product?')) {
+                              await deleteProduct(product.id)
+                           }
+                         }}
+                       >
+                         <Trash2 size={14} />
+                       </Button>
                     </div>
                   </td>
                 </tr>

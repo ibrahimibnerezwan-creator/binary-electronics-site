@@ -44,7 +44,34 @@ export async function placeOrder(data: CheckoutData) {
             return { error: 'Cart is empty.' }
         }
 
-        // 2. Start transaction
+        // 2. Validate prices and total
+        const storeSettings = await db.query.storeSettings.findMany()
+        const settingsMap = Object.fromEntries(storeSettings.map((s: { key: string, value: string }) => [s.key, s.value]))
+        const shippingInsideDhaka = parseFloat(settingsMap['shippingInsideDhaka'] || '0')
+        const shippingOutsideDhaka = parseFloat(settingsMap['shippingOutsideDhaka'] || '0')
+        const shippingCost = data.shippingCity.toLowerCase() === 'dhaka' ? shippingInsideDhaka : shippingOutsideDhaka
+
+        let calculatedSubtotal = 0
+        const itemIds = data.items.map(i => i.id)
+        const dbProducts = await db.query.products.findMany({
+            where: (products, { inArray }) => inArray(products.id, itemIds)
+        })
+
+        for (const item of data.items) {
+            const product = dbProducts.find(p => p.id === item.id)
+            if (!product) throw new Error(`Product mapping failed for ${item.id}`)
+            calculatedSubtotal += product.price * item.quantity
+        }
+
+        const calculatedTotal = calculatedSubtotal + shippingCost
+        
+        // Use a small epsilon for float comparison if necessary, but here simple equality or within 1 TK
+        if (Math.abs(calculatedTotal - data.total) > 1) {
+            console.error('Total mismatch:', { calculatedTotal, submittedTotal: data.total })
+            return { error: 'Price calculation mismatch. Please refresh your cart.' }
+        }
+
+        // 3. Start transaction
         await db.transaction(async (tx) => {
             // Check stock and decrement
             for (const item of data.items) {

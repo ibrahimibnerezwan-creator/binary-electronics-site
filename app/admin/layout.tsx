@@ -18,7 +18,7 @@ import {
   X
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const adminNav = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -33,6 +33,16 @@ const adminNav = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const router = useRouter()
 
@@ -74,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="relative w-8 h-8 flex-shrink-0">
                 <Image src="/logo.png" alt="Logo" fill className="object-contain" />
               </div>
-              {(isSidebarOpen || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
+              {(isSidebarOpen || isMobile) && (
                 <span className="text-xl font-display font-black text-gradient">BINARY</span>
               )}
             </Link>
@@ -90,7 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <nav className="flex-grow p-4 space-y-2 overflow-y-auto custom-scrollbar">
             {adminNav.map((item) => {
               const isActive = pathname === item.href
-              const showText = isSidebarOpen || (typeof window !== 'undefined' && window.innerWidth < 1024)
+              const showText = isSidebarOpen || isMobile
               return (
                 <Link
                   key={item.name}
@@ -124,7 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-text-muted hover:bg-red-500/10 hover:text-red-500 transition-all group"
             >
               <LogOut size={22} className="flex-shrink-0" />
-              {(isSidebarOpen || (typeof window !== 'undefined' && window.innerWidth < 1024)) && <span className="font-bold text-sm">Sign Out</span>}
+              {(isSidebarOpen || isMobile) && <span className="font-bold text-sm">Sign Out</span>}
             </button>
           </div>
         </div>

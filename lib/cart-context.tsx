@@ -25,17 +25,25 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const savedCart = localStorage.getItem('binary_cart')
     if (savedCart) {
-      setCart(JSON.parse(savedCart))
+      try {
+        setCart(JSON.parse(savedCart))
+      } catch (e) {
+        console.error('Failed to parse cart:', e)
+      }
     }
+    setIsLoaded(true)
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('binary_cart', JSON.stringify(cart))
-  }, [cart])
+    if (isLoaded) {
+      localStorage.setItem('binary_cart', JSON.stringify(cart))
+    }
+  }, [cart, isLoaded])
 
   const addItem = (item: CartItem) => {
     setCart((prev) => {

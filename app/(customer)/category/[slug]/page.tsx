@@ -7,9 +7,10 @@ import { getCategoryBySlug, getProductsByCategory, getStoreSettings } from '@/li
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
   const [category, settings] = await Promise.all([
-    getCategoryBySlug(params.slug),
+    getCategoryBySlug(slug),
     getStoreSettings()
   ])
   
@@ -18,12 +19,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   
   return {
     title: `${category.name} | ${storeName}`,
-    description: `Browse the latest ${category.name} from ${storeName}.`,
+    openGraph: {
+      images: category.image ? [category.image] : [],
+    },
   }
 }
 
-export default async function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = await getCategoryBySlug(params.slug)
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const category = await getCategoryBySlug(slug)
   if (!category) notFound()
 
   const products = await getProductsByCategory(category.id)

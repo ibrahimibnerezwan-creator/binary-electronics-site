@@ -27,10 +27,14 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
         stock: products.stock,
         imageUrl: productImages.url,
         categoryName: categories.name,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
       .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
+      .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
+      .groupBy(products.id, productImages.url)
       .orderBy(desc(products.createdAt))
       .limit(limit * 2);
 
@@ -48,8 +52,8 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
         image: row.imageUrl || 'https://via.placeholder.com/400',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
-        rating: 5,
-        reviews: 0,
+        rating: Math.round(row.avgRating),
+        reviews: row.reviewCount,
       });
       if (result.length >= limit) break;
     }
@@ -72,11 +76,15 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         stock: products.stock,
         imageUrl: productImages.url,
         categoryName: categories.name,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
       .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
+      .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
       .where(isNotNull(products.comparePrice))
+      .groupBy(products.id, productImages.url)
       .limit(limit * 2);
 
     const seen = new Set<string>();
@@ -93,8 +101,8 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         image: row.imageUrl || 'https://via.placeholder.com/400',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
-        rating: 5,
-        reviews: 0,
+        rating: Math.round(row.avgRating),
+        reviews: row.reviewCount,
       });
       if (result.length >= limit) break;
     }
@@ -116,10 +124,14 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         stock: products.stock,
         imageUrl: productImages.url,
         categoryName: categories.name,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
       .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
+      .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
+      .groupBy(products.id, productImages.url)
       .orderBy(desc(products.createdAt));
 
     const seen = new Set<string>();
@@ -136,8 +148,8 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         image: row.imageUrl || 'https://via.placeholder.com/400',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
-        rating: 5,
-        reviews: 0,
+        rating: Math.round(row.avgRating),
+        reviews: row.reviewCount,
       });
     }
     return result;
@@ -183,11 +195,15 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         stock: products.stock,
         imageUrl: productImages.url,
         categoryName: categories.name,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
       .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
+      .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
       .where(eq(products.categoryId, categoryId))
+      .groupBy(products.id, productImages.url)
       .limit(limit * 2);
 
     const seen = new Set<string>();
@@ -204,8 +220,8 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         image: row.imageUrl || 'https://via.placeholder.com/400',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
-        rating: 5,
-        reviews: 0,
+        rating: Math.round(row.avgRating),
+        reviews: row.reviewCount,
       });
     }
     return result;
@@ -229,6 +245,15 @@ export async function getProductBySlug(slug: string) {
 
     if (!product) return null;
 
+    // Fetch aggregate rating
+    const ratingResult = await db
+      .select({
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        count: sql<number>`COUNT(*)`,
+      })
+      .from(reviews)
+      .where(and(eq(reviews.productId, product.id), eq(reviews.status, 'approved')));
+
     return {
       ...product,
       specs: product.specs ? JSON.parse(product.specs) : {},
@@ -236,8 +261,8 @@ export async function getProductBySlug(slug: string) {
       images: product.images.length > 0 
         ? product.images.map(img => img.url)
         : ['https://via.placeholder.com/1000'],
-      rating: 5,
-      reviewsCount: 0, // Used on detail page
+      rating: Math.round(ratingResult[0].avgRating),
+      reviewsCount: ratingResult[0].count,
     };
   } catch (e) {
     console.error('Error fetching product by slug:', e);
@@ -259,11 +284,15 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         stock: products.stock,
         imageUrl: productImages.url,
         categoryName: categories.name,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
       .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
+      .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
       .where(and(eq(products.categoryId, categoryId), ne(products.id, currentProductId)))
+      .groupBy(products.id, productImages.url)
       .limit(limit * 2);
 
     const seen = new Set<string>();
@@ -280,8 +309,8 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         image: row.imageUrl || 'https://via.placeholder.com/400',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
-        rating: 5,
-        reviews: 0,
+        rating: Math.round(row.avgRating),
+        reviews: row.reviewCount,
       });
       if (result.length >= limit) break;
     }

@@ -12,7 +12,7 @@ export default function NotFound() {
         This page doesn't exist or the product may have been removed.
       </p>
       <Button asChild size="lg" className="rounded-full bg-primary-500 hover:bg-primary-600 text-black px-12 font-semibold">
-        <Link href="/category/computing">
+        <Link href="/products">
           BROWSE PRODUCTS
         </Link>
       </Button>

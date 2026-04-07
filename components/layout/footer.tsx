@@ -10,12 +10,12 @@ export function Footer() {
   const settings = useSettings()
 
   const socialLinks = [
-    { Icon: Facebook, url: settings.facebook },
-    { Icon: Instagram, url: settings.instagram },
-    { Icon: Youtube, url: settings.youtube },
-    { Icon: Twitter, url: settings.twitter },
+    { Icon: Facebook, url: settings.facebook, label: 'Facebook' },
+    { Icon: Instagram, url: settings.instagram, label: 'Instagram' },
+    { Icon: Youtube, url: settings.youtube, label: 'YouTube' },
+    { Icon: Twitter, url: settings.twitter, label: 'Twitter' },
     { Icon: Globe, url: settings.tiktok, label: 'TikTok' },
-    { Icon: Globe, url: settings.linkedin, label: 'LinkedIn' },
+    { Icon: Linkedin, url: settings.linkedin, label: 'LinkedIn' },
   ].filter(link => link.url && link.url !== '#' && link.url !== '')
 
   return (

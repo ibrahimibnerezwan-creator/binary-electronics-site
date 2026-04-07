@@ -3,9 +3,9 @@
 import { db } from '@/db'
 import { categories, products } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { v4 as uuidv4 } from 'uuid'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { nanoid } from 'nanoid'
 
 export async function createCategory(formData: FormData) {
     const name = formData.get('name') as string
@@ -13,11 +13,11 @@ export async function createCategory(formData: FormData) {
     
     if (!name) return { error: 'Name is required' }
     
-    const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
     
     try {
         await db.insert(categories).values({
-            id: nanoid(),
+            id: uuidv4(),
             name,
             slug,
             image: imageUrl || null,

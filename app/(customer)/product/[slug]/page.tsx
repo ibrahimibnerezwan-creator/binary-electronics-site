@@ -11,23 +11,28 @@ import { FeaturedProducts } from '@/components/home/featured-products'
 
 import { getProductBySlug, getRelatedProducts, getStoreSettings } from '@/lib/data'
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
   const [product, settings] = await Promise.all([
-    getProductBySlug(params.slug),
+    getProductBySlug(slug),
     getStoreSettings()
   ])
-
+  
   const storeName = settings.storeName || 'Binary Electronics'
   if (!product) return { title: `Product Not Found | ${storeName}` }
   
   return {
     title: `${product.name} | ${storeName}`,
     description: product.description,
+    openGraph: {
+      images: product.images?.[0] ? [product.images[0]] : [],
+    },
   }
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const product = await getProductBySlug(params.slug)
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
   if (!product) notFound()
 
   const relatedProducts = await getRelatedProducts(product.categoryId, product.id, 4)
