@@ -49,7 +49,7 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
         slug: row.slug,
         price: row.price,
         oldPrice: row.comparePrice ?? undefined,
-        image: row.imageUrl || 'https://via.placeholder.com/400',
+        image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
         rating: Math.round(row.avgRating),
@@ -59,7 +59,6 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
     }
     return result;
   } catch (e) {
-    console.error('Error fetching new arrivals:', e);
     return [];
   }
 }
@@ -98,7 +97,7 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         slug: row.slug,
         price: row.price,
         oldPrice: row.comparePrice ?? undefined,
-        image: row.imageUrl || 'https://via.placeholder.com/400',
+        image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
         rating: Math.round(row.avgRating),
@@ -145,7 +144,7 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         slug: row.slug,
         price: row.price,
         oldPrice: row.comparePrice ?? undefined,
-        image: row.imageUrl || 'https://via.placeholder.com/400',
+        image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
         rating: Math.round(row.avgRating),
@@ -154,7 +153,6 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
     }
     return result;
   } catch (e) {
-    console.error('Error fetching all products:', e);
     return [];
   }
 }
@@ -217,7 +215,7 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         slug: row.slug,
         price: row.price,
         oldPrice: row.comparePrice ?? undefined,
-        image: row.imageUrl || 'https://via.placeholder.com/400',
+        image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
         rating: Math.round(row.avgRating),
@@ -260,12 +258,11 @@ export async function getProductBySlug(slug: string) {
       categoryName: product.category?.name || 'Uncategorized',
       images: product.images.length > 0 
         ? product.images.map(img => img.url)
-        : ['https://via.placeholder.com/1000'],
+        : ['/logo.png'],
       rating: Math.round(ratingResult[0].avgRating),
       reviewsCount: ratingResult[0].count,
     };
   } catch (e) {
-    console.error('Error fetching product by slug:', e);
     return null;
   }
 }
@@ -306,7 +303,7 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         slug: row.slug,
         price: row.price,
         oldPrice: row.comparePrice ?? undefined,
-        image: row.imageUrl || 'https://via.placeholder.com/400',
+        image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
         rating: Math.round(row.avgRating),

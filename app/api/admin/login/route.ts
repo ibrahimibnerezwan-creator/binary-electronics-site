@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { login } from '@/lib/auth';
+import { login, logout } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,10 +13,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (username === adminUser && password === adminPassword) {
-      await login({ 
-        id: 'admin-1', 
-        email: `${adminUser}@binaryelectronics.com.bd`, 
-        name: 'Admin' 
+      await login({
+        id: 'admin-1',
+        email: `${adminUser}@binaryelectronics.com.bd`,
+        name: 'Admin'
       });
       return NextResponse.json({ success: true });
     }
@@ -24,5 +24,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   } catch (error) {
     return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
+  }
+}
+
+export async function DELETE() {
+  try {
+    await logout();
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ error: 'Logout failed' }, { status: 500 });
   }
 }

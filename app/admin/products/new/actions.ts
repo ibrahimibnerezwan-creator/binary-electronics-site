@@ -4,8 +4,10 @@ import { db } from '@/db';
 import { products, productImages } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from '@/lib/auth';
 
 export async function createProduct(formData: any) {
+  await requireAdmin();
   try {
     const id = uuidv4();
     const name = formData.get('name');
@@ -64,7 +66,6 @@ export async function createProduct(formData: any) {
 
     return { success: true, productId: id };
   } catch (error: any) {
-    console.error('Create product error:', error);
     return { success: false, error: error.message || 'Failed to create product' };
   }
 }

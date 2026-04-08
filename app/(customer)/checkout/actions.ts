@@ -22,7 +22,6 @@ export async function placeOrder(data: CheckoutData) {
     try {
         // Honeypot check
         if (data.honeypot) {
-            console.warn('Honeypot triggered, possible bot order.')
             return { error: 'Invalid submission' }
         }
 
@@ -67,7 +66,6 @@ export async function placeOrder(data: CheckoutData) {
         
         // Use a small epsilon for float comparison if necessary, but here simple equality or within 1 TK
         if (Math.abs(calculatedTotal - data.total) > 1) {
-            console.error('Total mismatch:', { calculatedTotal, submittedTotal: data.total })
             return { error: 'Price calculation mismatch. Please refresh your cart.' }
         }
 
@@ -125,7 +123,6 @@ export async function placeOrder(data: CheckoutData) {
         revalidatePath('/admin/orders')
         return { success: true, orderId }
     } catch (error: any) {
-        console.error('Checkout error:', error)
         return { error: error.message || 'An unexpected error occurred during checkout.' }
     }
 }

@@ -4,8 +4,10 @@ import { db } from '@/db'
 import { orders, storeSettings } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth'
 
 export async function updateOrderStatus(id: string, status: string) {
+    await requireAdmin()
     try {
         await db.update(orders)
             .set({ status, updatedAt: new Date() })
@@ -20,6 +22,7 @@ export async function updateOrderStatus(id: string, status: string) {
 }
 
 export async function sendToSteadfast(orderId: string) {
+    await requireAdmin()
     try {
         // 1. Get order details
         const orderRows = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1)
@@ -80,7 +83,6 @@ export async function sendToSteadfast(orderId: string) {
         }
 
     } catch (error) {
-        console.error('Steadfast Integration Error:', error)
         return { error: 'Failed to connect to Steadfast' }
     }
 }

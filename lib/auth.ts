@@ -5,9 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 function getSecretKey() {
   const secret = process.env.JWT_SECRET
   if (!secret) {
-    // During build or in non-critical paths, we might not have a secret.
-    // In production, this would fail during actual verification/encryption calls.
-    return new TextEncoder().encode('fallback_secret_for_build_purposes')
+    throw new Error('JWT_SECRET environment variable is not set. Authentication cannot proceed.')
   }
   return new TextEncoder().encode(secret)
 }
@@ -36,7 +34,7 @@ export async function login(user: { id: string; email: string; name: string }) {
 
   // Save the session in a cookie
   const cookieStore = await cookies()
-  cookieStore.set('session', session, { expires, httpOnly: true, secure: process.env.NODE_ENV === 'production' })
+  cookieStore.set('session', session, { expires, httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/' })
 }
 
 export async function logout() {
@@ -55,6 +53,14 @@ export async function getSession() {
 export async function getCurrentUser() {
   const session = await getSession()
   return session?.user || null
+}
+
+export async function requireAdmin() {
+  const session = await getSession()
+  if (!session?.user || session.user.id !== 'admin-1') {
+    throw new Error('Unauthorized: Admin access required')
+  }
+  return session.user
 }
 
 export async function updateSession(request: NextRequest) {

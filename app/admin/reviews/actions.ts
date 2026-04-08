@@ -4,8 +4,10 @@ import { db } from '@/db'
 import { reviews } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { requireAdmin } from '@/lib/auth'
 
 export async function updateReviewStatus(id: string, status: 'approved' | 'rejected') {
+    await requireAdmin()
     try {
         await db.update(reviews)
             .set({ status })
@@ -14,14 +16,14 @@ export async function updateReviewStatus(id: string, status: 'approved' | 'rejec
         revalidatePath('/admin/reviews')
         return { success: true }
     } catch (error) {
-        console.error('Failed to update review status:', error)
         return { success: false, error: 'Database update failed' }
     }
 }
 
 export async function replyToReview(id: string, reply: string) {
+    await requireAdmin()
     if (!reply.trim()) return { error: 'Reply content is required' }
-    
+
     try {
         await db.update(reviews)
             .set({ adminReply: reply })
@@ -30,7 +32,6 @@ export async function replyToReview(id: string, reply: string) {
         revalidatePath('/admin/reviews')
         return { success: true }
     } catch (error) {
-        console.error('Failed to reply to review:', error)
         return { success: false, error: 'Database update failed' }
     }
 }

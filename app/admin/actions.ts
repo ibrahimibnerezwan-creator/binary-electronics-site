@@ -6,8 +6,10 @@ import { eq } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { requireAdmin } from '@/lib/auth'
 
 export async function createCategory(formData: FormData) {
+    await requireAdmin()
     const name = formData.get('name') as string
     const imageUrl = formData.get('imageUrl') as string
     
@@ -33,6 +35,7 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
+    await requireAdmin()
     try {
         await db.delete(categories).where(eq(categories.id, id))
     } catch (e) {
@@ -43,6 +46,7 @@ revalidatePath('/admin/categories')
 }
 
 export async function deleteProduct(id: string) {
+    await requireAdmin()
     try {
         await db.delete(products).where(eq(products.id, id))
     } catch (e) {

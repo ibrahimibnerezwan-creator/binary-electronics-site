@@ -27,7 +27,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: 'Subscribed successfully' }, { status: 201 })
   } catch (error) {
-    console.error('Newsletter API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

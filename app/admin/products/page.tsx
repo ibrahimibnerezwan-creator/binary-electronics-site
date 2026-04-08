@@ -30,7 +30,7 @@ export default async function AdminProductsPage() {
       uniqueProducts.push({
         ...p,
         category: p.category || 'Uncategorized',
-        image: p.image || 'https://via.placeholder.com/200',
+        image: p.image || '/logo.png',
         status: p.stock > 10 ? 'active' : p.stock > 0 ? 'low_stock' : 'out_of_stock'
       })
     }

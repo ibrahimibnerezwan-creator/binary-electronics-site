@@ -10,7 +10,7 @@ export function ProductGallery({ images }: { images: string[] }) {
   const [active, setActive] = useState(0)
 
   // Fallback if no images
-  const displayImages = images.length > 0 ? images : ['https://via.placeholder.com/800x800']
+  const displayImages = images.length > 0 ? images : ['/logo.png']
 
   return (
     <div className="flex flex-col gap-6">
