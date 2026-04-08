@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
-import { getProductBySlug, getRelatedProducts, getStoreSettings } from '@/lib/data'
+import { getProductBySlug, getRelatedProducts, getProductReviews, getStoreSettings } from '@/lib/data'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -35,7 +35,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const product = await getProductBySlug(slug)
   if (!product) notFound()
 
-  const relatedProducts = await getRelatedProducts(product.categoryId, product.id, 4)
+  const [relatedProducts, productReviews] = await Promise.all([
+    getRelatedProducts(product.categoryId, product.id, 4),
+    getProductReviews(product.id),
+  ])
 
   return (
     <div className="flex flex-col">
@@ -144,6 +147,52 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Customer Reviews Section */}
+      <div className="container mx-auto px-4 py-16 md:py-20 border-t border-primary-500/5">
+        <div className="flex items-center gap-3 mb-8 md:mb-12">
+          <h3 className="text-2xl md:text-3xl font-display font-black uppercase">Customer <span className="text-gradient">Reviews</span></h3>
+          <span className="text-sm text-text-muted">({productReviews.length})</span>
+        </div>
+
+        {productReviews.length === 0 ? (
+          <p className="text-text-muted text-sm">No reviews yet. Be the first to review this product!</p>
+        ) : (
+          <div className="grid gap-4 md:gap-6 max-w-3xl">
+            {productReviews.map((review) => (
+              <div key={review.id} className="glass rounded-2xl p-4 md:p-6 border border-primary-500/5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-xs font-bold text-primary-500">
+                      {review.reviewerName.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold">{review.reviewerName}</span>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} className="text-accent-500" fill={i < review.rating ? 'currentColor' : 'none'} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-text-muted">
+                    {new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                {review.comment && (
+                  <p className="text-sm text-text-secondary leading-relaxed">{review.comment}</p>
+                )}
+                {review.adminReply && (
+                  <div className="mt-3 pl-4 border-l-2 border-primary-500/30">
+                    <span className="text-[10px] font-bold text-primary-500 uppercase tracking-wider">Store Reply</span>
+                    <p className="text-sm text-text-muted mt-1">{review.adminReply}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="container mx-auto px-4 py-20 border-t border-primary-500/5">

@@ -41,15 +41,17 @@ export function ProductGallery({ images }: { images: string[] }) {
         {/* Arrows */}
         {displayImages.length > 1 && (
           <>
-            <button 
+            <button
               onClick={() => setActive((active - 1 + displayImages.length) % displayImages.length)}
               className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary-500 hover:text-white"
+              aria-label="Previous image"
             >
               <ChevronLeft size={24} />
             </button>
-            <button 
+            <button
               onClick={() => setActive((active + 1) % displayImages.length)}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary-500 hover:text-white"
+              aria-label="Next image"
             >
               <ChevronRight size={24} />
             </button>
@@ -69,7 +71,7 @@ export function ProductGallery({ images }: { images: string[] }) {
                 active === i ? 'border-primary-500' : 'border-transparent opacity-60 hover:opacity-100'
               )}
             >
-              <Image src={img} alt={`Thumb ${i}`} fill className="object-cover" />
+              <Image src={img} alt={`Product image ${i + 1}`} fill className="object-cover" />
             </button>
           ))}
         </div>

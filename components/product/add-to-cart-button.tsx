@@ -52,14 +52,15 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
         <ShoppingCart size={24} /> Add to Cart
       </Button>
       <div className="flex gap-4">
-        <Button variant="secondary" size="icon" className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10">
+        <Button variant="secondary" size="icon" className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10" aria-label="Add to wishlist">
           <Heart size={24} />
         </Button>
-        <Button 
-          variant="secondary" 
-          size="icon" 
+        <Button
+          variant="secondary"
+          size="icon"
           className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10"
           onClick={handleShare}
+          aria-label="Share product"
         >
           <Share2 size={24} />
         </Button>

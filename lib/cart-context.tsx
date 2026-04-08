@@ -32,8 +32,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (savedCart) {
       try {
         setCart(JSON.parse(savedCart))
-      } catch (e) {
-        console.error('Failed to parse cart:', e)
+      } catch {
+        localStorage.removeItem('binary_cart')
       }
     }
     setIsLoaded(true)

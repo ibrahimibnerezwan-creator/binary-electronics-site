@@ -317,6 +317,25 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
   }
 }
 
+export async function getProductReviews(productId: string) {
+  try {
+    return await db
+      .select({
+        id: reviews.id,
+        rating: reviews.rating,
+        comment: reviews.comment,
+        reviewerName: reviews.reviewerName,
+        createdAt: reviews.createdAt,
+        adminReply: reviews.adminReply,
+      })
+      .from(reviews)
+      .where(and(eq(reviews.productId, productId), eq(reviews.status, 'approved')))
+      .orderBy(desc(reviews.createdAt));
+  } catch (e) {
+    return [];
+  }
+}
+
 // ==================== ADMIN QUERIES ====================
 
 export async function getAllOrders() {
