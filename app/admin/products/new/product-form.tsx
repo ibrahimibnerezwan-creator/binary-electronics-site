@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { Plus, Info, Image as ImageIcon, Tag, BarChart2, Save, X, ChevronLeft, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,6 +35,11 @@ export function ProductForm({ categories, brands }: ProductFormProps) {
         method: 'POST',
         body: formData
       })
+      if (res.status === 401) {
+        alert('Session expired. Please log in again.')
+        window.location.href = '/admin/login'
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setImages(prev => [...prev, ...data.files.map((f: any) => f.url)])
@@ -43,7 +47,7 @@ export function ProductForm({ categories, brands }: ProductFormProps) {
         alert(data.error || 'Upload failed')
       }
     } catch (err) {
-      alert('Failed to connect to upload server')
+      alert('Upload failed. Please try again.')
     } finally {
       setUploading(false)
     }

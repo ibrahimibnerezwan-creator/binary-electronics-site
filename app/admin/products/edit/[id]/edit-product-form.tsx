@@ -49,6 +49,11 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
         method: 'POST',
         body: formData,
       })
+      if (res.status === 401) {
+        alert('Session expired. Please log in again.')
+        window.location.href = '/admin/login'
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setImages(prev => [...prev, ...data.files.map((f: any) => f.url)])
@@ -56,7 +61,7 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
         alert(data.error || 'Upload failed')
       }
     } catch {
-      alert('Failed to connect to upload server')
+      alert('Upload failed. Please try again.')
     } finally {
       setUploading(false)
     }

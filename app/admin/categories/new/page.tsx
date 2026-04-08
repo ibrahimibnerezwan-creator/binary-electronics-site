@@ -28,15 +28,19 @@ export default function NewCategoryPage() {
                 method: 'POST',
                 body: formData
             })
+            if (res.status === 401) {
+                alert('Session expired. Please log in again.')
+                window.location.href = '/admin/login'
+                return
+            }
             const data = await res.json()
             if (data.success) {
-                // For categories we usually just want one image
                 setImageUrl(data.files[0].url)
             } else {
                 alert(data.error || 'Upload failed')
             }
         } catch (err) {
-            alert('Failed to connect to upload server')
+            alert('Upload failed. Please try again.')
         } finally {
             setUploading(false)
         }
