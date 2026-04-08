@@ -18,6 +18,7 @@ interface AddToCartButtonProps {
 export function AddToCartButton({ product }: AddToCartButtonProps) {
   const { addItem } = useCart()
   const [quantity, setQuantity] = useState(1)
+  const [wishlisted, setWishlisted] = useState(false)
 
   const handleAddToCart = () => {
     addItem({
@@ -52,8 +53,17 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
         <ShoppingCart size={24} /> Add to Cart
       </Button>
       <div className="flex gap-4">
-        <Button variant="secondary" size="icon" className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10" aria-label="Add to wishlist">
-          <Heart size={24} />
+        <Button
+          variant="secondary"
+          size="icon"
+          className={`h-16 w-16 rounded-2xl glass hover:bg-primary-500/10 ${wishlisted ? 'text-red-500' : ''}`}
+          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+          onClick={() => {
+            setWishlisted(!wishlisted)
+            alert(wishlisted ? 'Removed from wishlist' : 'Added to wishlist!')
+          }}
+        >
+          <Heart size={24} fill={wishlisted ? 'currentColor' : 'none'} />
         </Button>
         <Button
           variant="secondary"

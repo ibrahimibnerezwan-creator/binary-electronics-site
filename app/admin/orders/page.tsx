@@ -1,36 +1,19 @@
-import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 import { getAllOrders } from '@/lib/data'
 import { formatPrice } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
-import { 
-  ShoppingBag, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
-  Truck, 
-  ChevronRight,
-  ArrowUpRight,
+import {
+  ShoppingBag,
+  Clock,
   User,
   MapPin,
   CreditCard
 } from 'lucide-react'
 import { SteadfastButton } from './steadfast-button'
+import { OrderStatusSelect } from './order-status-select'
 
 export default async function AdminOrdersPage() {
     const orders = await getAllOrders()
-
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pending': return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-            case 'processing': return 'bg-blue-500/10 text-blue-500 border-blue-500/20'
-            case 'shipped': return 'bg-purple-500/10 text-purple-500 border-purple-500/20'
-            case 'delivered': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-            case 'cancelled': return 'bg-red-500/10 text-red-500 border-red-500/20'
-            default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20'
-        }
-    }
 
     return (
         <div className="flex flex-col gap-8">
@@ -118,19 +101,11 @@ export default async function AdminOrdersPage() {
                                             </div>
                                         </td>
                                         <td className="px-4 lg:px-6 py-4 lg:py-6">
-                                            <Badge className={`rounded-lg px-2 lg:px-3 py-0.5 lg:py-1 text-[8px] lg:text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.status)}`}>
-                                                {order.status}
-                                            </Badge>
+                                            <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
                                         </td>
                                         <td className="px-4 lg:px-6 py-4 lg:py-6 text-right">
                                             <div className="flex items-center justify-end gap-2 lg:gap-3">
                                                 <SteadfastButton orderId={order.id} trackingId={order.courierTrackingId} />
-                                                <Link href={`/admin/orders`}>
-                                                    <div className="p-1.5 lg:p-2 text-text-muted hover:text-primary-500 hover:glass rounded-lg transition-all" title="View details (Coming soon)">
-                                                        <ChevronRight size={16} className="lg:hidden" />
-                                                        <ChevronRight size={18} className="hidden lg:block" />
-                                                    </div>
-                                                </Link>
                                             </div>
                                         </td>
                                     </tr>

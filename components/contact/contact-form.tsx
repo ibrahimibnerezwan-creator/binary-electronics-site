@@ -15,10 +15,27 @@ export function ContactForm({ settings }: ContactFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('loading')
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
+    const name = formData.get('name') as string
+    const email = formData.get('email') as string
+    const subject = formData.get('subject') as string
+    const message = formData.get('message') as string
+
+    const whatsapp = settings.whatsapp || settings.phone
+    if (whatsapp) {
+      const phone = whatsapp.replace(/[^0-9]/g, '')
+      const text = `Name: ${name}%0AEmail: ${email}%0ASubject: ${subject}%0AMessage: ${message}`
+      window.open(`https://wa.me/${phone}?text=${text}`, '_blank')
+    } else if (settings.email) {
+      const mailBody = `Name: ${name}%0AMessage: ${message}`
+      window.open(`mailto:${settings.email}?subject=${encodeURIComponent(subject)}&body=${mailBody}`, '_blank')
+    }
+
     setStatus('success')
-    setTimeout(() => setStatus('idle'), 3000)
+    form.reset()
+    setTimeout(() => setStatus('idle'), 5000)
   }
 
   const socialLinks = [
@@ -99,22 +116,24 @@ export function ContactForm({ settings }: ContactFormProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div className="flex flex-col gap-3">
                       <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">USER_NAME</label>
-                      <Input placeholder="IDENT_STRING" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
+                      <Input name="name" required placeholder="IDENT_STRING" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
                    </div>
                    <div className="flex flex-col gap-3">
                       <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">UPLINK_ADDR</label>
-                      <Input type="email" placeholder="COMM_ID@NODE.LOCAL" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
+                      <Input name="email" type="email" required placeholder="COMM_ID@NODE.LOCAL" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
                    </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">TRANSMISSION_SUBJECT</label>
-                   <Input placeholder="GENERAL_INQUIRY_REQ" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
+                   <Input name="subject" required placeholder="GENERAL_INQUIRY_REQ" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
                 </div>
 
                 <div className="flex flex-col gap-3">
                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">PAYLOAD_DATA</label>
-                   <textarea 
+                   <textarea
+                     name="message"
+                     required
                      rows={5}
                      placeholder="INPUT_MESSAGE_HERE..."
                      className="w-full border border-primary-500/10 bg-white/5 p-6 text-xs font-mono focus:outline-none focus:border-primary-500/50 transition-all resize-none text-white uppercase tracking-widest placeholder:text-text-muted/20"

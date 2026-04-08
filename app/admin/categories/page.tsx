@@ -3,14 +3,11 @@ export const dynamic = 'force-dynamic'
 import { getAllCategoriesWithCount } from '@/lib/data'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  FolderOpen, 
+import {
+  Plus,
+  Trash2,
+  FolderOpen,
   Image as ImageIcon,
-  ArrowUpRight,
-  MoreVertical,
   Layers,
   ChevronRight
 } from 'lucide-react'
@@ -97,8 +94,8 @@ export default async function AdminCategoriesPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <Link href={`/admin/categories`}>
-                                                    <div className="p-2 text-text-secondary hover:text-primary-500 hover:glass rounded-lg transition-all" title="View details (Coming soon)">
+                                                <Link href={`/category/${category.slug}`} target="_blank" rel="noopener noreferrer">
+                                                    <div className="p-2 text-text-secondary hover:text-primary-500 hover:glass rounded-lg transition-all" title="View on store">
                                                         <ChevronRight size={18} />
                                                     </div>
                                                 </Link>

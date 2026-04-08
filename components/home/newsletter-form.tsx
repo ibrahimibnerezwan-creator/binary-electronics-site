@@ -31,7 +31,6 @@ export function NewsletterForm() {
         throw new Error(data.error || 'Failed to subscribe')
       }
     } catch (error: any) {
-      console.error('Newsletter Error:', error)
       setStatus('error')
       setMessage(`PROTOCOL_FAILURE: ${error.message || "UPLINK_TERMINATED"}`)
     }
