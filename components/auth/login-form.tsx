@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, Lock, ArrowRight, Github, ShieldCheck, Cpu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -9,12 +10,41 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const router = useRouter()
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
-    // Add real Auth logic later
-    setTimeout(() => setIsLoading(false), 1500)
+    setError('')
+
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Login failed')
+        return
+      }
+
+      router.push('/')
+      router.refresh()
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -45,6 +75,12 @@ export function LoginForm() {
         </CardHeader>
 
         <CardContent className="px-10 pb-12">
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs text-center font-bold uppercase tracking-wider">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="space-y-2">
               <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-text-muted/80">
@@ -52,11 +88,12 @@ export function LoginForm() {
               </div>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
-                <Input 
-                  type="email" 
-                  placeholder="USER@NETWORK.LOCAL" 
-                  className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm placeholder:text-text-muted/20" 
-                  required 
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="USER@NETWORK.LOCAL"
+                  className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm placeholder:text-text-muted/20"
+                  required
                 />
               </div>
             </div>
@@ -68,11 +105,12 @@ export function LoginForm() {
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
-                <Input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm" 
-                  required 
+                <Input
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm"
+                  required
                 />
               </div>
             </div>
