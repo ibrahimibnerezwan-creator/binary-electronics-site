@@ -130,10 +130,9 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
                        <Link href={`/product/${product.slug}`} target="_blank" rel="noopener noreferrer" className="p-2 text-text-muted hover:text-primary-500 transition-all" title="View Store Page">
                          <ExternalLink size={16} />
                        </Link>
-                       {/* Note: Edit functionality will be implemented in future tasks */}
-                       <Button size="icon" variant="ghost" className="h-8 w-8 text-text-muted hover:text-primary-500 hover:bg-primary-500/10" disabled>
+                       <Link href={`/admin/products/edit/${product.id}`} className="p-2 text-text-muted hover:text-primary-500 transition-all" title="Edit Product">
                          <Edit size={14} />
-                       </Button>
+                       </Link>
                        <Button 
                          type="button" 
                          size="icon" 
