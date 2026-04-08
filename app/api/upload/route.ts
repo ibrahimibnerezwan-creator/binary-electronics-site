@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { uploadToR2 } from '@/lib/r2';
 import { v4 as uuidv4 } from 'uuid';
 
+// Increase body size limit for image uploads (default is 1MB)
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const MAX_FILES = 10;
@@ -42,6 +46,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, files: results });
   } catch (error: any) {
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    const message = error?.message || 'Upload failed';
+    // Surface R2/S3 errors to help diagnose (no PII here - only infra errors)
+    return NextResponse.json({ error: message.includes('Access') || message.includes('credentials') ? 'Storage configuration error. Check R2 credentials.' : 'Upload failed' }, { status: 500 });
   }
 }
