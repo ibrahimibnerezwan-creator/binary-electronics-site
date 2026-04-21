@@ -4,12 +4,14 @@ import Link from 'next/link'
 import { Star, Shield, Truck, RefreshCcw, ShoppingCart, Zap, Heart, Share2 } from 'lucide-react'
 import { ProductGallery } from '@/components/product/product-gallery'
 import { AddToCartButton } from '@/components/product/add-to-cart-button'
+import { ReviewForm } from '@/components/product/review-form'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
 import { getProductBySlug, getRelatedProducts, getProductReviews, getStoreSettings } from '@/lib/data'
+import { getCurrentUser } from '@/lib/auth'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -35,9 +37,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const product = await getProductBySlug(slug)
   if (!product) notFound()
 
-  const [relatedProducts, productReviews] = await Promise.all([
+  const [relatedProducts, productReviews, currentUser] = await Promise.all([
     getRelatedProducts(product.categoryId, product.id, 4),
     getProductReviews(product.id),
+    getCurrentUser(),
   ])
 
   return (
@@ -60,7 +63,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="flex flex-col gap-6 md:gap-8">
             <div className="flex flex-col gap-3 md:gap-4">
               <div className="flex items-center gap-3 md:gap-4">
-                <Badge variant="gold" className="px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs">Best Seller</Badge>
+                {product.isFeatured && (
+                  <Badge variant="gold" className="px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs">Featured</Badge>
+                )}
                 <div className="flex items-center gap-1">
                   <div className="flex text-accent-500">
                     {[...Array(5)].map((_, i) => (
@@ -157,7 +162,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
 
         {productReviews.length === 0 ? (
-          <p className="text-text-muted text-sm">No reviews yet. Be the first to review this product!</p>
+          <p className="text-text-muted text-sm mb-8">No reviews yet. Be the first to review this product!</p>
         ) : (
           <div className="grid gap-4 md:gap-6 max-w-3xl">
             {productReviews.map((review) => (
@@ -193,6 +198,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             ))}
           </div>
         )}
+
+        <div className="mt-10">
+          <ReviewForm
+            productId={product.id}
+            productSlug={product.slug}
+            loggedInName={currentUser?.name}
+          />
+        </div>
       </div>
 
       <div className="container mx-auto px-4 py-20 border-t border-primary-500/5">

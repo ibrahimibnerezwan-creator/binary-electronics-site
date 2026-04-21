@@ -2,24 +2,43 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Search, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/lib/cart-context'
 import { useSettings } from '@/lib/settings-context'
 import { cn } from '@/lib/utils'
 
-export function Header() {
+interface HeaderProps {
+  user?: { id: string; name: string; email: string } | null
+}
+
+export function Header({ user }: HeaderProps = {}) {
   const settings = useSettings()
   const { cartCount } = useCart()
+  const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    try {
+      await fetch('/api/auth/login', { method: 'DELETE' })
+      router.refresh()
+      router.push('/')
+    } finally {
+      setLoggingOut(false)
+      setIsMobileMenuOpen(false)
+    }
+  }
 
   const navLinks = [
     { name: 'Categories', href: '/categories' },
@@ -98,11 +117,33 @@ export function Header() {
               </span>
             )}
           </Link>
-          <Link href="/login" className="hidden md:flex items-center gap-2 pl-3 pr-4 py-2 rounded-sm border border-primary-500/10 hover:border-primary-500/40 bg-primary-500/5 hover:bg-primary-500/10 transition-all group overflow-hidden relative">
-            <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-primary-500/10 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000" />
-            <User size={16} className="text-primary-500 group-hover:scale-110 transition-transform" />
-            <span className="text-[11px] font-mono tracking-widest uppercase text-text-secondary group-hover:text-text-primary transition-colors">Access</span>
-          </Link>
+          {user ? (
+            <div className="hidden md:flex items-center gap-2">
+              <span className="flex items-center gap-2 pl-3 pr-3 py-2 rounded-sm border border-primary-500/10 bg-primary-500/5">
+                <User size={14} className="text-primary-500" />
+                <span className="text-[11px] font-mono tracking-widest uppercase text-text-primary max-w-[100px] truncate">
+                  {user.name.split(' ')[0]}
+                </span>
+              </span>
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="flex items-center gap-2 pl-3 pr-3 py-2 rounded-sm border border-primary-500/10 hover:border-red-500/40 hover:bg-red-500/5 transition-all disabled:opacity-50"
+                aria-label="Logout"
+              >
+                <LogOut size={14} className="text-text-muted" />
+                <span className="text-[11px] font-mono tracking-widest uppercase text-text-secondary">
+                  {loggingOut ? '...' : 'Exit'}
+                </span>
+              </button>
+            </div>
+          ) : (
+            <Link href="/login" className="hidden md:flex items-center gap-2 pl-3 pr-4 py-2 rounded-sm border border-primary-500/10 hover:border-primary-500/40 bg-primary-500/5 hover:bg-primary-500/10 transition-all group overflow-hidden relative">
+              <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-primary-500/10 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000" />
+              <User size={16} className="text-primary-500 group-hover:scale-110 transition-transform" />
+              <span className="text-[11px] font-mono tracking-widest uppercase text-text-secondary group-hover:text-text-primary transition-colors">Access</span>
+            </Link>
+          )}
           
           {/* Mobile Menu Toggle */}
           <button
@@ -135,13 +176,23 @@ export function Header() {
                   <span className="w-1.5 h-1.5 bg-primary-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_8px_var(--color-primary-500)]" />
                 </Link>
               ))}
-              <Link
-                href="/login"
-                className="flex items-center justify-between p-3 mt-2 bg-primary-500 text-bg-void font-mono text-xs tracking-[0.2em] uppercase rounded-sm"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Access System <User size={16} />
-              </Link>
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="flex items-center justify-between p-3 mt-2 bg-primary-500 text-bg-void font-mono text-xs tracking-[0.2em] uppercase rounded-sm disabled:opacity-50"
+                >
+                  {loggingOut ? 'Exiting...' : `Exit (${user.name.split(' ')[0]})`} <LogOut size={16} />
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex items-center justify-between p-3 mt-2 bg-primary-500 text-bg-void font-mono text-xs tracking-[0.2em] uppercase rounded-sm"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Access System <User size={16} />
+                </Link>
+              )}
             </div>
           </motion.div>
         )}
