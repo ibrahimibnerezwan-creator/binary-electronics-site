@@ -52,15 +52,22 @@ export default function NewCategoryPage() {
 
         const formData = new FormData(e.currentTarget)
         formData.append('imageUrl', imageUrl)
-        
+
         try {
             const res = await createCategory(formData)
-            if (res && res.error) {
-                alert(res.error)
+            if (res?.success) {
+                router.push('/admin/categories')
+                router.refresh()
+                return
             }
-            // Transition happens via redirect in server action
-        } catch (err) {
-            alert('Something went wrong')
+            if (res?.authError) {
+                alert(res.error)
+                window.location.href = '/admin/login'
+                return
+            }
+            alert(res?.error || 'Failed to create category')
+        } catch (err: any) {
+            alert(err?.message || 'Something went wrong')
         } finally {
             setLoading(false)
         }

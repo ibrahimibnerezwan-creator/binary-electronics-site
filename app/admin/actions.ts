@@ -5,19 +5,29 @@ import { categories, products } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { requireAdmin } from '@/lib/auth'
 
 export async function createCategory(formData: FormData) {
-    await requireAdmin()
-    const name = formData.get('name') as string
-    const imageUrl = formData.get('imageUrl') as string
-    
-    if (!name) return { error: 'Name is required' }
-    
-    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
-    
     try {
+        await requireAdmin()
+    } catch {
+        return { error: 'Session expired. Please log in again.', authError: true }
+    }
+
+    const name = (formData.get('name') as string)?.trim()
+    const imageUrl = formData.get('imageUrl') as string
+
+    if (!name) return { error: 'Name is required' }
+
+    const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+    if (!slug) return { error: 'Name must contain at least one letter or number' }
+
+    try {
+        const existing = await db.select().from(categories).where(eq(categories.slug, slug)).limit(1)
+        if (existing.length > 0) {
+            return { error: 'A category with that name already exists.' }
+        }
+
         await db.insert(categories).values({
             id: uuidv4(),
             name,
@@ -26,12 +36,13 @@ export async function createCategory(formData: FormData) {
             createdAt: new Date(),
             updatedAt: new Date()
         })
-    } catch (e) {
-        return { error: 'Failed to create category' }
+    } catch (e: any) {
+        return { error: e?.message || 'Failed to create category' }
     }
-    
+
     revalidatePath('/admin/categories')
-    redirect('/admin/categories')
+    revalidatePath('/categories')
+    return { success: true }
 }
 
 export async function deleteCategory(id: string) {
