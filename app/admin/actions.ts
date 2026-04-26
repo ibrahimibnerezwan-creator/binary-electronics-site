@@ -46,23 +46,41 @@ export async function createCategory(formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
-    await requireAdmin()
     try {
-        await db.delete(categories).where(eq(categories.id, id))
-    } catch (e) {
-        return { error: 'Failed to delete category' }
+        await requireAdmin()
+    } catch {
+        return { error: 'Session expired. Please log in again.', authError: true }
     }
-    
-revalidatePath('/admin/categories')
+
+    try {
+        // Detach products from this category instead of cascading the delete,
+        // so the products themselves are preserved (unassigned).
+        await db.update(products).set({ categoryId: null, updatedAt: new Date() }).where(eq(products.categoryId, id))
+        await db.delete(categories).where(eq(categories.id, id))
+    } catch (e: any) {
+        return { error: e?.message || 'Failed to delete category' }
+    }
+
+    revalidatePath('/admin/categories')
+    revalidatePath('/categories')
+    revalidatePath('/admin/products')
+    return { success: true }
 }
 
 export async function deleteProduct(id: string) {
-    await requireAdmin()
+    try {
+        await requireAdmin()
+    } catch {
+        return { error: 'Session expired. Please log in again.', authError: true }
+    }
+
     try {
         await db.delete(products).where(eq(products.id, id))
-    } catch (e) {
-        return { error: 'Failed to delete product' }
+    } catch (e: any) {
+        return { error: e?.message || 'Failed to delete product' }
     }
-    
+
     revalidatePath('/admin/products')
+    revalidatePath('/products')
+    return { success: true }
 }

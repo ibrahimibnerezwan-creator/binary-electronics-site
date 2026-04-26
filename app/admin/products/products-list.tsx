@@ -133,16 +133,20 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
                        <Link href={`/admin/products/edit/${product.id}`} className="p-2 text-text-muted hover:text-primary-500 transition-all" title="Edit Product">
                          <Edit size={14} />
                        </Link>
-                       <Button 
-                         type="button" 
-                         size="icon" 
-                         variant="ghost" 
+                       <Button
+                         type="button"
+                         size="icon"
+                         variant="ghost"
                          className="h-8 w-8 text-text-muted hover:text-red-500 hover:bg-red-500/10"
                          onClick={async () => {
-                           if (confirm('Are you sure you want to delete this product?')) {
-                              await deleteProduct(product.id)
+                           if (!confirm(`Delete "${product.name}"? This will permanently remove the product, its images, and all reviews. This cannot be undone.`)) return
+                           const res = await deleteProduct(product.id)
+                           if (res?.error) {
+                             alert(res.error)
+                             if (res.authError) window.location.href = '/admin/login'
                            }
                          }}
+                         title={`Delete ${product.name}`}
                        >
                          <Trash2 size={14} />
                        </Button>

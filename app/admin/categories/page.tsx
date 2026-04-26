@@ -5,13 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
   Plus,
-  Trash2,
   FolderOpen,
   Image as ImageIcon,
   Layers,
   ChevronRight
 } from 'lucide-react'
-import { deleteCategory } from '@/app/admin/actions'
+import { DeleteCategoryButton } from './delete-category-button'
 
 export default async function AdminCategoriesPage() {
     const categories = await getAllCategoriesWithCount()
@@ -99,14 +98,11 @@ export default async function AdminCategoriesPage() {
                                                         <ChevronRight size={18} />
                                                     </div>
                                                 </Link>
-                                                <form action={async (formData) => {
-                                                    'use server'
-                                                    await deleteCategory(category.id)
-                                                }}>
-                                                    <Button type="submit" size="icon" variant="secondary" className="h-10 w-10 rounded-xl glass border-red-500/10 hover:text-red-500 transition-all">
-                                                        <Trash2 size={18} />
-                                                    </Button>
-                                                </form>
+                                                <DeleteCategoryButton
+                                                    categoryId={category.id}
+                                                    categoryName={category.name}
+                                                    productCount={Number(category.productCount)}
+                                                />
                                             </div>
                                         </td>
                                     </tr>

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,6 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,16 +28,18 @@ export default function AdminLoginPage() {
       })
 
       if (res.ok) {
-        // Redirect to dashboard
-        router.push('/admin')
-        router.refresh()
-      } else {
-        const data = await res.json()
-        setError(data.error || 'Invalid credentials')
+        // Hard navigation so the browser sends the freshly-set session
+        // cookie to the middleware on the next request. router.push can
+        // race with cookie storage and force the user to log in twice.
+        window.location.href = '/admin'
+        return
       }
+
+      const data = await res.json()
+      setError(data.error || 'Invalid credentials')
+      setIsLoading(false)
     } catch (err) {
       setError('An error occurred. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }

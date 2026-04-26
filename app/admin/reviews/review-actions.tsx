@@ -14,6 +14,9 @@ export function ReviewActionButtons({ reviewId, status }: ReviewActionButtonsPro
   const [loading, setLoading] = useState<string | null>(null)
 
   const handleAction = async (newStatus: 'approved' | 'rejected') => {
+    if (newStatus === 'rejected') {
+      if (!confirm('Reject this review? It will be hidden from the storefront.')) return
+    }
     setLoading(newStatus)
     try {
       await updateReviewStatus(reviewId, newStatus)
