@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth'
 import { Card } from '@/components/ui/card'
 export const dynamic = 'force-dynamic'
 import { 
@@ -27,6 +28,7 @@ import { format } from 'date-fns'
 import Link from 'next/link'
 
 export default async function AdminDashboard() {
+  await requireAdmin()
   const [
       productCount,
       orderCount,

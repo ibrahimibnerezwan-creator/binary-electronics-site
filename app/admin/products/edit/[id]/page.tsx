@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+import { requireAdmin } from '@/lib/auth'
 import { db } from '@/db'
 import { products, productImages, categories, brands } from '@/db/schema'
 import { eq } from 'drizzle-orm'
@@ -5,6 +7,7 @@ import { notFound } from 'next/navigation'
 import { EditProductForm } from './edit-product-form'
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireAdmin()
   const { id } = await params
 
   const product = await db.query.products.findFirst({

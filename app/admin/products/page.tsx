@@ -1,9 +1,12 @@
+export const dynamic = 'force-dynamic'
+import { requireAdmin } from '@/lib/auth'
 import { db } from '@/db'
 import { products as productsTable, categories, productImages } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { AdminProductsList, type AdminProduct } from './products-list'
 
 export default async function AdminProductsPage() {
+  await requireAdmin()
   const products = await db
     .select({
       id: productsTable.id,

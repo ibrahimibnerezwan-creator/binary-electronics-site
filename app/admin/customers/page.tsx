@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth'
 import { getUsers } from '@/lib/data'
 export const dynamic = 'force-dynamic'
 import { Card } from '@/components/ui/card'
@@ -17,6 +18,7 @@ import {
 import { format } from 'date-fns'
 
 export default async function AdminCustomersPage() {
+  await requireAdmin()
     const customers = await getUsers()
 
     return (

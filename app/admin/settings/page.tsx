@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth'
 import { getStoreSettings } from '@/lib/data'
 export const dynamic = 'force-dynamic'
 import { SettingsForm } from './settings-form'
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react'
 
 export default async function SettingsPage() {
+  await requireAdmin()
     const settings = await getStoreSettings()
 
     return (

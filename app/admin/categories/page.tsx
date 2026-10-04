@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth'
 import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 import { getAllCategoriesWithCount } from '@/lib/data'
@@ -13,6 +14,7 @@ import {
 import { DeleteCategoryButton } from './delete-category-button'
 
 export default async function AdminCategoriesPage() {
+  await requireAdmin()
     const categories = await getAllCategoriesWithCount()
 
     return (

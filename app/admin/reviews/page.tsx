@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth'
 import { getAllReviews } from '@/lib/data'
 export const dynamic = 'force-dynamic'
 import { Card } from '@/components/ui/card'
@@ -7,6 +8,7 @@ import { ReviewActionButtons } from './review-actions'
 import { format } from 'date-fns'
 
 export default async function AdminReviewsPage() {
+  await requireAdmin()
     const reviews = await getAllReviews()
 
     return (

@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth'
 export const dynamic = 'force-dynamic'
 import { getAllOrders } from '@/lib/data'
 import { formatPrice } from '@/lib/utils'
@@ -14,6 +15,7 @@ import { SteadfastButton } from './steadfast-button'
 import { OrderStatusSelect } from './order-status-select'
 
 export default async function AdminOrdersPage() {
+  await requireAdmin()
     const orders = await getAllOrders()
 
     return (
