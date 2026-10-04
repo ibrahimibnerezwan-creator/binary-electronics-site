@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Star, Zap } from 'lucide-react'
 import Image from 'next/image'
@@ -19,6 +20,7 @@ interface Product {
   rating: number
   reviews: number
   isNew?: boolean
+  stock: number
 }
 
 export function FeaturedProducts({ products, noLayout = false }: { products: Product[], noLayout?: boolean }) {
@@ -68,17 +70,21 @@ export function FeaturedProducts({ products, noLayout = false }: { products: Pro
 
 export function ProductCard({ product, index }: { product: Product, index: number }) {
   const { addItem } = useCart()
+  const [added, setAdded] = useState(false)
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    if (product.stock < 1) return
+    setAdded(true)
     addItem({
       id: product.id,
       name: product.name,
       price: product.price,
       quantity: 1,
       image: product.image,
-      slug: product.slug
+      slug: product.slug,
+      stock: product.stock
     })
   }
 
@@ -102,7 +108,7 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
               NEW_CORE
             </div>
           )}
-          {product.oldPrice && (
+          {product.oldPrice && product.oldPrice > product.price && (
             <div className="px-2 py-0.5 bg-accent-500 text-white text-[9px] font-black uppercase tracking-widest shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
               -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%_REDUCTION
             </div>
@@ -114,13 +120,14 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
             src={product.image}
             alt={product.name}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 desaturate-[0.3] group-hover:desaturate-0"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
         </Link>
 
         {/* Action Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 z-30">
+        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 translate-y-0 transition-all duration-300 z-30">
            <Link href={`/product/${product.slug}`} className="flex-grow">
              <Button className="w-full h-10 bg-white/10 hover:bg-white text-white hover:text-black text-[10px] font-black uppercase tracking-widest backdrop-blur-md border border-white/20 transition-all rounded-none">
                Details
@@ -129,19 +136,22 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
            <Button 
             className="w-12 h-10 bg-primary-500 hover:bg-primary-400 text-black border-0 transition-all rounded-none"
             onClick={handleAddToCart}
+            disabled={product.stock < 1}
+            aria-label={`Add ${product.name} to cart`}
            >
              <ShoppingCart size={16} strokeWidth={3} />
            </Button>
         </div>
       </div>
 
+      {added && <p role="status" className="text-primary-500 text-sm mt-2">Added to cart</p>}
       {/* Info Area */}
       <div className="pt-6 flex flex-col flex-grow relative">
         {/* Technical Label (Kicker) */}
         <div className="flex items-center gap-2 mb-2 text-[8px] text-primary-500/40 uppercase tracking-[0.3em] font-black">
           <span>UID: {product.slug.substring(0, 8).toUpperCase()}</span>
           <span className="w-1 h-1 bg-primary-500/20 rounded-full" />
-          <span>STATUS: ONLINE</span>
+          <span>{product.stock > 0 ? 'In stock' : 'Out of stock'}</span>
         </div>
         
         <Link href={`/product/${product.slug}`}>
@@ -153,7 +163,7 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
         <div className="mt-auto flex items-end justify-between gap-4">
           <div className="flex flex-col">
             <span className="text-2xl font-black text-white tracking-widest">{formatPrice(product.price)}</span>
-            {product.oldPrice && (
+            {product.oldPrice && product.oldPrice > product.price && (
               <span className="text-[10px] text-text-muted/50 line-through tracking-widest">{formatPrice(product.oldPrice)}</span>
             )}
           </div>
@@ -164,7 +174,7 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
                 <Star key={i} size={8} fill={i < product.rating ? 'currentColor' : 'none'} className={i < product.rating ? 'drop-shadow-[0_0_2px_rgba(var(--color-accent-500),0.5)]' : ''} />
               ))}
             </div>
-            <span className="text-[8px] text-text-muted/40 font-bold uppercase tracking-widest">Verified_User_Ref</span>
+            <span className="text-[8px] text-text-muted/40 font-bold uppercase tracking-widest">{product.reviews ? `${product.reviews} reviews` : 'No reviews yet'}</span>
           </div>
         </div>
         

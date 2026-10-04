@@ -9,6 +9,7 @@ import {
   MapPin,
   CreditCard
 } from 'lucide-react'
+import { PaymentStatusSelect } from './payment-status-select'
 import { SteadfastButton } from './steadfast-button'
 import { OrderStatusSelect } from './order-status-select'
 
@@ -39,7 +40,7 @@ export default async function AdminOrdersPage() {
                         <div className="p-2 lg:p-3 rounded-xl bg-amber-500/10 text-amber-500"><Clock size={20} className="lg:hidden"/><Clock size={24} className="hidden lg:block"/></div>
                         <div>
                             <p className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted">Pending</p>
-                            <p className="text-xl lg:text-2xl font-black text-white">{orders.filter(o => o.status === 'pending').length}</p>
+                            <p className="text-xl lg:text-2xl font-black text-white">{orders.filter(o => o.status === 'PENDING').length}</p>
                         </div>
                     </div>
                 </Card>
@@ -87,12 +88,15 @@ export default async function AdminOrdersPage() {
                                                 </div>
                                                 <div className="flex items-center gap-1.5 lg:gap-2">
                                                     <MapPin size={10} className="text-text-muted" />
-                                                    <span className="text-[10px] lg:text-xs text-text-secondary">{order.shippingCity}</span>
+                                                    <span className="text-[10px] lg:text-xs text-text-secondary">{order.address}, {order.shippingCity}<br /><a href={`tel:${order.customerPhone}`}>{order.customerPhone}</a></span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-4 lg:px-6 py-4 lg:py-6">
                                             <div className="flex flex-col gap-0.5 lg:gap-1">
+                                                <ul className="text-xs space-y-1">{order.items.map(item => <li key={item.id}>{item.product?.name || 'Product'} × {item.quantity} — {formatPrice(item.price * item.quantity)}</li>)}</ul>
+                                                {order.transactionId && <p className="text-xs break-all">TrxID: {order.transactionId}</p>}
+                                                <PaymentStatusSelect id={order.id} value={order.paymentStatus} />
                                                 <span className="font-black text-primary-500 text-xs lg:text-sm">{formatPrice(order.total)}</span>
                                                 <div className="flex items-center gap-1.5 lg:gap-2">
                                                     <CreditCard size={10} className="text-accent-500" />
@@ -101,11 +105,11 @@ export default async function AdminOrdersPage() {
                                             </div>
                                         </td>
                                         <td className="px-4 lg:px-6 py-4 lg:py-6">
-                                            <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
+                                            <OrderStatusSelect key={order.status} orderId={order.id} currentStatus={order.status} />
                                         </td>
                                         <td className="px-4 lg:px-6 py-4 lg:py-6 text-right">
                                             <div className="flex items-center justify-end gap-2 lg:gap-3">
-                                                <SteadfastButton orderId={order.id} trackingId={order.courierTrackingId} />
+                                                <SteadfastButton orderId={order.id} trackingId={order.courierTrackingId} status={order.status} />
                                             </div>
                                         </td>
                                     </tr>

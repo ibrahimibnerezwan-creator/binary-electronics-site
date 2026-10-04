@@ -1,9 +1,10 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { updateOrderStatus } from './actions'
 
-const STATUS_OPTIONS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'RETURNED'] as const
+const STATUS_OPTIONS = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED'] as const
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'border-amber-500/30 text-amber-500 bg-amber-500/10',
@@ -14,18 +15,20 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export function OrderStatusSelect({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
+  const router = useRouter()
   const [status, setStatus] = useState(currentStatus)
   const [saving, setSaving] = useState(false)
 
   async function handleChange(newStatus: string) {
+    if (['CANCELLED','RETURNED'].includes(newStatus) && !confirm(newStatus === 'RETURNED' ? 'Confirm the returned goods are back in stock? This restores inventory.' : 'Cancel this order and restore its reserved stock?')) return
     setSaving(true)
     setStatus(newStatus)
     try {
       const res = await updateOrderStatus(orderId, newStatus)
       if (!res.success) {
         setStatus(currentStatus)
-        alert('Failed to update status')
-      }
+        alert(res.error || 'Failed to update status')
+      } else router.refresh()
     } catch {
       setStatus(currentStatus)
       alert('Failed to update status')
@@ -38,11 +41,13 @@ export function OrderStatusSelect({ orderId, currentStatus }: { orderId: string;
 
   return (
     <select
+      aria-label={`Order status ${orderId.slice(0,8)}`}
       value={status}
       onChange={(e) => handleChange(e.target.value)}
       disabled={saving}
       className={`px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg text-[8px] lg:text-[10px] font-black uppercase tracking-widest border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary-500/30 ${colorClass} ${saving ? 'opacity-50' : ''}`}
     >
+      {!STATUS_OPTIONS.includes(status as typeof STATUS_OPTIONS[number]) && <option value={status}>{status}</option>}
       {STATUS_OPTIONS.map((opt) => (
         <option key={opt} value={opt}>{opt}</option>
       ))}

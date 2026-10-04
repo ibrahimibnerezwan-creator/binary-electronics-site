@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/api/'],
+      disallow: ['/admin', '/api/', '/checkout', '/order-confirmation/', '/cart', '/login', '/register'],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://binary-electronics-site.vercel.app'}/sitemap.xml`,
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://binaryelectronics.shopbd.app'}/sitemap.xml`,
   }
 }

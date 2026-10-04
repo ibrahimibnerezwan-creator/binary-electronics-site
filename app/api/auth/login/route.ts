@@ -3,17 +3,19 @@ import { db } from '@/db'
 import { users } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { compare } from 'bcryptjs'
+import { allowRequest } from '@/lib/rate-limit'
 import { login, logout } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
+    if (!(await allowRequest(req.headers, 'customer-login', 20))) return NextResponse.json({error:'Too many attempts. Try again in 15 minutes.'},{status:429})
     const { email, password } = await req.json()
 
-    if (!email || !password) {
+    if (typeof email !== 'string' || typeof password !== 'string' || !email.trim() || !password || email.length > 254 || password.length > 200) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
 
-    const result = await db.select().from(users).where(eq(users.email, email.toLowerCase())).limit(1)
+    const result = await db.select().from(users).where(eq(users.email, email.trim().toLowerCase())).limit(1)
     if (result.length === 0) {
       return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
     }

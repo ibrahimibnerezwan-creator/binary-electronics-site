@@ -18,7 +18,7 @@ import {
   X
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useState, useEffect } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 
 const adminNav = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -27,22 +27,17 @@ const adminNav = [
   { name: 'Categories', href: '/admin/categories', icon: Tag },
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Reviews', href: '/admin/reviews', icon: Star },
+  { name: 'Messages', href: '/admin/messages', icon: Users },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
+function subscribeViewport(listener: () => void) { window.addEventListener('resize', listener); return () => window.removeEventListener('resize', listener) }
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [isMobile, setIsMobile] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  const isMobile = useSyncExternalStore(subscribeViewport, () => window.innerWidth < 1024, () => false)
+  const [sidebarOverride, setIsSidebarOpen] = useState<boolean | null>(null)
+  const isSidebarOpen = sidebarOverride ?? !isMobile
 
   const router = useRouter()
 
@@ -59,6 +54,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       console.error('Logout failed:', error)
     }
   }
+
+  if (pathname === '/admin/login') return <>{children}</>
 
   return (
     <div className="min-h-screen bg-bg-void flex overflow-hidden relative">
@@ -90,6 +87,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
             <button 
               onClick={() => setIsSidebarOpen(false)}
+              aria-label="Close sidebar"
               className="lg:hidden p-2 text-text-muted hover:text-primary-500 glass rounded-lg border-primary-500/10"
             >
               <X size={20} />

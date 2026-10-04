@@ -1,5 +1,6 @@
 'use client'
 
+import { whatsappNumber } from '@/lib/commerce'
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Send, MessageSquare, Facebook, Twitter, Instagram, Youtube, Linkedin, Network, Cpu, ShieldCheck, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -11,6 +12,8 @@ interface ContactFormProps {
 
 export function ContactForm({ settings }: ContactFormProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
+  const [error, setError] = useState('')
+  const [followup, setFollowup] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,19 +26,19 @@ export function ContactForm({ settings }: ContactFormProps) {
     const subject = formData.get('subject') as string
     const message = formData.get('message') as string
 
-    const whatsapp = settings.whatsapp || settings.phone
-    if (whatsapp) {
-      const phone = whatsapp.replace(/[^0-9]/g, '')
-      const text = `Name: ${name}%0AEmail: ${email}%0ASubject: ${subject}%0AMessage: ${message}`
-      window.open(`https://wa.me/${phone}?text=${text}`, '_blank')
-    } else if (settings.email) {
-      const mailBody = `Name: ${name}%0AMessage: ${message}`
-      window.open(`mailto:${settings.email}?subject=${encodeURIComponent(subject)}&body=${mailBody}`, '_blank')
+    setError('')
+    try {
+      const res = await fetch('/api/contact', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,subject,message})})
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not save your message.')
+      const phone = whatsappNumber(settings.whatsapp || settings.phone || '')
+      if (phone) setFollowup(`https://wa.me/${phone}?text=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`)}`)
+      setStatus('success')
+      form.reset()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not save your message. Please retry.')
+      setStatus('idle')
     }
-
-    setStatus('success')
-    form.reset()
-    setTimeout(() => setStatus('idle'), 5000)
   }
 
   const socialLinks = [
@@ -60,7 +63,7 @@ export function ContactForm({ settings }: ContactFormProps) {
             <span className="text-gradient">INTERFACE</span>
           </h1>
           <p className="text-sm text-text-muted/60 leading-relaxed max-w-md uppercase tracking-widest border-l border-primary-500/20 pl-4 py-2">
-            Initiate communication with our technical support core. Average response latency: <span className="text-primary-500 font-bold">120ms</span>. Static node verified.
+            Initiate communication with our technical support core. Your enquiry is saved for the store team to review.
           </p>
         </div>
 
@@ -111,28 +114,30 @@ export function ContactForm({ settings }: ContactFormProps) {
            {/* Decorative scanning line */}
            <div className="absolute top-0 left-0 w-full h-[1px] bg-primary-500/40 animate-scan z-20 pointer-events-none" />
            
+           {error && <p role="alert" className="text-red-400 mb-4">{error}</p>}
+           {status === 'success' && <p role="status" className="mb-4 text-primary-500">Your message is saved. The store team can read it in their inbox. {followup && <a href={followup} target="_blank" rel="noopener noreferrer" className="underline">Continue on WhatsApp</a>}</p>}
            <form onSubmit={handleSubmit} className="relative z-10 flex flex-col gap-8">
               <div className="flex flex-col gap-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div className="flex flex-col gap-3">
                       <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">USER_NAME</label>
-                      <Input name="name" required placeholder="IDENT_STRING" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
+                      <Input aria-label="Name" name="name" required placeholder="IDENT_STRING" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
                    </div>
                    <div className="flex flex-col gap-3">
                       <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">UPLINK_ADDR</label>
-                      <Input name="email" type="email" required placeholder="COMM_ID@NODE.LOCAL" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
+                      <Input aria-label="Email" name="email" type="email" required placeholder="COMM_ID@NODE.LOCAL" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
                    </div>
                 </div>
 
                 <div className="flex flex-col gap-3">
                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">TRANSMISSION_SUBJECT</label>
-                   <Input name="subject" required placeholder="GENERAL_INQUIRY_REQ" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
+                   <Input aria-label="Subject" name="subject" required placeholder="GENERAL_INQUIRY_REQ" className="h-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 rounded-none text-xs uppercase tracking-widest text-white placeholder:text-text-muted/20" />
                 </div>
 
                 <div className="flex flex-col gap-3">
                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary-500/40 ml-1">PAYLOAD_DATA</label>
                    <textarea
-                     name="message"
+                     aria-label="Message" name="message"
                      required
                      rows={5}
                      placeholder="INPUT_MESSAGE_HERE..."
@@ -144,20 +149,20 @@ export function ContactForm({ settings }: ContactFormProps) {
               <Button 
                 type="submit"
                 size="lg" 
-                disabled={status !== 'idle'}
+                disabled={status === 'loading'}
                 className="h-16 w-full text-xs font-black uppercase tracking-[0.4em] gap-3 relative overflow-hidden group bg-primary-500 text-black border-0 rounded-none transition-all hover:bg-white"
               >
                 {status === 'loading' ? (
                    <span className="flex items-center gap-3">
-                     <Cpu className="animate-spin w-5 h-5" /> ENCRYPTING...
+                     <Cpu className="animate-spin w-5 h-5" /> SAVING...
                    </span>
                 ) : status === 'success' ? (
                    <span className="flex items-center gap-3 text-black">
-                     <ShieldCheck className="w-5 h-5" /> UPLINK_ESTABLISHED
+                     <ShieldCheck className="w-5 h-5" /> MESSAGE_SAVED
                    </span>
                 ) : (
                   <>
-                    <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> TRANSMIT_SIGNAL
+                    <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> SEND_MESSAGE
                   </>
                 )}
                 

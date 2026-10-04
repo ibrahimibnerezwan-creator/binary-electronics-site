@@ -8,12 +8,13 @@ import { requireAdmin } from '@/lib/auth'
 
 export async function updateReviewStatus(id: string, status: 'approved' | 'rejected') {
     await requireAdmin()
+    if (!['approved','rejected'].includes(status)) return {success:false,error:'Invalid status'}
     try {
         await db.update(reviews)
             .set({ status })
             .where(eq(reviews.id, id))
             
-        revalidatePath('/admin/reviews')
+        revalidatePath('/', 'layout')
         return { success: true }
     } catch (error) {
         return { success: false, error: 'Database update failed' }
@@ -22,14 +23,14 @@ export async function updateReviewStatus(id: string, status: 'approved' | 'rejec
 
 export async function replyToReview(id: string, reply: string) {
     await requireAdmin()
-    if (!reply.trim()) return { error: 'Reply content is required' }
+    if (typeof reply !== 'string' || reply.length > 2000 || !reply.trim()) return { error: 'Reply content is required' }
 
     try {
         await db.update(reviews)
             .set({ adminReply: reply })
             .where(eq(reviews.id, id))
             
-        revalidatePath('/admin/reviews')
+        revalidatePath('/', 'layout')
         return { success: true }
     } catch (error) {
         return { success: false, error: 'Database update failed' }

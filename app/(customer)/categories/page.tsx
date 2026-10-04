@@ -1,9 +1,10 @@
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { Laptop, Smartphone, Headphones, Watch, Camera, Cpu, MousePointer, Monitor, ShoppingBag } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { getAllCategoriesWithCount } from '@/lib/data'
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   'computing': Laptop,
   'phones': Smartphone,
   'audio': Headphones,

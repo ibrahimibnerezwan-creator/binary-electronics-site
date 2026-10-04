@@ -29,6 +29,7 @@ export function ReviewForm({ productId, productSlug, loggedInName }: ReviewFormP
     }
 
     setStatus('loading')
+    try {
     const result = await submitReview({
       productId,
       productSlug,
@@ -49,6 +50,10 @@ export function ReviewForm({ productId, productSlug, loggedInName }: ReviewFormP
     setRating(0)
     setComment('')
     setReviewerName('')
+    } catch {
+      setStatus('error')
+      setMessage('Could not submit your review. Please retry.')
+    }
   }
 
   return (

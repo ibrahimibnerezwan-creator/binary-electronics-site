@@ -1,7 +1,7 @@
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { WhatsAppCTA } from '@/components/layout/whatsapp-cta'
-import { getStoreSettings } from '@/lib/data'
+import { getPublicStoreSettings } from '@/lib/data'
 import { SettingsProvider } from '@/lib/settings-context'
 import { getCurrentUser } from '@/lib/auth'
 
@@ -11,7 +11,7 @@ export default async function CustomerLayout({
   children: React.ReactNode
 }) {
   const [settings, user] = await Promise.all([
-    getStoreSettings(),
+    getPublicStoreSettings(),
     getCurrentUser(),
   ])
 

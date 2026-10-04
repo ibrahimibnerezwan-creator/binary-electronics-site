@@ -1,14 +1,15 @@
 "use client"
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
+import { deliverySettings, orderTotals, normalizePhone } from '@/lib/commerce'
 import { placeOrder } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { formatPrice } from '@/lib/utils'
-import { CreditCard, Truck, Receipt, ArrowRight, ArrowLeft, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { ShoppingBag, CreditCard, Truck, Receipt, ArrowRight, ArrowLeft, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react'
 import Image from 'next/image'
 
 interface Settings {
@@ -21,9 +22,11 @@ interface User {
 }
 
 export default function CheckoutClient({ settings, user }: { settings: Settings, user?: User | null }) {
-    const { cart, cartTotal, clearCart } = useCart()
+    const { cart, cartTotal, clearCart, ready, syncError } = useCart()
     const router = useRouter()
 
+    const requestId = useRef('')
+    const submitting = useRef(false)
     const [step, setStep] = useState<1 | 2 | 3>(1)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -34,17 +37,15 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
         customerPhone: '',
         address: '',
         shippingCity: 'Dhaka',
-        paymentMethod: 'bkash', // bkash, nagad, cod
+        paymentMethod: 'cod',
         transactionId: '',
     })
 
-    const sInside = parseFloat(settings.shipping_inside_dhaka || '60')
-    const sOutside = parseFloat(settings.shipping_outside_dhaka || '120')
-    const vatRate = parseFloat(settings.vat_percentage || '0') / 100
-
-    const shippingCost = formData.shippingCity.toLowerCase() === 'dhaka' ? sInside : sOutside
-    const tax = cartTotal * vatRate
-    const finalTotal = cartTotal + shippingCost + tax
+    const rates = deliverySettings(settings)
+    const sInside = rates.inside
+    const sOutside = rates.outside
+    const vatRate = rates.vat / 100
+    const { shipping: shippingCost, tax, total: finalTotal } = orderTotals(cartTotal, formData.shippingCity, settings)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -52,11 +53,15 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
     }
 
     const nextStep = () => {
+        if (cart.some(item => !item.stock || item.quantity > item.stock)) { setError('Stock has changed. Update your cart before continuing.'); return }
         if (step === 1) {
-            if (!formData.customerName || !formData.customerPhone || !formData.address) {
+            if (!formData.customerName.trim() || !formData.customerPhone.trim() || !formData.address.trim()) {
                 setError("Please fill out all shipping fields.")
                 return
             }
+        }
+        if (step === 1) {
+            try { normalizePhone(formData.customerPhone) } catch { setError('Enter a valid Bangladesh mobile number.'); return }
         }
         if (step === 2) {
             if (formData.paymentMethod !== 'cod' && !formData.transactionId) {
@@ -74,23 +79,26 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
     }
 
     const handleSubmit = async () => {
+        if (submitting.current || !ready || syncError) return
+        if (cart.some(item => !item.stock || item.quantity > item.stock)) { setError('Stock has changed. Update your cart before placing the order.'); return }
+        submitting.current = true
         setIsLoading(true)
         setError(null)
-
-        const result = await placeOrder({
-            ...formData,
-            items: cart.map(i => ({ id: i.id, quantity: i.quantity, price: i.price })),
-            total: finalTotal
-        })
-
-        if (result.error) {
-            setError(result.error)
-            setIsLoading(false)
-        } else {
-            clearCart()
-            router.push(`/order-confirmation/${result.orderId}`)
-        }
+        if (!requestId.current) requestId.current = crypto.randomUUID()
+        try {
+            const result = await placeOrder({ ...formData, requestId: requestId.current,
+                items: cart.map(i => ({ id: i.id, quantity: i.quantity })), total: finalTotal })
+            if (result.error) setError(result.error)
+            else if ('orderId' in result) {
+                clearCart()
+                router.push(`/order-confirmation/${result.orderId}`)
+            }
+        } catch { setError('Connection failed. Your cart is saved. Please try again.') }
+        finally { submitting.current = false; setIsLoading(false) }
     }
+
+    if (!ready) return <p role="status" className="py-12">Checking current prices and stock…</p>
+    if (syncError) return <div role="alert" className="py-12"><p>{syncError}</p><Button onClick={() => window.location.reload()}>Retry</Button></div>
 
     if (cart.length === 0) {
         return (
@@ -108,7 +116,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 mt-4 md:mt-8">
             {/* Main Checkout Area */}
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
-                
+
                 {/* Step Indicators */}
                 <div className="flex items-center justify-between bg-white/5 p-4 md:p-6 rounded-2xl border border-primary-500/10">
                     <div className={`flex flex-col items-center transition-colors ${step >= 1 ? 'text-primary-500' : 'text-text-muted'}`}>
@@ -134,7 +142,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                 </div>
 
                 {error && (
-                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-xs md:text-sm font-bold animate-shake">
+                    <div role="alert" className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-xs md:text-sm font-bold animate-shake">
                         {error}
                     </div>
                 )}
@@ -158,11 +166,11 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                             </div>
                             <div className="space-y-2 md:space-y-3">
                                 <Label htmlFor="shippingCity" className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-text-muted">City / Region</Label>
-                                <select 
-                                    id="shippingCity" 
-                                    name="shippingCity" 
-                                    value={formData.shippingCity} 
-                                    onChange={handleInputChange} 
+                                <select
+                                    id="shippingCity"
+                                    name="shippingCity"
+                                    value={formData.shippingCity}
+                                    onChange={handleInputChange}
                                     className="w-full h-12 md:h-14 px-4 md:px-6 bg-bg-void/40 border-primary-500/10 text-white border rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all font-bold appearance-none cursor-pointer text-sm"
                                 >
                                     <option value="Dhaka">Dhaka City (৳{sInside})</option>
@@ -182,10 +190,10 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                 {step === 2 && (
                     <div className="glass border border-primary-500/5 rounded-2xl p-5 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-6 md:mb-8 uppercase tracking-tight">Payment Method</h2>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-10">
-                            {['bkash', 'nagad', 'cod'].map((method) => (
-                                <label 
+                            {['bkash', 'nagad', 'cod'].filter(method => method === 'cod' || settings[`${method}_number`]?.trim()).map((method) => (
+                                <label
                                     key={method}
                                     className={`relative cursor-pointer border-2 rounded-2xl p-4 md:p-6 flex flex-row md:flex-col items-center gap-4 transition-all duration-300 overflow-hidden group ${formData.paymentMethod === method ? 'border-primary-500 bg-primary-500/5' : 'border-primary-500/5 bg-bg-void/40 hover:border-primary-500/20'}`}
                                 >
@@ -221,7 +229,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                                         <p>3. Amount: <strong className="text-white text-base md:text-lg font-mono">{formatPrice(finalTotal)}</strong></p>
                                         <p>4. Enter your TrxID below to confirm.</p>
                                     </div>
-                                    
+
                                     <div className="pt-4 border-t border-white/5">
                                         <Label htmlFor="transactionId" className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${settings.bkash_number ? 'text-[#e2136e]' : 'text-gray-600'}`}>bKash TrxID</Label>
                                         <Input id="transactionId" name="transactionId" placeholder={settings.bkash_number ? "e.g. 9J2A4HRXZ" : "PAYMENT UNAVAILABLE"} disabled={!settings.bkash_number} value={formData.transactionId} onChange={handleInputChange} className="h-12 md:h-14 mt-2 bg-bg-void border-[#e2136e]/30 text-white focus:ring-[#e2136e]/50 font-mono uppercase tracking-[0.2em] disabled:opacity-50 text-sm" />
@@ -245,7 +253,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                                         <p>3. Amount: <strong className="text-white text-base md:text-lg font-mono">{formatPrice(finalTotal)}</strong></p>
                                         <p>4. Enter your TrxID below to confirm.</p>
                                     </div>
-                                    
+
                                     <div className="pt-4 border-t border-white/5">
                                         <Label htmlFor="transactionId" className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${settings.nagad_number ? 'text-[#f37021]' : 'text-gray-600'}`}>Nagad TrxID</Label>
                                         <Input id="transactionId" name="transactionId" placeholder={settings.nagad_number ? "e.g. ABC123XYZ" : "PAYMENT UNAVAILABLE"} disabled={!settings.nagad_number} value={formData.transactionId} onChange={handleInputChange} className="h-12 md:h-14 mt-2 bg-bg-void border-[#f37021]/30 text-white focus:ring-[#f37021]/50 font-mono uppercase tracking-[0.2em] disabled:opacity-50 text-sm" />
@@ -281,7 +289,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
                 {step === 3 && (
                     <div className="glass border border-primary-500/5 rounded-2xl p-5 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <h2 className="text-lg md:text-xl font-bold text-white mb-6 md:mb-8 uppercase tracking-tight">Final Verification</h2>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-10">
                             <div className="p-4 md:p-6 bg-bg-void/40 rounded-2xl border border-primary-500/10">
                                 <h3 className="text-[9px] md:text-[10px] font-bold text-text-muted uppercase tracking-[0.3em] mb-3 md:mb-4">Shipping To</h3>
@@ -321,7 +329,7 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
             <div className="flex flex-col gap-6 md:gap-8 h-fit lg:sticky lg:top-32">
                 <div className="glass border border-primary-500/10 rounded-2xl p-6 md:p-8 shadow-2xl">
                     <h3 className="text-xs md:text-sm font-black text-white uppercase tracking-[0.2em] mb-6 md:mb-8 border-b border-primary-500/10 pb-4 md:pb-6">Summary</h3>
-                    
+
                     <div className="space-y-4 md:space-y-6 mb-8 md:mb-10 max-h-[300px] md:max-h-[400px] overflow-y-auto pr-2 md:pr-4 custom-scrollbar">
                         {cart.map(item => (
                             <div key={item.id} className="flex gap-3 md:gap-4">
@@ -372,25 +380,4 @@ export default function CheckoutClient({ settings, user }: { settings: Settings,
             </div>
         </div>
     )
-}
-
-function ShoppingBag(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-      <path d="M3 6h18" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-  )
 }

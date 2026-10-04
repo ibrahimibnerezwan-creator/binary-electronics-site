@@ -193,3 +193,18 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
     references: [users.id],
   }),
 }));
+
+export const contactMessages = sqliteTable('contact_messages', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  subject: text('subject').notNull(),
+  message: text('message').notNull(),
+  status: text('status').notNull().default('NEW'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
+export const rateLimits = sqliteTable('rate_limits', {
+  key: text('key').primaryKey(),
+  count: integer('count').notNull(),
+  expiresAt: integer('expires_at').notNull(),
+});

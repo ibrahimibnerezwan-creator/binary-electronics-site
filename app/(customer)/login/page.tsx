@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
-import { getStoreSettings } from '@/lib/data'
+import { getPublicStoreSettings } from '@/lib/data'
 import { LoginForm } from '@/components/auth/login-form'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getStoreSettings()
+  const settings = await getPublicStoreSettings()
   const storeName = settings.storeName || 'Binary Electronics'
   return {
     title: `Login | ${storeName}`,
@@ -32,8 +32,8 @@ export default function LoginPage() {
             <div className="w-1.5 h-1.5 bg-primary-500 animate-pulse" />
             SECURE_LINK_ACTIVE
           </div>
-          <div className="hidden md:block">ENCRYPTION: AES-256-GCM</div>
-          <div className="hidden md:block">NODE: EDGE-SOUTH-01</div>
+          <div className="hidden md:block">CONNECTION: HTTPS</div>
+          <div className="hidden md:block">BINARY ELECTRONICS</div>
         </div>
       </div>
     </div>

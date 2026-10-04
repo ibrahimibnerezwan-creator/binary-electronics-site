@@ -10,7 +10,7 @@ import { useSettings } from '@/lib/settings-context'
 import { formatPrice } from '@/lib/utils'
 
 export default function CartPage() {
-    const { cart, removeItem, updateQuantity, cartTotal, cartCount } = useCart()
+    const { cart, removeItem, updateQuantity, cartTotal, cartCount, ready, syncError } = useCart()
     const settings = useSettings()
 
     const vatPercentage = parseFloat(settings.vat_percentage || '0')
@@ -18,7 +18,7 @@ export default function CartPage() {
     const finalTotal = cartTotal + vatAmount
 
     return (
-        <div className="py-12 md:py-20 min-h-screen relative overflow-hidden">
+        <div className="pt-28 pb-12 md:pt-32 md:pb-20 min-h-screen relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent-500/5 rounded-full blur-[100px] pointer-events-none -z-10" />
@@ -60,6 +60,7 @@ export default function CartPage() {
                                                 <h3 className="font-bold text-white hover:text-primary-500 transition-colors line-clamp-2 uppercase tracking-tight text-sm md:text-base">{item.name}</h3>
                                             </Link>
                                             <button 
+                                                aria-label={`Remove ${item.name}`}
                                                 onClick={() => removeItem(item.id)}
                                                 className="text-text-muted hover:text-red-500 transition-colors p-1"
                                             >
@@ -72,6 +73,7 @@ export default function CartPage() {
                                         <div className="flex items-center justify-between sm:justify-start gap-6 mt-1 md:mt-2">
                                             <div className="flex items-center glass rounded-xl border border-primary-500/10 overflow-hidden">
                                                 <button 
+                                                    aria-label={`Decrease ${item.name} quantity`}
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                                     className="p-2 hover:bg-white/5 text-text-muted hover:text-white transition-all disabled:opacity-30"
                                                     disabled={item.quantity <= 1}
@@ -80,6 +82,8 @@ export default function CartPage() {
                                                 </button>
                                                 <span className="w-8 md:w-10 text-center font-bold text-xs md:text-sm text-white">{item.quantity}</span>
                                                 <button 
+                                                    aria-label={`Increase ${item.name} quantity`}
+                                                    disabled={item.quantity >= (item.stock ?? 999)}
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                     className="p-2 hover:bg-white/5 text-text-muted hover:text-white transition-all"
                                                 >
@@ -110,17 +114,19 @@ export default function CartPage() {
                                     </div>
                                     <div className="flex justify-between items-center text-text-secondary">
                                         <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest">Shipping</span>
-                                        <span className="text-[9px] md:text-[10px] font-black uppercase px-2 py-0.5 md:py-1 bg-emerald-500/10 text-emerald-500 rounded border border-emerald-500/20">FREE</span>
+                                        <span className="text-[9px] md:text-[10px] font-black uppercase px-2 py-0.5 md:py-1 bg-emerald-500/10 text-emerald-500 rounded border border-emerald-500/20">AT CHECKOUT</span>
                                     </div>
                                     <div className="flex justify-between items-center text-text-secondary">
                                         <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest">Tax (VAT {vatPercentage}%)</span>
                                         <span className="font-bold text-white text-sm md:text-base">{formatPrice(vatAmount)}</span>
                                     </div>
                                     <div className="border-t border-primary-500/10 pt-4 md:pt-6 mt-2 flex justify-between items-center">
-                                        <span className="font-display font-black uppercase tracking-widest text-white text-xs md:text-sm">Total Amount</span>
+                                        <span className="font-display font-black uppercase tracking-widest text-white text-xs md:text-sm">Before delivery</span>
                                         <span className="text-2xl md:text-3xl font-black text-primary-500 tracking-tight">{formatPrice(finalTotal)}</span>
                                     </div>
-                                    <Link href="/checkout">
+                                    {syncError && <p role="alert" className="text-red-400">{syncError} <button onClick={() => window.location.reload()} className="underline">Retry</button></p>}
+                                    {cart.some(i => i.stock === 0 || i.quantity > (i.stock ?? 999)) && <p role="alert" className="text-red-400">An item exceeds current stock. Reduce its quantity or remove it.</p>}
+                                    <Link href="/checkout" aria-disabled={!ready || !!syncError || cart.some(i => i.stock === 0 || i.quantity > (i.stock ?? 999))} onClick={e => { if (!ready || syncError || cart.some(i => i.stock === 0 || i.quantity > (i.stock ?? 999))) e.preventDefault() }}>
                                         <Button className="h-14 md:h-16 w-full rounded-2xl font-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-base md:text-lg shadow-2xl shadow-primary-500/20 mt-2 md:mt-4 group">
                                             Proceed to Checkout
                                         </Button>

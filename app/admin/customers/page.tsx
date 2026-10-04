@@ -28,9 +28,7 @@ export default async function AdminCustomersPage() {
                     <p className="text-text-secondary">View and manage your registered client base</p>
                 </div>
                 <div className="flex gap-4">
-                   <Button variant="secondary" className="h-14 px-8 rounded-2xl glass border-primary-500/10 gap-2 font-bold">
-                      Export Users
-                   </Button>
+                   <a href="/api/admin/customers/export" className="p-4 glass rounded-xl">Export users (CSV)</a>
                 </div>
             </div>
 
@@ -67,7 +65,7 @@ export default async function AdminCustomersPage() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-lg font-black tracking-tight group-hover:text-primary-500 transition-colors uppercase italic">{customer.name}</span>
-                                                    <span className="text-[10px] text-text-muted uppercase tracking-widest font-black">Verified Client</span>
+                                                    <span className="text-[10px] text-text-muted uppercase tracking-widest font-black">Registered customer</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -102,12 +100,8 @@ export default async function AdminCustomersPage() {
                                         </td>
                                         <td className="px-6 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <Button size="icon" variant="secondary" className="h-10 w-10 rounded-xl glass border-primary-500/10 hover:text-primary-500">
-                                                    <ArrowUpRight size={18} />
-                                                </Button>
-                                                <Button size="icon" variant="secondary" className="h-10 w-10 rounded-xl glass border-primary-500/10 hover:text-primary-500">
-                                                    <MoreVertical size={18} />
-                                                </Button>
+                                                <a href={`mailto:${customer.email}`} aria-label={`Email ${customer.name}`} className="p-3 glass rounded-lg"><Mail size={18}/></a>
+                                                <a href={`tel:${customer.phone}`} aria-label={`Call ${customer.name}`} className="p-3 glass rounded-lg"><Phone size={18}/></a>
                                             </div>
                                         </td>
                                     </tr>

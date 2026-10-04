@@ -1,20 +1,20 @@
 import { getStoreSettings } from '@/lib/data'
 export const dynamic = 'force-dynamic'
-import { updateSettings } from './actions'
+import { SettingsForm } from './settings-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
-import { 
-  Save, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  MessageCircle, 
-  Share2, 
-  Server, 
-  CreditCard, 
+import {
+  Save,
+  Phone,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Share2,
+  Server,
+  CreditCard,
   Truck,
   Globe
 } from 'lucide-react'
@@ -30,12 +30,12 @@ export default async function SettingsPage() {
                 <p className="text-text-secondary text-lg">Manage your business information and third-party integrations.</p>
             </div>
 
-            <form action={updateSettings} className="flex flex-col gap-8">
-                
+            <SettingsForm>
+
                 {/* Contact Information */}
                 <Card className="p-8 border-primary-500/10 bg-bg-elevated/30 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[80px] -mr-32 -mt-32 group-hover:bg-primary-500/10 transition-colors duration-500" />
-                    
+
                     <div className="flex items-center gap-3 text-primary-500 mb-8 pb-4 border-b border-primary-500/10 relative">
                         <div className="p-2 glass rounded-lg border-primary-500/10">
                             <Globe size={20} />
@@ -46,67 +46,67 @@ export default async function SettingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="storeName" className="text-xs font-bold uppercase tracking-widest text-text-muted">Store Name</Label>
-                            <Input 
-                                id="storeName" 
-                                name="storeName" 
-                                defaultValue={settings.storeName || "Binary Electronics"} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                            <Input
+                                id="storeName"
+                                name="storeName"
+                                defaultValue={settings.storeName || "Binary Electronics"}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
 
                         <div className="flex flex-col gap-2 md:col-span-2">
                             <Label htmlFor="storeDescription" className="text-xs font-bold uppercase tracking-widest text-text-muted">Store Description / Brand Story</Label>
-                            <Textarea 
-                                id="storeDescription" 
-                                name="storeDescription" 
+                            <Textarea
+                                id="storeDescription"
+                                name="storeDescription"
                                 placeholder="Your ultimate destination for premium electronics..."
-                                defaultValue={settings.storeDescription} 
-                                className="min-h-[120px] bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-medium" 
+                                defaultValue={settings.storeDescription}
+                                className="min-h-[120px] bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-medium"
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest text-text-muted">Phone Number</Label>
-                            <Input 
-                                id="phone" 
-                                name="phone" 
+                            <Input
+                                id="phone"
+                                name="phone"
                                 placeholder="+880 1XXX-XXXXXX"
-                                defaultValue={settings.phone} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.phone}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="whatsapp" className="text-xs font-bold uppercase tracking-widest text-text-muted">WhatsApp Number</Label>
-                            <Input 
-                                id="whatsapp" 
-                                name="whatsapp" 
+                            <Input
+                                id="whatsapp"
+                                name="whatsapp"
                                 placeholder="01XXX-XXXXXX"
-                                defaultValue={settings.whatsapp} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.whatsapp}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-text-muted">Support Email</Label>
-                            <Input 
-                                id="email" 
-                                name="email" 
-                                type="email" 
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
                                 placeholder="support@binary-electronics.com"
-                                defaultValue={settings.email} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.email}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
 
                         <div className="flex flex-col gap-2 md:col-span-2">
                             <Label htmlFor="address" className="text-xs font-bold uppercase tracking-widest text-text-muted">Physical Address</Label>
-                            <Input 
-                                id="address" 
-                                name="address" 
+                            <Input
+                                id="address"
+                                name="address"
                                 placeholder="Enter store location"
-                                defaultValue={settings.address} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.address}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
                     </div>
@@ -129,11 +129,11 @@ export default async function SettingsPage() {
                                   <div className="w-2 h-2 rounded-full bg-primary-500" />
                                   <span className="text-[10px] font-bold uppercase tracking-widest text-primary-500">bKash (Personal/Merchant)</span>
                                </div>
-                               <Input 
-                                 id="bkash_number" 
-                                 name="bkash_number" 
-                                 placeholder="Receive Money Number" 
-                                 defaultValue={settings.bkash_number} 
+                               <Input
+                                 aria-label="bKash receiving number" id="bkash_number"
+                                 name="bkash_number"
+                                 placeholder="Receive Money Number"
+                                 defaultValue={settings.bkash_number}
                                  className="h-12 bg-bg-void/40 border-primary-500/20 focus:border-primary-500"
                                />
                             </div>
@@ -143,11 +143,11 @@ export default async function SettingsPage() {
                                   <div className="w-2 h-2 rounded-full bg-orange-500" />
                                   <span className="text-[10px] font-bold uppercase tracking-widest text-orange-500">Nagad (Personal)</span>
                                </div>
-                               <Input 
-                                 id="nagad_number" 
-                                 name="nagad_number" 
-                                 placeholder="Nagad Number" 
-                                 defaultValue={settings.nagad_number} 
+                               <Input
+                                 aria-label="Nagad receiving number" id="nagad_number"
+                                 name="nagad_number"
+                                 placeholder="Nagad Number"
+                                 defaultValue={settings.nagad_number}
                                  className="h-12 bg-bg-void/40 border-orange-500/20 focus:border-orange-500"
                                />
                             </div>
@@ -166,22 +166,22 @@ export default async function SettingsPage() {
                         <div className="flex flex-col gap-6">
                             <div className="flex flex-col gap-2">
                                 <Label htmlFor="steadfast_api_key" className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Steadfast API Key</Label>
-                                <Input 
-                                    id="steadfast_api_key" 
-                                    name="steadfast_api_key" 
-                                    placeholder="Enter API Key" 
-                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 font-mono text-xs" 
+                                <Input
+                                    id="steadfast_api_key"
+                                    name="steadfast_api_key"
+                                    placeholder="Enter API Key"
+                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 font-mono text-xs"
                                     defaultValue={settings.steadfast_api_key}
                                 />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <Label htmlFor="steadfast_secret_key" className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Steadfast Secret Key</Label>
-                                <Input 
-                                    id="steadfast_secret_key" 
-                                    name="steadfast_secret_key" 
+                                <Input
+                                    id="steadfast_secret_key"
+                                    name="steadfast_secret_key"
                                     type="password"
-                                    placeholder="Enter Secret Key" 
-                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 font-mono text-xs" 
+                                    placeholder="Enter Secret Key"
+                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 font-mono text-xs"
                                     defaultValue={settings.steadfast_secret_key}
                                 />
                             </div>
@@ -208,12 +208,12 @@ export default async function SettingsPage() {
                         {['Facebook', 'Instagram', 'YouTube', 'TikTok', 'Twitter', 'LinkedIn'].map((social) => (
                             <div key={social} className="flex flex-col gap-2">
                                 <Label htmlFor={social.toLowerCase()} className="text-xs font-bold uppercase tracking-widest text-text-muted">{social} URL</Label>
-                                <Input 
-                                    id={social.toLowerCase()} 
-                                    name={social.toLowerCase()} 
+                                <Input
+                                    id={social.toLowerCase()}
+                                    name={social.toLowerCase()}
                                     placeholder={`https://${social.toLowerCase()}.com/...`}
-                                    defaultValue={settings[social.toLowerCase()]} 
-                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-xs" 
+                                    defaultValue={settings[social.toLowerCase()]}
+                                    className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-xs"
                                 />
                             </div>
                         ))}
@@ -232,36 +232,36 @@ export default async function SettingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="shipping_inside_dhaka" className="text-xs font-bold uppercase tracking-widest text-text-muted">Shipping (Inside Dhaka) ৳</Label>
-                            <Input 
-                                id="shipping_inside_dhaka" 
-                                name="shipping_inside_dhaka" 
+                            <Input
+                                id="shipping_inside_dhaka"
+                                name="shipping_inside_dhaka"
                                 type="number"
                                 placeholder="60"
-                                defaultValue={settings.shipping_inside_dhaka || '60'} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.shipping_inside_dhaka || '60'}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="shipping_outside_dhaka" className="text-xs font-bold uppercase tracking-widest text-text-muted">Shipping (Outside Dhaka) ৳</Label>
-                            <Input 
-                                id="shipping_outside_dhaka" 
-                                name="shipping_outside_dhaka" 
+                            <Input
+                                id="shipping_outside_dhaka"
+                                name="shipping_outside_dhaka"
                                 type="number"
                                 placeholder="120"
-                                defaultValue={settings.shipping_outside_dhaka || '120'} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.shipping_outside_dhaka || '120'}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="vat_percentage" className="text-xs font-bold uppercase tracking-widest text-text-muted">VAT Percentage (%)</Label>
-                            <Input 
-                                id="vat_percentage" 
-                                name="vat_percentage" 
+                            <Input
+                                id="vat_percentage"
+                                name="vat_percentage"
                                 type="number"
                                 step="0.01"
                                 placeholder="0"
-                                defaultValue={settings.vat_percentage || '0'} 
-                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold" 
+                                defaultValue={settings.vat_percentage || '0'}
+                                className="h-12 bg-bg-void/40 border-primary-500/10 focus:border-primary-500 text-white font-bold"
                             />
                         </div>
                     </div>
@@ -273,7 +273,7 @@ export default async function SettingsPage() {
                         <Save size={24} /> Save Calculations
                     </Button>
                 </div>
-            </form>
+            </SettingsForm>
         </div>
     )
 }

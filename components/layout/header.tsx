@@ -43,8 +43,9 @@ export function Header({ user }: HeaderProps = {}) {
   const navLinks = [
     { name: 'Categories', href: '/categories' },
     { name: 'Products', href: '/products' },
-    { name: 'Deals', href: '/#featured' },
+    { name: 'New Arrivals', href: '/#new-arrivals' },
     { name: 'Contact', href: '/contact' },
+    { name: 'Saved', href: '/wishlist' },
   ]
 
   return (
@@ -106,10 +107,10 @@ export function Header({ user }: HeaderProps = {}) {
 
         {/* Actions */}
         <div className="flex items-center gap-2 lg:gap-4">
-          <Link href="/products" className="p-2 text-text-secondary hover:text-primary-400 transition-all hover:bg-primary-500/5 rounded-lg border border-transparent hover:border-primary-500/10">
+          <Link href="/products" aria-label="Search products" className="p-2 text-text-secondary hover:text-primary-400 transition-all hover:bg-primary-500/5 rounded-lg border border-transparent hover:border-primary-500/10">
             <Search size={18} />
           </Link>
-          <Link href="/cart" className="relative p-2 text-text-secondary hover:text-primary-400 transition-all hover:bg-primary-500/5 rounded-lg border border-transparent hover:border-primary-500/10">
+          <Link href="/cart" aria-label={`Shopping cart, ${cartCount} items`} className="relative p-2 text-text-secondary hover:text-primary-400 transition-all hover:bg-primary-500/5 rounded-lg border border-transparent hover:border-primary-500/10">
             <ShoppingCart size={18} />
             {cartCount > 0 && (
               <span className="absolute top-1 right-1 w-4 h-4 bg-primary-500 text-bg-void text-[9px] font-bold flex items-center justify-center rounded-sm animate-pulse">
@@ -148,6 +149,8 @@ export function Header({ user }: HeaderProps = {}) {
           {/* Mobile Menu Toggle */}
           <button
             className="md:hidden p-2 text-text-secondary hover:text-primary-400"
+            aria-label="Toggle menu"
+            aria-expanded={isMobileMenuOpen}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}

@@ -12,7 +12,7 @@ export function NewsletterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
-    
+
     setStatus('loading')
     try {
       const response = await fetch('/api/newsletter', {
@@ -25,16 +25,16 @@ export function NewsletterForm() {
 
       if (response.ok) {
         setStatus('success')
-        setMessage("PROTOCOL_SUCCEEDED: UPLINK_ESTABLISHED")
+        setMessage("You are subscribed. Thank you!")
         setEmail('')
       } else {
         throw new Error(data.error || 'Failed to subscribe')
       }
-    } catch (error: any) {
+    } catch (error) {
       setStatus('error')
-      setMessage(`PROTOCOL_FAILURE: ${error.message || "UPLINK_TERMINATED"}`)
+      setMessage(error instanceof Error ? error.message : 'Could not subscribe. Please retry.')
     }
-    
+
     setTimeout(() => {
       setStatus('idle')
       setMessage('')
@@ -45,9 +45,10 @@ export function NewsletterForm() {
     <div className="w-full max-w-lg flex flex-col gap-6 font-mono relative">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-0 w-full group">
         <div className="relative flex-grow">
-          <input 
-            type="email" 
-            placeholder="IDENTIFIER@COMM_LINK.ORG" 
+          <input
+            type="email"
+            aria-label="Newsletter email"
+            placeholder="IDENTIFIER@COMM_LINK.ORG"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -57,8 +58,8 @@ export function NewsletterForm() {
           {/* Internal corner decoration */}
           <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary-500/30" />
         </div>
-        
-        <Button 
+
+        <Button
           type="submit"
           disabled={status === 'loading' || status === 'success'}
           className="h-14 px-10 bg-primary-500 text-black font-black text-xs uppercase tracking-[0.2em] hover:bg-white transition-all min-w-[160px] border-l-0 border border-primary-500/20 active:scale-[0.98] relative"
@@ -66,13 +67,13 @@ export function NewsletterForm() {
           {status === 'loading' ? (
             <span className="flex items-center gap-2"><Cpu className="animate-spin w-4 h-4" /> UPLINKING...</span>
           ) : status === 'success' ? (
-            <span className="flex items-center gap-2 text-black"><ShieldCheck className="w-4 h-4" /> SECURED</span>
+            <span className="flex items-center gap-2 text-black"><ShieldCheck className="w-4 h-4" /> Subscribed</span>
           ) : (
-            <span className="flex items-center gap-2 italic">START_UPLINK <Send className="w-3 h-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /></span>
+            <span className="flex items-center gap-2 italic">Subscribe <Send className="w-3 h-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /></span>
           )}
         </Button>
       </form>
-      
+
       {message && (
         <div className="flex items-center gap-3 animate-reveal-up overflow-hidden">
           {status === 'error' ? <AlertCircle className="text-red-500 w-4 h-4 shrink-0" /> : <ShieldCheck className="text-primary-500 w-4 h-4 shrink-0" /> }

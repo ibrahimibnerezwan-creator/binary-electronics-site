@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ShoppingCart, Heart, Share2, Minus, Plus, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useWishlist, writeWishlist } from '@/lib/wishlist'
 import { useCart } from '@/lib/cart-context'
 
 interface AddToCartButtonProps {
@@ -12,21 +13,16 @@ interface AddToCartButtonProps {
     price: number
     image: string
     slug: string
+    stock: number
   }
 }
 
 export function AddToCartButton({ product }: AddToCartButtonProps) {
   const { addItem } = useCart()
   const [quantity, setQuantity] = useState(1)
-  const [wishlisted, setWishlisted] = useState(false)
+  const saved = useWishlist()
+  const wishlisted = saved.includes(product.id)
   const [toast, setToast] = useState<string | null>(null)
-
-  useEffect(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem('binary_wishlist') || '[]') as string[]
-      setWishlisted(stored.includes(product.id))
-    } catch {}
-  }, [product.id])
 
   useEffect(() => {
     if (!toast) return
@@ -35,40 +31,24 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   }, [toast])
 
   const handleAddToCart = () => {
+    if (product.stock < 1) return
     addItem({ ...product, quantity })
     setToast(`Added ${quantity} × ${product.name} to cart`)
   }
 
   const toggleWishlist = () => {
     try {
-      const stored = JSON.parse(localStorage.getItem('binary_wishlist') || '[]') as string[]
-      let next: string[]
-      if (stored.includes(product.id)) {
-        next = stored.filter((id) => id !== product.id)
-        setWishlisted(false)
-        setToast('Removed from wishlist')
-      } else {
-        next = [...stored, product.id]
-        setWishlisted(true)
-        setToast('Added to wishlist')
-      }
-      localStorage.setItem('binary_wishlist', JSON.stringify(next))
+      const next = wishlisted ? saved.filter(id => id !== product.id) : [...saved, product.id]
+      writeWishlist(next)
+      setToast(wishlisted ? 'Removed from wishlist' : 'Added to wishlist')
     } catch {
       setToast('Could not update wishlist')
     }
   }
 
   const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: product.name, url: window.location.href })
-        return
-      }
-      await navigator.clipboard.writeText(window.location.href)
-      setToast('Link copied to clipboard')
-    } catch {
-      setToast('Could not share link')
-    }
+    try { await navigator.clipboard.writeText(window.location.href); setToast('Link copied to clipboard') }
+    catch { setToast('Copy the page address from your browser to share this product.') }
   }
 
   return (
@@ -88,7 +68,8 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
           <span className="w-10 text-center text-sm font-bold">{quantity}</span>
           <button
             type="button"
-            onClick={() => setQuantity((q) => q + 1)}
+            onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+            disabled={quantity >= product.stock}
             aria-label="Increase quantity"
             className="h-10 w-10 flex items-center justify-center hover:text-primary-500"
           >
@@ -102,8 +83,9 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
           size="lg"
           className="flex-grow h-16 gap-3 text-lg font-black uppercase tracking-widest shadow-2xl"
           onClick={handleAddToCart}
+          disabled={product.stock < 1}
         >
-          <ShoppingCart size={24} /> Add to Cart
+          <ShoppingCart size={24} /> {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
         </Button>
         <div className="flex gap-4">
           <Button

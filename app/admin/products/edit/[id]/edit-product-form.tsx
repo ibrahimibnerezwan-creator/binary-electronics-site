@@ -1,5 +1,6 @@
 'use client'
 
+import { uploadImages } from '@/lib/upload-client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Info, Image as ImageIcon, Tag, BarChart2, Save, X, ChevronLeft, Loader2, Plus } from 'lucide-react'
@@ -23,6 +24,9 @@ interface EditProductFormProps {
     sku: string | null
     isFeatured: boolean
     images: string[]
+    warranty?: string | null
+    weight?: string | null
+    specs?: string | null
   }
   categories: { id: string; name: string }[]
   brands: { id: string; name: string }[]
@@ -35,36 +39,13 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
   const [images, setImages] = useState<string[]>(product.images)
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files
-    if (!files || files.length === 0) return
-
+    const files=Array.from(e.target.files || [])
+    if(!files.length)return
+    if(files.length+images.length>5){alert('Choose at most five product images.');return}
     setUploading(true)
-    const formData = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      formData.append('file', files[i])
-    }
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-      if (res.status === 401) {
-        alert('Session expired. Please log in again.')
-        window.location.href = '/admin/login'
-        return
-      }
-      const data = await res.json()
-      if (data.success) {
-        setImages(prev => [...prev, ...data.files.map((f: any) => f.url)])
-      } else {
-        alert(data.error || 'Upload failed')
-      }
-    } catch {
-      alert('Upload failed. Please try again.')
-    } finally {
-      setUploading(false)
-    }
+    try { await uploadImages(files, url => setImages(prev=>[...prev,url])) }
+    catch(e) { alert(e instanceof Error ? e.message : 'Upload failed. Please retry.') }
+    finally { setUploading(false) }
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -124,13 +105,13 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
             <div className="grid grid-cols-1 gap-6">
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Product Name</label>
-                <Input name="name" required defaultValue={product.name} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <Input aria-label="Product name" name="name" required defaultValue={product.name} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
 
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Description</label>
                 <textarea
-                  name="description"
+                  aria-label="Description" name="description"
                   required
                   rows={6}
                   defaultValue={product.description}
@@ -180,25 +161,32 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
             <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:gap-8">
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Regular Price (&#2547;)</label>
-                <Input name="price" type="number" step="0.01" required defaultValue={product.price} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <Input aria-label="Selling price" name="price" min="0.01" type="number" step="0.01" required defaultValue={product.price} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Sale Price (&#2547;)</label>
-                <Input name="comparePrice" type="number" step="0.01" defaultValue={product.comparePrice ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <Input aria-label="Previous price" name="comparePrice" type="number" step="0.01" defaultValue={product.comparePrice ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">SKU Code</label>
-                <Input name="sku" defaultValue={product.sku ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <Input aria-label="SKU" name="sku" defaultValue={product.sku ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Stock Quantity</label>
-                <Input name="stock" type="number" required defaultValue={product.stock} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <Input aria-label="Stock quantity" name="stock" min="0" step="1" type="number" required defaultValue={product.stock} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
             </div>
           </Card>
         </div>
 
         <div className="flex flex-col gap-8">
+          <Card className="p-5 lg:p-8 space-y-5 bg-bg-elevated/30 border-primary-500/5">
+            <label className="block">Warranty<Input name="warranty" maxLength={200} defaultValue={product.warranty || ''} /></label>
+            <label className="block">Weight<Input name="weight" maxLength={100} defaultValue={product.weight || ''} /></label>
+            <label className="block">Specifications (JSON)<textarea aria-label="Specifications (JSON)" name="specs" rows={5} defaultValue={product.specs || '{}'} className="block w-full bg-black border border-primary-500/20 p-3 rounded" /></label>
+            <p className="text-xs text-text-secondary">Example: {`{"Voltage":"12V","Current":"10A"}`}. Selling Price is what the customer pays. A higher Previous Price displays a discount.</p>
+          </Card>
+
           <Card className="p-5 lg:p-8 flex flex-col gap-6 lg:gap-8 bg-bg-elevated/30 border-primary-500/5">
             <div className="flex items-center gap-3 border-b border-primary-500/10 pb-5 lg:pb-6">
               <div className="p-2 rounded-lg glass text-gold-500"><Tag size={18} className="lg:hidden" /><Tag size={20} className="hidden lg:block" /></div>
@@ -208,14 +196,14 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Category</label>
-                <select name="categoryId" defaultValue={product.categoryId ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
+                <select aria-label="Category" name="categoryId" defaultValue={product.categoryId ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
                   <option>Select Category</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Brand</label>
-                <select name="brandId" defaultValue={product.brandId ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
+                <select aria-label="Brand" name="brandId" defaultValue={product.brandId ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
                   <option>Select Brand</option>
                   {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
@@ -232,7 +220,7 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Featured Product</label>
-                <select name="isFeatured" defaultValue={product.isFeatured ? 'true' : 'false'} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
+                <select aria-label="Featured product" name="isFeatured" defaultValue={product.isFeatured ? 'true' : 'false'} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
                   <option value="false">No</option>
                   <option value="true">Yes (Show on Homepage)</option>
                 </select>

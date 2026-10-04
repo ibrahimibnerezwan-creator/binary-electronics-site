@@ -24,17 +24,19 @@ export function ProductGallery({ images }: { images: string[] }) {
             transition={{ duration: 0.4 }}
             className="w-full h-full bg-bg-void/50"
           >
+            <a href={displayImages[active]} target="_blank" rel="noopener noreferrer" aria-label="Open full-size product image">
             <Image
               src={displayImages[active]}
               alt="Product"
               fill
-              className="object-cover"
-            />
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            /></a>
           </motion.div>
         </AnimatePresence>
 
         {/* Zoom Icon */}
-        <div className="absolute bottom-6 right-6 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="pointer-events-none absolute bottom-6 right-6 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity">
           <ZoomIn size={20} />
         </div>
 
@@ -66,6 +68,8 @@ export function ProductGallery({ images }: { images: string[] }) {
             <button
               key={i}
               onClick={() => setActive(i)}
+              aria-label={`Show image ${i + 1}`}
+              aria-pressed={active === i}
               className={cn(
                 'relative aspect-square glass rounded-xl overflow-hidden border-2 transition-all p-2',
                 active === i ? 'border-primary-500' : 'border-transparent opacity-60 hover:opacity-100'

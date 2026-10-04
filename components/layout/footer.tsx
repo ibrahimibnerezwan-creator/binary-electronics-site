@@ -1,5 +1,5 @@
 'use client'
- 
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, Globe, Linkedin } from 'lucide-react'
@@ -40,11 +40,13 @@ export function Footer() {
             </p>
             {socialLinks.length > 0 && (
               <div className="flex items-center gap-4">
-                {socialLinks.map(({ Icon, url }, i) => (
-                  <Link 
-                    key={i} 
-                    href={url} 
-                    target="_blank" 
+                {socialLinks.map(({ Icon, url, label }, i) => (
+                  <Link
+                    key={i}
+                    href={url}
+                    aria-label={label}
+                    rel="noopener noreferrer"
+                    target="_blank"
                     className="w-10 h-10 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all"
                   >
                     <Icon size={18} />
@@ -98,11 +100,11 @@ export function Footer() {
               </li>
               <li className="flex gap-3">
                 <Phone className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">{settings.phone || "+880 1911-857987"}</span>
+                <span className="text-text-secondary">{settings.phone || "Contact us using the enquiry form"}</span>
               </li>
               <li className="flex gap-3">
                 <Mail className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">{settings.email || "support@binary-electronics.com"}</span>
+                <span className="text-text-secondary">{settings.email || "Online enquiries available"}</span>
               </li>
             </ul>
           </div>
@@ -113,10 +115,10 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center gap-6">
             <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Secure Payments:</span>
             <div className="flex items-center gap-4">
-              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-rose-500 tracking-tighter shadow-inner">bKash</div>
-              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-orange-500 tracking-tighter shadow-inner">Nagad</div>
+              {settings.bkash_number && <span>bKash</span>}
+              {settings.nagad_number && <span>Nagad</span>}
               <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-primary-500 tracking-tighter shadow-inner">COD</div>
-              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-white tracking-tighter shadow-inner">VISA/MC</div>
+
             </div>
           </div>
         </div>

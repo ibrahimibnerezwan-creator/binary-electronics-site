@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
 
   const stats = [
     { name: 'Total Revenue', value: totalRevenue, trend: '+12.5%', icon: TrendingUp, color: 'text-green-500' },
-    { name: 'Active Orders', value: orderCount, trend: '+8', icon: ShoppingCart, color: 'text-primary-500' },
+    { name: 'Total Orders', value: orderCount, trend: '+8', icon: ShoppingCart, color: 'text-primary-500' },
     { name: 'Total Customers', value: userCount, trend: '+24', icon: Users, color: 'text-accent-500' },
     { name: 'Total Products', value: productCount, trend: '+12', icon: Package, color: 'text-orange-500' },
   ]
@@ -70,12 +70,7 @@ export default async function AdminDashboard() {
               <div className={cn("p-3 rounded-2xl glass border-primary-500/10", stat.color)}>
                 <stat.icon size={24} />
               </div>
-              <span className={cn(
-                "flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full glass border",
-                stat.trend.startsWith('+') ? "text-green-500 border-green-500/20" : "text-red-500 border-red-500/20"
-              )}>
-                {stat.trend} {stat.trend.startsWith('+') ? <ArrowUpRight size={12}/> : <ArrowDownRight size={12}/>}
-              </span>
+
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{stat.name}</span>
@@ -117,7 +112,7 @@ export default async function AdminDashboard() {
                           </div>
                           <div className="flex flex-col leading-tight">
                              <span className="font-bold text-sm">{order.customerName}</span>
-                             <span className="text-[10px] text-text-muted">{format(order.createdAt, 'mm')} mins ago • {order.paymentMethod}</span>
+                             <span className="text-[10px] text-text-muted">{format(order.createdAt, 'MMM d, yyyy HH:mm')} • {order.paymentMethod}</span>
                           </div>
                        </div>
                        <div className="flex items-center gap-8">

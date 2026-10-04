@@ -73,7 +73,7 @@ export function RegisterForm() {
           <h1 className="text-3xl font-black tracking-tighter text-white uppercase">
             PROFILE <span className="text-primary-500">ENROLLMENT</span>
           </h1>
-          <p className="text-[10px] text-text-muted/60 uppercase tracking-[0.2em]">Initialize Digital ID // Sync to Blockchain Archive</p>
+          <p className="text-[10px] text-text-muted/60 uppercase tracking-[0.2em]">Create an account to save your order details</p>
         </CardHeader>
 
         <CardContent className="px-10 pb-12 mt-4">
@@ -91,7 +91,7 @@ export function RegisterForm() {
               <div className="relative group">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
                 <Input
-                  name="name"
+                  aria-label="Name" name="name"
                   type="text"
                   placeholder="AGENT-001"
                   className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm placeholder:text-text-muted/20"
@@ -107,7 +107,7 @@ export function RegisterForm() {
               <div className="relative group">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
                 <Input
-                  name="phone"
+                  aria-label="Phone" name="phone"
                   type="tel"
                   placeholder="+880-XXXX-XXXX"
                   className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm placeholder:text-text-muted/20"
@@ -123,7 +123,7 @@ export function RegisterForm() {
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
                 <Input
-                  name="email"
+                  aria-label="Email" name="email"
                   type="email"
                   placeholder="IDENTITY@BINARY.IO"
                   className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm placeholder:text-text-muted/20"
@@ -139,12 +139,12 @@ export function RegisterForm() {
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
                 <Input
-                  name="password"
+                  aria-label="Password" name="password"
                   type="password"
                   placeholder="••••••••••••"
                   className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm"
                   required
-                  minLength={6}
+                  minLength={8}
                 />
               </div>
             </div>

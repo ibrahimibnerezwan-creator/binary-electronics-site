@@ -1,7 +1,7 @@
 import { db } from '@/db'
 import { products as productsTable, categories, productImages } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
-import { AdminProductsList } from './products-list'
+import { AdminProductsList, type AdminProduct } from './products-list'
 
 export default async function AdminProductsPage() {
   const products = await db
@@ -21,7 +21,7 @@ export default async function AdminProductsPage() {
     .orderBy(desc(productsTable.createdAt))
 
   // Group images into products (since left join repeats for each image, we just take the first one for the list)
-  const uniqueProducts: any[] = []
+  const uniqueProducts: AdminProduct[] = []
   const seenIds = new Set()
   
   for (const p of products) {

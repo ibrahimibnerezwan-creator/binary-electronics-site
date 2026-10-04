@@ -9,7 +9,7 @@ export default function NotFound() {
       </p>
       <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-6">404</h1>
       <p className="text-text-secondary text-lg mb-10 max-w-md">
-        This page doesn't exist or the product may have been removed.
+        This page doesn&apos;t exist or the product may have been removed.
       </p>
       <Button asChild size="lg" className="rounded-full bg-primary-500 hover:bg-primary-600 text-black px-12 font-semibold">
         <Link href="/products">

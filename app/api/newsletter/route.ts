@@ -1,33 +1,14 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/db'
 import { newsletter } from '@/db/schema'
-import { eq } from 'drizzle-orm'
-import { v4 as uuidv4 } from 'uuid'
-
+import { allowRequest } from '@/lib/rate-limit'
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json()
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!email || !emailRegex.test(email)) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
-    }
-
-    // Check if email already exists
-    const existing = await db.select().from(newsletter).where(eq(newsletter.email, email)).limit(1)
-    if (existing.length > 0) {
-      return NextResponse.json({ message: 'Already subscribed' }, { status: 200 })
-    }
-
-    // Add to newsletter
-    await db.insert(newsletter).values({
-      id: uuidv4(),
-      email,
-      createdAt: new Date(),
-    })
-
-    return NextResponse.json({ message: 'Subscribed successfully' }, { status: 201 })
-  } catch (error) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
+    if (!(await allowRequest(req.headers,'newsletter',15))) return NextResponse.json({error:'Please try again in 15 minutes.'},{status:429})
+    const data = await req.json()
+    const email = typeof data.email === 'string' ? data.email.trim().toLowerCase() : ''
+    if (data.website || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({error:'Enter a valid email address.'},{status:400})
+    await db.insert(newsletter).values({id:crypto.randomUUID(),email,createdAt:new Date()}).onConflictDoNothing()
+    return NextResponse.json({message:'Your subscription is saved.'})
+  } catch { return NextResponse.json({error:'Could not save your subscription. Please try again.'},{status:503}) }
 }

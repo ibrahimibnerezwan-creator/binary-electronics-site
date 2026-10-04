@@ -1,7 +1,10 @@
 'use server'
 
 import { db } from '@/db'
-import { reviews } from '@/db/schema'
+import { reviews, products } from '@/db/schema'
+import { headers } from 'next/headers'
+import { allowRequest } from '@/lib/rate-limit'
+import { eq } from 'drizzle-orm'
 import { getCurrentUser } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 
@@ -18,17 +21,19 @@ export async function submitReview(data: {
   const user = await getCurrentUser()
   const name = user?.name || data.reviewerName?.trim() || 'Anonymous'
 
-  const rating = Math.round(Number(data.rating))
-  if (!rating || rating < 1 || rating > 5) {
+  const rating = Number(data.rating)
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
     return { error: 'Please select a rating from 1 to 5 stars.' }
   }
 
-  const comment = (data.comment || '').trim()
+  const comment = typeof data.comment === 'string' ? data.comment.trim() : ''
   if (comment.length > 2000) {
     return { error: 'Review is too long (max 2000 characters).' }
   }
 
   try {
+    if (!(await allowRequest(await headers(), 'review', 10))) return { error: 'Please wait 15 minutes before submitting another review.' }
+    if (!data.productId || name.length > 120 || !(await db.select({id:products.id}).from(products).where(eq(products.id,data.productId))).length) return {error:'This product is unavailable.'}
     await db.insert(reviews).values({
       id: crypto.randomUUID(),
       productId: data.productId,

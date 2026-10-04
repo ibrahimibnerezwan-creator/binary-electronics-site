@@ -26,6 +26,7 @@ export function DeleteCategoryButton({ categoryId, categoryName, productCount }:
 
     startTransition(async () => {
       setError(null)
+      try {
       const res = await deleteCategory(categoryId)
       if (res && 'error' in res && res.error) {
         setError(res.error)
@@ -33,6 +34,7 @@ export function DeleteCategoryButton({ categoryId, categoryName, productCount }:
         return
       }
       router.refresh()
+      } catch { setError('Could not delete category. Please retry.'); alert('Could not delete category. Please retry.') }
     })
   }
 

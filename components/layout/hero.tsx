@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
-import { motion, AnimatePresence, type Variants } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Cpu, Zap, Activity } from 'lucide-react'
 
 // Placeholder images for electronics
@@ -30,11 +30,7 @@ const heroSlides = [
 export function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [direction, setDirection] = useState(1) 
-  const [reducedMotion, setReducedMotion] = useState(false)
-
-  useEffect(() => {
-    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-  }, [])
+  const reducedMotion = useReducedMotion()
 
   const navigate = useCallback((dir: number) => {
     setDirection(dir)
@@ -232,12 +228,14 @@ export function Hero() {
         {/* Navigation Arrows (Mobile and Desktop) */}
         <div className="absolute bottom-8 right-6 md:right-16 flex items-center gap-2">
           <button
+            aria-label="Previous slide"
             onClick={() => navigate(-1)}
             className="p-4 border border-primary-500/10 hover:border-primary-500/50 text-primary-500/40 hover:text-primary-500 transition-all bg-primary-500/5 backdrop-blur-md"
           >
             <ChevronLeft size={20} />
           </button>
           <button
+            aria-label="Next slide"
             onClick={() => navigate(1)}
             className="p-4 border border-primary-500/10 hover:border-primary-500/50 text-primary-500/40 hover:text-primary-500 transition-all bg-primary-500/5 backdrop-blur-md"
           >
@@ -249,14 +247,14 @@ export function Hero() {
         <div className="absolute bottom-8 left-6 md:left-24 hidden md:flex items-center gap-12 text-[8px] text-primary-500/20 font-black uppercase tracking-[0.5em]">
           <span>Lat: 23.8103° N</span>
           <span>Lon: 90.4125° E</span>
-          <span className="text-primary-500/40">Encryption: AES-SHA-256</span>
+          <span className="text-primary-500/40">Connection: HTTPS</span>
         </div>
       </div>
     </section>
   )
 }
 
-function ArrowRight(props: any) {
+function ArrowRight(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg 
       {...props} 

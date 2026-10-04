@@ -16,6 +16,7 @@ export async function uploadToR2(
   key: string,
   contentType: string
 ) {
+  if (!process.env.CF_PUBLIC_DOMAIN || !process.env.CF_ENDPOINT || !bucketName || !process.env.CF_ACCESS_KEY_ID || !process.env.CF_SECRET_ACCESS_KEY) throw new Error('Media storage is not configured')
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: key,
@@ -28,7 +29,7 @@ export async function uploadToR2(
   // If CF_PUBLIC_DOMAIN is provided, use it. 
   // Otherwise, default to the R2 endpoint structure if applicable, 
   // but usually a public domain is required for browser access.
-  const domain = process.env.CF_PUBLIC_DOMAIN || `https://${bucketName}.r2.cloudflarestorage.com`;
+  const domain = process.env.CF_PUBLIC_DOMAIN!.replace(/\/$/, '');
   
   return `${domain}/${key}`;
 }

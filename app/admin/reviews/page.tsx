@@ -78,13 +78,13 @@ export default async function AdminReviewsPage() {
 
                                    <div className="p-6 rounded-2xl bg-bg-void/40 border border-primary-500/5">
                                        <p className="text-text-secondary leading-relaxed italic italic font-serif text-lg">
-                                           "{review.comment}"
+                                           &ldquo;{review.comment}&rdquo;
                                        </p>
                                    </div>
 
                                    <div className="flex items-center gap-3 text-primary-500/60 font-bold text-[10px] uppercase tracking-widest">
                                        <Package size={14} />
-                                       Purchased: <span className="text-white">{review.productName}</span>
+                                       Product: <span className="text-white">{review.productName}</span>
                                    </div>
                                </div>
 
@@ -97,7 +97,7 @@ export default async function AdminReviewsPage() {
                                        {review.status === 'rejected' && <Badge className="bg-red-500/10 text-red-500 border-red-500/20 w-fit">Rejected</Badge>}
                                    </div>
 
-                                   <ReviewActionButtons reviewId={review.id} status={review.status} />
+                                   <ReviewActionButtons reviewId={review.id} status={review.status} currentReply={review.adminReply} />
 
                                    {review.adminReply && (
                                        <div className="mt-4 p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 flex flex-col gap-2">

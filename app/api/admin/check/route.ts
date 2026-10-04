@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const session = await getSession();
-    if (!session) {
+    if (session?.user?.id !== 'admin-1') {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
     return NextResponse.json({ authenticated: true, user: session.user });

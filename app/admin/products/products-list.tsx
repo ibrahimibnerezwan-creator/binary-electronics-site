@@ -21,18 +21,24 @@ import Link from 'next/link'
 import { formatPrice, cn } from '@/lib/utils'
 import { deleteProduct } from '@/app/admin/actions'
 
+export interface AdminProduct { id: string; name: string; slug: string; sku: string | null; price: number; stock: number; category: string; image: string; status: string }
 interface AdminProductsListProps {
-  products: any[]
+  products: AdminProduct[]
 }
 
 export function AdminProductsList({ products }: AdminProductsListProps) {
   const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('Newest First')
+  const [lowStock, setLowStock] = useState(false)
 
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = products.filter(p => (!lowStock || p.stock < 5) && (
     p.name.toLowerCase().includes(search.toLowerCase()) || 
     p.sku?.toLowerCase().includes(search.toLowerCase()) ||
     p.category.toLowerCase().includes(search.toLowerCase())
-  )
+  ))
+  if (sort === "Price: Low-High") filteredProducts.sort((a,b)=>a.price-b.price)
+  if (sort === "Price: High-Low") filteredProducts.sort((a,b)=>b.price-a.price)
+  if (sort === "Low Stock") filteredProducts.sort((a,b)=>a.stock-b.stock)
 
   return (
     <div className="flex flex-col gap-8">
@@ -59,10 +65,10 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
             />
          </div>
          <div className="flex gap-2 lg:gap-4 w-full lg:w-auto">
-            <Button variant="secondary" className="flex-1 lg:flex-none gap-2 h-11 lg:h-12 rounded-xl border border-primary-500/10 text-xs">
-              <Filter size={16} /> Filters
+            <Button onClick={()=>setLowStock(!lowStock)} aria-pressed={lowStock} variant="secondary" className="flex-1 lg:flex-none gap-2 h-11 lg:h-12 rounded-xl border border-primary-500/10 text-xs">
+              <Filter size={16} /> {lowStock ? "Show all stock" : "Stock below 5"}
             </Button>
-            <select className="flex-1 lg:flex-none h-11 lg:h-12 bg-bg-void/40 border border-primary-500/10 rounded-xl px-3 text-xs font-bold focus:outline-none focus:border-primary-500 cursor-pointer">
+            <select aria-label="Sort products" value={sort} onChange={e=>setSort(e.target.value)} className="flex-1 lg:flex-none h-11 lg:h-12 bg-bg-void/40 border border-primary-500/10 rounded-xl px-3 text-xs font-bold focus:outline-none focus:border-primary-500 cursor-pointer">
                <option>Newest First</option>
                <option>Price: Low-High</option>
                <option>Price: High-Low</option>

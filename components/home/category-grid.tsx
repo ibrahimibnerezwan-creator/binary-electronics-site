@@ -3,8 +3,9 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Laptop, Smartphone, Headphones, Watch, Camera, Cpu, Package, Layers } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   computing: Laptop,
   phones: Smartphone,
   audio: Headphones,
@@ -15,7 +16,7 @@ const iconMap: Record<string, any> = {
 
 const defaultIcon = Package
 
-export function CategoryGrid({ categories }: { categories: any[] }) {
+export function CategoryGrid({ categories }: { categories: { id: string; slug: string; name: string; productCount: number }[] }) {
   return (
     <section className="container mx-auto px-4 py-24 relative overflow-hidden font-mono">
       {/* Decorative Meta-data (Vertical) */}

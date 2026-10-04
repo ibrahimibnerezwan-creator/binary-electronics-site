@@ -1,3 +1,4 @@
+import { publicSettings } from './commerce';
 import { db } from '@/db';
 import { products, categories, productImages, brands, orders, storeSettings, reviews, users } from '@/db/schema';
 import { eq, desc, isNotNull, sql, ne, and, lt } from 'drizzle-orm';
@@ -15,7 +16,7 @@ export interface ProductForCard {
   reviews: number;
 }
 
-export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
+export async function getNewArrivals(limit = 4, featuredFirst = false): Promise<ProductForCard[]> {
   try {
     const rows = await db
       .select({
@@ -25,18 +26,17 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
-        imageUrl: productImages.url,
+        imageUrl: sql<string>`(SELECT url FROM product_images WHERE product_id = ${products.id} ORDER BY sort_order, id LIMIT 1)`,
         categoryName: categories.name,
-        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 0)`,
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
-      .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
       .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
-      .groupBy(products.id, productImages.url)
-      .orderBy(desc(products.createdAt))
-      .limit(limit * 2);
+      .groupBy(products.id)
+      .orderBy(...(featuredFirst ? [desc(products.isFeatured), desc(products.createdAt)] : [desc(products.createdAt)]))
+      .limit(limit);
 
     const seen = new Set<string>();
     const result: ProductForCard[] = [];
@@ -48,7 +48,7 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
         name: row.name,
         slug: row.slug,
         price: row.price,
-        oldPrice: row.comparePrice ?? undefined,
+        oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
@@ -59,7 +59,7 @@ export async function getNewArrivals(limit = 4): Promise<ProductForCard[]> {
     }
     return result;
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -73,18 +73,17 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
-        imageUrl: productImages.url,
+        imageUrl: sql<string>`(SELECT url FROM product_images WHERE product_id = ${products.id} ORDER BY sort_order, id LIMIT 1)`,
         categoryName: categories.name,
-        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 0)`,
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
-      .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
       .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
       .where(isNotNull(products.comparePrice))
-      .groupBy(products.id, productImages.url)
-      .limit(limit * 2);
+      .groupBy(products.id)
+      .limit(limit);
 
     const seen = new Set<string>();
     const result: ProductForCard[] = [];
@@ -96,7 +95,7 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         name: row.name,
         slug: row.slug,
         price: row.price,
-        oldPrice: row.comparePrice ?? undefined,
+        oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
@@ -107,7 +106,7 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
     }
     return result;
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -121,16 +120,15 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
-        imageUrl: productImages.url,
+        imageUrl: sql<string>`(SELECT url FROM product_images WHERE product_id = ${products.id} ORDER BY sort_order, id LIMIT 1)`,
         categoryName: categories.name,
-        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 0)`,
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
-      .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
       .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
-      .groupBy(products.id, productImages.url)
+      .groupBy(products.id)
       .orderBy(desc(products.createdAt));
 
     const seen = new Set<string>();
@@ -143,7 +141,7 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         name: row.name,
         slug: row.slug,
         price: row.price,
-        oldPrice: row.comparePrice ?? undefined,
+        oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
@@ -153,7 +151,7 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
     }
     return result;
   } catch (e) {
-    return [];
+    throw new Error("Catalogue unavailable. Please try again.");
   }
 }
 
@@ -177,7 +175,7 @@ export async function getCategoryBySlug(slug: string) {
       where: eq(categories.slug, slug),
     });
   } catch (e) {
-    return null;
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -191,18 +189,17 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
-        imageUrl: productImages.url,
+        imageUrl: sql<string>`(SELECT url FROM product_images WHERE product_id = ${products.id} ORDER BY sort_order, id LIMIT 1)`,
         categoryName: categories.name,
-        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 0)`,
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
-      .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
       .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
       .where(eq(products.categoryId, categoryId))
-      .groupBy(products.id, productImages.url)
-      .limit(limit * 2);
+      .groupBy(products.id)
+      .limit(limit);
 
     const seen = new Set<string>();
     const result: ProductForCard[] = [];
@@ -214,7 +211,7 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         name: row.name,
         slug: row.slug,
         price: row.price,
-        oldPrice: row.comparePrice ?? undefined,
+        oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
@@ -224,7 +221,7 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
     }
     return result;
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -246,7 +243,7 @@ export async function getProductBySlug(slug: string) {
     // Fetch aggregate rating
     const ratingResult = await db
       .select({
-        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 0)`,
         count: sql<number>`COUNT(*)`,
       })
       .from(reviews)
@@ -263,7 +260,7 @@ export async function getProductBySlug(slug: string) {
       reviewsCount: ratingResult[0].count,
     };
   } catch (e) {
-    return null;
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -279,18 +276,17 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
-        imageUrl: productImages.url,
+        imageUrl: sql<string>`(SELECT url FROM product_images WHERE product_id = ${products.id} ORDER BY sort_order, id LIMIT 1)`,
         categoryName: categories.name,
-        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 5)`,
+        avgRating: sql<number>`COALESCE(AVG(${reviews.rating}), 0)`,
         reviewCount: sql<number>`COUNT(${reviews.id})`,
       })
       .from(products)
-      .leftJoin(productImages, eq(productImages.productId, products.id))
       .leftJoin(categories, eq(categories.id, products.categoryId))
       .leftJoin(reviews, and(eq(reviews.productId, products.id), eq(reviews.status, 'approved')))
       .where(and(eq(products.categoryId, categoryId), ne(products.id, currentProductId)))
-      .groupBy(products.id, productImages.url)
-      .limit(limit * 2);
+      .groupBy(products.id)
+      .limit(limit);
 
     const seen = new Set<string>();
     const result: ProductForCard[] = [];
@@ -302,7 +298,7 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         name: row.name,
         slug: row.slug,
         price: row.price,
-        oldPrice: row.comparePrice ?? undefined,
+        oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
         category: row.categoryName || 'Uncategorized',
         stock: row.stock,
@@ -313,7 +309,7 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
     }
     return result;
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -332,7 +328,7 @@ export async function getProductReviews(productId: string) {
       .where(and(eq(reviews.productId, productId), eq(reviews.status, 'approved')))
       .orderBy(desc(reviews.createdAt));
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -340,9 +336,9 @@ export async function getProductReviews(productId: string) {
 
 export async function getAllOrders() {
   try {
-    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+    return await db.query.orders.findMany({ orderBy: desc(orders.createdAt), with: { items: { with: { product: true } } } });
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -350,7 +346,7 @@ export async function getRecentOrders(limit = 5) {
   try {
     return await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(limit);
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -358,7 +354,7 @@ export async function getAllCategories() {
   try {
     return await db.select().from(categories).orderBy(categories.name);
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -379,15 +375,15 @@ export async function getAllReviews() {
       .leftJoin(products, eq(reviews.productId, products.id))
       .orderBy(desc(reviews.createdAt));
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
 export async function getUsers() {
   try {
-    return await db.select().from(users).orderBy(desc(users.createdAt));
+    return await db.select({ id: users.id, name: users.name, email: users.email, phone: users.phone, address: users.address, city: users.city, createdAt: users.createdAt }).from(users).orderBy(desc(users.createdAt));
   } catch (e) {
-    return [];
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -399,8 +395,12 @@ export async function getStoreSettings() {
       return acc;
     }, {} as Record<string, string>);
   } catch (e) {
-    return {};
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
+}
+
+export async function getPublicStoreSettings() {
+  return publicSettings(await getStoreSettings());
 }
 
 export async function getStoreSetting(key: string, defaultValue = '') {
@@ -408,7 +408,7 @@ export async function getStoreSetting(key: string, defaultValue = '') {
     const result = await db.select().from(storeSettings).where(eq(storeSettings.key, key)).limit(1);
     return result.length > 0 ? result[0].value : defaultValue;
   } catch (e) {
-    return defaultValue;
+    throw new Error('Store data could not be loaded. Please retry.', { cause: e });
   }
 }
 
@@ -429,7 +429,7 @@ export async function getUserCount() {
 }
 
 export async function getTotalRevenue() {
-  const result = await db.select({ sum: sql<number>`sum(${orders.total})` }).from(orders);
+  const result = await db.select({ sum: sql<number>`sum(${orders.total})` }).from(orders).where(and(eq(orders.paymentStatus, 'PAID'), ne(orders.status, 'CANCELLED'), ne(orders.status, 'RETURNED')));
   return result[0].sum || 0;
 }
 

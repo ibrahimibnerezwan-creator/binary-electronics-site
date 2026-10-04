@@ -10,21 +10,22 @@ import { Badge } from '@/components/ui/badge'
 import { formatPrice, cn } from '@/lib/utils'
 import { FeaturedProducts } from '@/components/home/featured-products'
 
-import { getProductBySlug, getRelatedProducts, getProductReviews, getStoreSettings } from '@/lib/data'
+import { getProductBySlug, getRelatedProducts, getProductReviews, getPublicStoreSettings } from '@/lib/data'
 import { getCurrentUser } from '@/lib/auth'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const [product, settings] = await Promise.all([
     getProductBySlug(slug),
-    getStoreSettings()
+    getPublicStoreSettings()
   ])
   
   const storeName = settings.storeName || 'Binary Electronics'
   if (!product) return { title: `Product Not Found | ${storeName}` }
   
   return {
-    title: `${product.name} | ${storeName}`,
+    title: product.name,
+    alternates: { canonical: `/product/${product.slug}` },
     description: product.description,
     openGraph: {
       images: product.images?.[0] ? [product.images[0]] : [],
@@ -50,7 +51,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="flex items-center gap-2 text-[10px] md:text-xs text-text-muted mb-6 md:mb-8 uppercase tracking-widest font-bold overflow-x-auto whitespace-nowrap scrollbar-hide">
           <Link href="/products" className="hover:text-primary-500 transition-colors shrink-0">Store</Link>
           <span className="shrink-0">/</span>
-          <Link href={`/category/${product.category?.slug}`} className="hover:text-primary-500 transition-colors uppercase shrink-0">{product.categoryName}</Link>
+          <Link href={product.category?.slug ? `/category/${product.category.slug}` : "/products"} className="hover:text-primary-500 transition-colors uppercase shrink-0">{product.categoryName}</Link>
           <span className="shrink-0">/</span>
           <span className="text-text-primary truncate">{product.name}</span>
         </div>
@@ -84,12 +85,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 <span className="text-2xl md:text-3xl font-black text-primary-500">
                   {formatPrice(product.price)}
                 </span>
-                {product.comparePrice && (
+                {product.comparePrice && product.comparePrice > product.price && (
                   <span className="text-lg md:text-xl text-text-muted line-through">
                     {formatPrice(product.comparePrice)}
                   </span>
                 )}
-                {product.comparePrice && (
+                {product.comparePrice && product.comparePrice > product.price && (
                   <Badge variant="destructive" className="rounded-md text-[9px] md:text-[10px]">
                    -{Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}%
                   </Badge>
@@ -98,7 +99,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <p className="text-sm md:text-lg text-text-secondary leading-relaxed border-l-2 border-primary-500/20 pl-4 md:pl-6">
-              {product.description}
+              {product.description.replace(/\\r?\\n/g, '\n')}
             </p>
 
             {/* Quick Stats Grid */}
@@ -106,17 +107,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <div className="flex flex-col items-center text-center gap-1.5 md:gap-2">
                  <Shield className="w-4 h-4 md:w-5 md:h-5 text-primary-500" />
                  <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Warranty</span>
-                 <span className="text-[10px] md:text-xs font-bold">{product.warranty}</span>
+                 <span className="text-[10px] md:text-xs font-bold">{product.warranty || 'Ask the store'}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 md:gap-2 sm:border-l border-primary-500/10">
                  <Truck className="w-4 h-4 md:w-5 md:h-5 text-accent-500" />
                  <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Delivery</span>
-                 <span className="text-[10px] md:text-xs font-bold">Free Shipping</span>
+                 <span className="text-[10px] md:text-xs font-bold">At checkout</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 md:gap-2 md:border-l border-primary-500/10 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l">
                  <RefreshCcw className="w-4 h-4 md:w-5 md:h-5 text-gold-500" />
                  <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Returns</span>
-                 <span className="text-[10px] md:text-xs font-bold">7 Days</span>
+                 <span className="text-[10px] md:text-xs font-bold">Ask the store</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 md:gap-2 md:border-l border-primary-500/10 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l">
                  <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary-500" />
@@ -134,7 +135,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 name: product.name,
                 price: product.price,
                 image: product.images[0],
-                slug: product.slug
+                slug: product.slug,
+                stock: product.stock
               }} 
             />
 
@@ -210,7 +212,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <div className="container mx-auto px-4 py-20 border-t border-primary-500/5">
         <h3 className="text-2xl font-display font-black uppercase mb-12">Related <span className="text-gradient">Products</span></h3>
-        <FeaturedProducts products={relatedProducts as any} noLayout />
+        <FeaturedProducts products={relatedProducts} noLayout />
       </div>
 
     </div>

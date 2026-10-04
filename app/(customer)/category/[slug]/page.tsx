@@ -3,7 +3,7 @@ import { ProductCard } from '@/components/home/featured-products'
 import { Button } from '@/components/ui/button'
 import { Search, Filter, SlidersHorizontal, Cpu, Network, ShieldCheck, Zap, Activity } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { getCategoryBySlug, getProductsByCategory, getStoreSettings } from '@/lib/data'
+import { getCategoryBySlug, getProductsByCategory, getPublicStoreSettings } from '@/lib/data'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 
@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const [category, settings] = await Promise.all([
     getCategoryBySlug(slug),
-    getStoreSettings()
+    getPublicStoreSettings()
   ])
   
   const storeName = settings.storeName || 'Binary Electronics'
@@ -117,15 +117,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
           {/* Product Grid */}
           <div className="lg:col-span-3">
-            {/* Mobile Controls */}
-            <div className="flex lg:hidden gap-4 mb-12">
-              <Button className="flex-grow bg-white/5 border border-primary-500/10 rounded-none h-14 gap-4 text-xs font-bold tracking-[0.3em] uppercase">
-                <Search size={18} className="text-primary-500" /> QUERY
-              </Button>
-              <Button className="flex-grow bg-white/5 border border-accent-500/10 rounded-none h-14 gap-4 text-xs font-bold tracking-[0.3em] uppercase text-accent-500">
-                <SlidersHorizontal size={18} /> FILTER
-              </Button>
-            </div>
+            <Link href={`/products?category=${encodeURIComponent(category.slug)}`} className="inline-block mb-8 p-3 border border-primary-500/30 text-primary-500">Search, sort and filter this category</Link>
 
             {products.length === 0 ? (
               <div className="py-32 text-center border border-dashed border-primary-500/20 bg-primary-500/5 relative overflow-hidden">
@@ -133,7 +125,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 <div className="relative z-10 flex flex-col items-center gap-6">
                   <Cpu size={48} className="text-primary-500/20 animate-pulse" />
                   <p className="text-text-muted font-bold uppercase tracking-[0.5em] text-sm">NO_ASSETS_FOUND_IN_SECTOR</p>
-                  <Button variant="outline" className="rounded-none border-primary-500/20 text-xs uppercase tracking-widest px-8">REFRESH_NODE</Button>
+                  <Link href="/products" className="text-primary-500 underline">Browse all products</Link>
                 </div>
               </div>
             ) : (

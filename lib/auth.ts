@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -10,7 +10,10 @@ function getSecretKey() {
   return new TextEncoder().encode(secret)
 }
 
-export async function encrypt(payload: any) {
+interface SessionUser { id: string; email: string; name: string }
+interface SessionPayload extends JWTPayload { user?: SessionUser; expires?: Date }
+
+export async function encrypt(payload: JWTPayload) {
   const key = getSecretKey()
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
@@ -19,12 +22,12 @@ export async function encrypt(payload: any) {
     .sign(key)
 }
 
-export async function decrypt(input: string): Promise<any> {
+export async function decrypt(input: string): Promise<SessionPayload> {
   const key = getSecretKey()
   const { payload } = await jwtVerify(input, key, {
     algorithms: ['HS256'],
   })
-  return payload
+  return payload as SessionPayload
 }
 
 export async function login(user: { id: string; email: string; name: string }) {
@@ -40,14 +43,14 @@ export async function login(user: { id: string; email: string; name: string }) {
 export async function logout() {
   // Destroy the session
   const cookieStore = await cookies()
-  cookieStore.set('session', '', { expires: new Date(0) })
+  cookieStore.set('session', '', { expires: new Date(0), path: '/', httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' })
 }
 
 export async function getSession() {
   const cookieStore = await cookies()
   const session = cookieStore.get('session')?.value
   if (!session) return null
-  return await decrypt(session)
+  try { return await decrypt(session) } catch { return null }
 }
 
 export async function getCurrentUser() {

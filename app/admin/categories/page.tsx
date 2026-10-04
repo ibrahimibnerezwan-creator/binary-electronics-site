@@ -98,6 +98,7 @@ export default async function AdminCategoriesPage() {
                                                         <ChevronRight size={18} />
                                                     </div>
                                                 </Link>
+                                                <Link href={`/admin/categories/edit/${category.id}`} className="text-primary-500 underline text-sm">Edit</Link>
                                                 <DeleteCategoryButton
                                                     categoryId={category.id}
                                                     categoryName={category.name}

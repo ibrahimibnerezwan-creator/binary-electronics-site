@@ -89,7 +89,7 @@ export function LoginForm() {
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
                 <Input
-                  name="email"
+                  aria-label="Email" autoComplete="email" name="email"
                   type="email"
                   placeholder="USER@NETWORK.LOCAL"
                   className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm placeholder:text-text-muted/20"
@@ -101,12 +101,12 @@ export function LoginForm() {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-widest text-text-muted/80">
                 <span>[ PASSCODE ]</span>
-                <Link href="/login" className="text-primary-500 hover:text-primary-400 transition-colors">LOST_ACCESS?</Link>
+                <Link href="/contact" className="text-primary-500 hover:text-primary-400 transition-colors">CONTACT SUPPORT</Link>
               </div>
               <div className="relative group">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted/40 group-focus-within:text-primary-500 transition-colors" size={16} />
                 <Input
-                  name="password"
+                  aria-label="Password" autoComplete="current-password" name="password"
                   type="password"
                   placeholder="••••••••"
                   className="pl-12 bg-white/5 border-primary-500/10 focus:border-primary-500/50 focus:ring-primary-500/20 text-sm"
@@ -126,16 +126,6 @@ export function LoginForm() {
               <ArrowRight className="w-4 h-4" />
             </Button>
           </form>
-
-          <div className="relative my-8 border-t border-primary-500/10 flex justify-center">
-            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4 text-[10px] font-bold text-text-muted/30 uppercase tracking-[0.3em]">External Modules</span>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-             <Button variant="outline" className="border-primary-500/10 hover:border-primary-400/50 hover:bg-primary-500/5 text-primary-500/70 text-xs tracking-widest uppercase transition-all duration-300 gap-2">
-               <Github size={16} /> Protocol: GITHUB
-             </Button>
-          </div>
 
           <div className="mt-10 pt-4 border-t border-primary-500/10 text-center">
             <p className="text-[11px] text-text-muted/40 uppercase tracking-widest flex items-center justify-center gap-2">

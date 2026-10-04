@@ -3,14 +3,17 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, XCircle, Reply, Loader2 } from 'lucide-react'
-import { updateReviewStatus } from './actions'
+import { updateReviewStatus, replyToReview } from './actions'
 
 interface ReviewActionButtonsProps {
   reviewId: string
   status: string | null
+  currentReply?: string | null
 }
 
-export function ReviewActionButtons({ reviewId, status }: ReviewActionButtonsProps) {
+export function ReviewActionButtons({ reviewId, status, currentReply }: ReviewActionButtonsProps) {
+  const [reply, setReply] = useState(currentReply || '')
+  const [message, setMessage] = useState('')
   const [loading, setLoading] = useState<string | null>(null)
 
   const handleAction = async (newStatus: 'approved' | 'rejected') => {
@@ -19,14 +22,16 @@ export function ReviewActionButtons({ reviewId, status }: ReviewActionButtonsPro
     }
     setLoading(newStatus)
     try {
-      await updateReviewStatus(reviewId, newStatus)
-    } finally {
+      const result = await updateReviewStatus(reviewId, newStatus)
+      if (!result.success) alert(result.error || 'Could not update review')
+    } catch { alert('Could not update review. Please retry.') } finally {
       setLoading(null)
     }
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
       {status !== 'approved' && (
         <Button 
           size="sm" 
@@ -49,6 +54,18 @@ export function ReviewActionButtons({ reviewId, status }: ReviewActionButtonsPro
            {loading === 'rejected' ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />} Reject
         </Button>
       )}
+      </div>
+      <form className="space-y-2" onSubmit={async e => {
+        e.preventDefault(); setLoading('reply'); setMessage('')
+        try { const result = await replyToReview(reviewId, reply); setMessage(result.success ? 'Reply saved.' : result.error || 'Could not save reply.') }
+        catch { setMessage('Could not save reply. Please retry.') }
+        finally { setLoading(null) }
+      }}>
+        <label className="block text-sm" htmlFor={`reply-${reviewId}`}>Store reply</label>
+        <textarea id={`reply-${reviewId}`} value={reply} onChange={e => setReply(e.target.value)} required maxLength={2000} className="w-full rounded-lg border p-2 bg-bg-void" />
+        <Button type="submit" disabled={!!loading} size="sm"><Reply size={14} /> Save reply</Button>
+        {message && <p role="status" className="text-sm">{message}</p>}
+      </form>
     </div>
   )
 }

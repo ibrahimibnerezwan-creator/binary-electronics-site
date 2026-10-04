@@ -1,4 +1,4 @@
-import { getStoreSettings } from '@/lib/data'
+import { getPublicStoreSettings } from '@/lib/data'
 import { getCurrentUser } from '@/lib/auth'
 import CheckoutClient from './checkout-client'
 
@@ -6,11 +6,11 @@ import CheckoutClient from './checkout-client'
 export const dynamic = 'force-dynamic'
 
 export default async function CheckoutPage() {
-    const settings = await getStoreSettings()
+    const settings = await getPublicStoreSettings()
     const user = await getCurrentUser()
 
     return (
-        <div className="min-h-screen py-12 relative overflow-hidden">
+        <div className="min-h-screen pt-28 pb-12 relative overflow-hidden">
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-primary-500/5 rounded-full blur-[160px] pointer-events-none -z-10" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent-500/5 rounded-full blur-[140px] pointer-events-none -z-10" />

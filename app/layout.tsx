@@ -7,15 +7,15 @@ const sora = Sora({ subsets: ['latin'], variable: '--font-display' })
 const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
-import { getStoreSettings } from '@/lib/data'
+import { getPublicStoreSettings } from '@/lib/data'
 
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getStoreSettings()
+  const settings = await getPublicStoreSettings()
   const storeName = settings.storeName || 'Binary Electronics'
   const storeDescription = settings.storeDescription || 'Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered. Best tech prices in Bangladesh.'
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://binary-electronics-site.vercel.app'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://binaryelectronics.shopbd.app'
 
   return {
     metadataBase: new URL(siteUrl),

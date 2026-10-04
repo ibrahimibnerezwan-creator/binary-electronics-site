@@ -7,7 +7,7 @@ import { getNewArrivals, getAllCategoriesWithCount } from '@/lib/data'
 export const revalidate = 60;
 
 export default async function Home() {
-  const products = await getNewArrivals(8);
+  const products = await getNewArrivals(8, true);
   const categories = await getAllCategoriesWithCount();
   
   return (
@@ -32,17 +32,17 @@ export default async function Home() {
             <div className="h-[1px] w-8 bg-primary-500/30" />
           </div>
           <h2 className="text-3xl md:text-5xl font-display font-black mb-8 max-w-4xl mx-auto leading-tight uppercase tracking-tighter">
-            "TRUSTED BY <span className="text-gradient">OVER 10,000+</span> TECH ENTHUSIASTS ACROSS BANGLADESH"
+            ELECTRONICS FOR <span className="text-gradient">YOUR NEXT</span> PROJECT
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 mt-12 max-w-3xl mx-auto">
             <div className="flex flex-col items-center">
-              <span className="text-4xl md:text-5xl font-black text-primary-500 tracking-tighter">24H</span>
+              <span className="text-4xl md:text-5xl font-black text-primary-500 tracking-tighter">SUPPORT</span>
               <span className="text-[10px] uppercase font-bold text-text-muted mt-2 tracking-[0.3em]">System_Support</span>
             </div>
             <div className="hidden sm:block w-[1px] h-12 bg-primary-500/20 self-center" />
             <div className="flex flex-col items-center">
-              <span className="text-4xl md:text-5xl font-black text-accent-500 tracking-tighter">100%</span>
-              <span className="text-[10px] uppercase font-bold text-text-muted mt-2 tracking-[0.3em]">Verified_Hardware</span>
+              <span className="text-4xl md:text-5xl font-black text-accent-500 tracking-tighter">TECH</span>
+              <span className="text-[10px] uppercase font-bold text-text-muted mt-2 tracking-[0.3em]">Electronics_&_Parts</span>
             </div>
             <div className="hidden sm:block w-[1px] h-12 bg-primary-500/20 self-center" />
             <div className="flex flex-col items-center">
@@ -53,7 +53,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="py-12 md:py-0">
+      <div id="new-arrivals" className="py-12 md:py-0 scroll-mt-24">
         <FeaturedProducts products={products} />
       </div>
 
