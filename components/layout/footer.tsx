@@ -1,128 +1,148 @@
-'use client'
-
-import Link from 'next/link'
-import Image from 'next/image'
-import { Facebook, Twitter, Instagram, Youtube, MapPin, Phone, Mail, Globe, Linkedin } from 'lucide-react'
-import { useSettings } from '@/lib/settings-context'
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Facebook,
+  Instagram,
+  Youtube,
+  Twitter,
+  Linkedin,
+  Globe,
+  MapPin,
+  Mail,
+  Phone,
+} from "lucide-react";
+import { useSettings } from "@/lib/settings-context";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
-  const settings = useSettings()
-
-  const socialLinks = [
-    { Icon: Facebook, url: settings.facebook, label: 'Facebook' },
-    { Icon: Instagram, url: settings.instagram, label: 'Instagram' },
-    { Icon: Youtube, url: settings.youtube, label: 'YouTube' },
-    { Icon: Twitter, url: settings.twitter, label: 'Twitter' },
-    { Icon: Globe, url: settings.tiktok, label: 'TikTok' },
-    { Icon: Linkedin, url: settings.linkedin, label: 'LinkedIn' },
-  ].filter(link => link.url && link.url !== '#' && link.url !== '')
-
+  const settings = useSettings();
+  const socials = [
+    { Icon: Facebook, url: settings.facebook, label: "Facebook" },
+    { Icon: Instagram, url: settings.instagram, label: "Instagram" },
+    { Icon: Youtube, url: settings.youtube, label: "YouTube" },
+    { Icon: Twitter, url: settings.twitter, label: "Twitter" },
+    { Icon: Linkedin, url: settings.linkedin, label: "LinkedIn" },
+    { Icon: Globe, url: settings.tiktok, label: "TikTok" },
+  ].filter((item) => item.url && item.url !== "#");
   return (
-    <footer className="relative bg-bg-void pt-20 pb-10 overflow-hidden">
-      {/* Glow Effect */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/2 bg-primary-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          {/* Brand */}
-          <div className="flex flex-col gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="relative w-10 h-10">
-                <Image src="/logo.png" alt={settings.storeName || "Binary Electronics"} fill className="object-contain" />
-              </div>
-              <span className="text-2xl font-display font-bold text-gradient">
-                {settings.storeName?.split(' ')[0] || "BINARY"}
+    <footer className="sf-footer">
+      <div className="sf-wrap">
+        <div className="sf-footer-grid">
+          <div className="sf-footer-brand">
+            <Link
+              href="/"
+              className="sf-brand"
+              aria-label={settings.storeName || "Binary Electronics"}
+            >
+              <span className="sf-brand-image">
+                <Image src="/logo.png" alt="" fill sizes="43px" />
+              </span>
+              <span className="sf-brand-name">
+                <strong>{settings.storeName?.split(" ")[0] || "Binary"}</strong>
+                <small>Electronics</small>
               </span>
             </Link>
-            <p className="text-text-secondary leading-relaxed">
-              {settings.storeDescription || "Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered."}
+            <p>
+              Practical electronics. New possibilities.
+              <br />
+              Find components and power solutions for the things you want to
+              build.
             </p>
-            {socialLinks.length > 0 && (
-              <div className="flex items-center gap-4">
-                {socialLinks.map(({ Icon, url, label }, i) => (
-                  <Link
-                    key={i}
-                    href={url}
-                    aria-label={label}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className="w-10 h-10 rounded-full glass border border-primary-500/10 flex items-center justify-center text-text-secondary hover:text-primary-500 hover:border-primary-500/30 transition-all"
-                  >
-                    <Icon size={18} />
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Links */}
-          <div>
-            <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Quick Links</h4>
-            <ul className="flex flex-col gap-3">
-              {[
-                { name: 'Home', href: '/' },
-                { name: 'New Arrivals', href: '/#new-arrivals' },
-                { name: 'Categories', href: '/categories' },
-                { name: 'Products', href: '/products' },
-              ].map((item) => (
-                <li key={item.name}>
-                  <Link href={item.href} className="text-text-secondary hover:text-primary-500 transition-colors">{item.name}</Link>
-                </li>
+            <div className="sf-socials">
+              {socials.map(({ Icon, url, label }) => (
+                <a
+                  key={label}
+                  href={url}
+                  aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icon size={18} />
+                </a>
               ))}
+            </div>
+          </div>
+          <div>
+            <h3>Explore</h3>
+            <ul>
+              <li>
+                <Link href="/products">All products</Link>
+              </li>
+              <li>
+                <Link href="/categories">Shop by category</Link>
+              </li>
+              <li>
+                <Link href="/#new-arrivals">New arrivals</Link>
+              </li>
+              <li>
+                <Link href="/wishlist">Saved products</Link>
+              </li>
+              <li>
+                <Link href="/about">About Binary</Link>
+              </li>
             </ul>
           </div>
-
-          {/* Support */}
           <div>
-            <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Support</h4>
-            <ul className="flex flex-col gap-3">
-              {[
-                { name: 'Contact Us', href: '/contact' },
-                { name: 'Shipping Policy', href: '/shipping-policy' },
-                { name: 'Privacy Policy', href: '/privacy-policy' },
-                { name: 'About Us', href: '/about' },
-              ].map((item) => (
-                <li key={item.name}>
-                  <Link href={item.href} className="text-text-secondary hover:text-primary-500 transition-colors">{item.name}</Link>
-                </li>
-              ))}
+            <h3>Here to help</h3>
+            <ul>
+              <li>
+                <Link href="/contact">Contact us</Link>
+              </li>
+              <li>
+                <Link href="/shipping-policy">Delivery information</Link>
+              </li>
+              <li>
+                <Link href="/privacy-policy">Privacy policy</Link>
+              </li>
+              <li>
+                <Link href="/login">Your account</Link>
+              </li>
+              <li>
+                <Link href="/cart">Shopping cart</Link>
+              </li>
             </ul>
           </div>
-
-          {/* Contact */}
           <div>
-            <h4 className="text-lg font-display font-bold mb-6 text-text-primary">Contact Us</h4>
-            <ul className="flex flex-col gap-6">
-              <li className="flex gap-3">
-                <MapPin className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">{settings.address || "Level-5, Multiplan Center, Dhaka, Bangladesh"}</span>
-              </li>
-              <li className="flex gap-3">
-                <Phone className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">{settings.phone || "Contact us using the enquiry form"}</span>
-              </li>
-              <li className="flex gap-3">
-                <Mail className="text-primary-500 shrink-0" size={20} />
-                <span className="text-text-secondary">{settings.email || "Online enquiries available"}</span>
+            <h3>Let’s connect</h3>
+            <ul>
+              {settings.address && (
+                <li className="sf-footer-address">
+                  <MapPin size={16} />
+                  <span>{settings.address}</span>
+                </li>
+              )}
+              {settings.phone && (
+                <li className="sf-footer-address">
+                  <Phone size={16} />
+                  <a href={`tel:${settings.phone}`}>{settings.phone}</a>
+                </li>
+              )}
+              {settings.email && (
+                <li className="sf-footer-address">
+                  <Mail size={16} />
+                  <a href={`mailto:${settings.email}`}>{settings.email}</a>
+                </li>
+              )}
+              <li>
+                <Link href="/contact" className="sf-text-link">
+                  Send an enquiry
+                </Link>
               </li>
             </ul>
           </div>
         </div>
-
-        <div className="pt-8 border-t border-primary-500/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-muted">
-          <p>© {currentYear} {settings.storeName || "Binary Electronics"}. All rights reserved.</p>
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Secure Payments:</span>
-            <div className="flex items-center gap-4">
-              {settings.bkash_number && <span>bKash</span>}
-              {settings.nagad_number && <span>Nagad</span>}
-              <div className="px-3 py-1 glass rounded-lg border border-primary-500/10 text-[10px] font-black text-primary-500 tracking-tighter shadow-inner">COD</div>
-
-            </div>
+        <div className="sf-footer-bottom">
+          <p>
+            © {new Date().getFullYear()}{" "}
+            {settings.storeName || "Binary Electronics"}. All rights reserved.
+          </p>
+          <div className="sf-payment-options">
+            Ways to pay <span>Cash on delivery</span>
+            {settings.bkash_number && <span>bKash</span>}
+            {settings.nagad_number && <span>Nagad</span>}
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

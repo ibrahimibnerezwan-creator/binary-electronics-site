@@ -1,135 +1,133 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Star, CheckCircle2, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { submitReview } from '@/app/(customer)/product/[slug]/actions'
+import { useState } from "react";
+import { Star } from "lucide-react";
+import { submitReview } from "@/app/(customer)/product/[slug]/actions";
 
 interface ReviewFormProps {
-  productId: string
-  productSlug: string
-  loggedInName?: string
+  productId: string;
+  productSlug: string;
+  loggedInName?: string;
 }
 
-export function ReviewForm({ productId, productSlug, loggedInName }: ReviewFormProps) {
-  const [rating, setRating] = useState(0)
-  const [hover, setHover] = useState(0)
-  const [comment, setComment] = useState('')
-  const [reviewerName, setReviewerName] = useState('')
-  const [honeypot, setHoneypot] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [message, setMessage] = useState('')
+export function ReviewForm({
+  productId,
+  productSlug,
+  loggedInName,
+}: ReviewFormProps) {
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [comment, setComment] = useState("");
+  const [reviewerName, setReviewerName] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     if (rating < 1) {
-      setStatus('error')
-      setMessage('Please select a rating.')
-      return
+      setStatus("error");
+      setMessage("Please select a rating.");
+      return;
     }
 
-    setStatus('loading')
+    setStatus("loading");
     try {
-    const result = await submitReview({
-      productId,
-      productSlug,
-      rating,
-      comment,
-      reviewerName,
-      honeypot,
-    })
+      const result = await submitReview({
+        productId,
+        productSlug,
+        rating,
+        comment,
+        reviewerName,
+        honeypot,
+      });
 
-    if ('error' in result && result.error) {
-      setStatus('error')
-      setMessage(result.error)
-      return
-    }
+      if ("error" in result && result.error) {
+        setStatus("error");
+        setMessage(result.error);
+        return;
+      }
 
-    setStatus('success')
-    setMessage('Thank you! Your review is pending approval by the store.')
-    setRating(0)
-    setComment('')
-    setReviewerName('')
+      setStatus("success");
+      setMessage("Thank you! Your review is pending approval by the store.");
+      setRating(0);
+      setComment("");
+      setReviewerName("");
     } catch {
-      setStatus('error')
-      setMessage('Could not submit your review. Please retry.')
+      setStatus("error");
+      setMessage("Could not submit your review. Please retry.");
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="glass rounded-2xl p-5 md:p-6 border border-primary-500/5 max-w-3xl flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h4 className="text-sm md:text-base font-black uppercase tracking-wider">Write a review</h4>
-        <p className="text-xs text-text-muted">Your review will be visible after admin approval.</p>
+    <form onSubmit={handleSubmit} className="sf-review-form sf-form">
+      <div>
+        <h3>Write a review</h3>
+        <p>Your review appears after the store approves it.</p>
       </div>
-
-      <div className="flex items-center gap-2">
-        {[1, 2, 3, 4, 5].map((n) => (
+      <div className="sf-review-stars" aria-label="Product rating">
+        {[1, 2, 3, 4, 5].map((value) => (
           <button
-            key={n}
+            key={value}
             type="button"
-            onClick={() => setRating(n)}
-            onMouseEnter={() => setHover(n)}
+            aria-label={`${value} star${value > 1 ? "s" : ""}`}
+            aria-pressed={rating === value}
+            onClick={() => setRating(value)}
+            onMouseEnter={() => setHover(value)}
             onMouseLeave={() => setHover(0)}
-            aria-label={`${n} star${n > 1 ? 's' : ''}`}
-            className="p-1"
           >
             <Star
-              size={26}
-              className="text-accent-500 transition-transform hover:scale-110"
-              fill={n <= (hover || rating) ? 'currentColor' : 'none'}
+              size={25}
+              fill={value <= (hover || rating) ? "currentColor" : "none"}
             />
           </button>
         ))}
-        {rating > 0 && (
-          <span className="text-xs text-text-muted ml-2">{rating} / 5</span>
-        )}
+        {rating > 0 && <span>{rating} / 5</span>}
       </div>
-
       {!loggedInName && (
-        <input
-          type="text"
-          value={reviewerName}
-          onChange={(e) => setReviewerName(e.target.value)}
-          placeholder="Your name (optional)"
-          maxLength={60}
-          className="bg-bg-elevated/40 border border-primary-500/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500/40"
-        />
+        <label className="sf-field">
+          Your name (optional)
+          <input
+            value={reviewerName}
+            onChange={(event) => setReviewerName(event.target.value)}
+            maxLength={60}
+            placeholder="Your name"
+            autoComplete="name"
+          />
+        </label>
       )}
-
-      <textarea
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        placeholder="Share your experience with this product..."
-        rows={4}
-        maxLength={2000}
-        className="bg-bg-elevated/40 border border-primary-500/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary-500/40 resize-y"
-      />
-
+      <label className="sf-field">
+        Your review
+        <textarea
+          value={comment}
+          onChange={(event) => setComment(event.target.value)}
+          rows={4}
+          maxLength={2000}
+          placeholder="Share your experience with this product…"
+        />
+      </label>
       <input
         type="text"
         value={honeypot}
-        onChange={(e) => setHoneypot(e.target.value)}
+        onChange={(event) => setHoneypot(event.target.value)}
         tabIndex={-1}
         autoComplete="off"
-        className="hidden"
+        hidden
         aria-hidden
       />
-
       {message && (
-        <div className={`flex items-center gap-2 text-xs ${status === 'error' ? 'text-red-500' : 'text-primary-500'}`}>
-          {status === 'error' ? <AlertCircle size={14} /> : <CheckCircle2 size={14} />}
-          <span>{message}</span>
-        </div>
+        <p
+          role={status === "error" ? "alert" : "status"}
+          className={status === "error" ? "sf-error" : "sf-success"}
+        >
+          {message}
+        </p>
       )}
-
-      <Button
-        type="submit"
-        disabled={status === 'loading'}
-        className="self-start h-11 px-6 rounded-xl text-xs font-black uppercase tracking-widest"
-      >
-        {status === 'loading' ? 'Submitting...' : 'Submit Review'}
-      </Button>
+      <button type="submit" className="sf-btn" disabled={status === "loading"}>
+        {status === "loading" ? "Submitting…" : "Submit review"}
+      </button>
     </form>
-  )
+  );
 }

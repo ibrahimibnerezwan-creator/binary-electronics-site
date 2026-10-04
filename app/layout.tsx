@@ -4,8 +4,8 @@ import { Providers } from './providers'
 import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
-const sora = Sora({ subsets: ['latin'], variable: '--font-display' })
-const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body' })
+const sora = Sora({ subsets: ['latin'], variable: '--font-display-family' })
+const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-body-family' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 import { getPublicStoreSettings } from '@/lib/data'

@@ -1,121 +1,118 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { ShoppingCart, Heart, Share2, Minus, Plus, Check } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { useWishlist, writeWishlist } from '@/lib/wishlist'
-import { useCart } from '@/lib/cart-context'
-
-interface AddToCartButtonProps {
+"use client";
+import { useEffect, useState } from "react";
+import { ShoppingBag, Heart, Share2, Minus, Plus } from "lucide-react";
+import { useWishlist, writeWishlist } from "@/lib/wishlist";
+import { useCart } from "@/lib/cart-context";
+interface Props {
   product: {
-    id: string
-    name: string
-    price: number
-    image: string
-    slug: string
-    stock: number
-  }
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    slug: string;
+    stock: number;
+  };
 }
-
-export function AddToCartButton({ product }: AddToCartButtonProps) {
-  const { addItem } = useCart()
-  const [quantity, setQuantity] = useState(1)
-  const saved = useWishlist()
-  const wishlisted = saved.includes(product.id)
-  const [toast, setToast] = useState<string | null>(null)
-
+export function AddToCartButton({ product }: Props) {
+  const { addItem, cart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const saved = useWishlist();
+  const wishlisted = saved.includes(product.id);
+  const [message, setMessage] = useState("");
+  const available = Math.max(
+    0,
+    product.stock -
+      (cart.find((item) => item.id === product.id)?.quantity || 0),
+  );
   useEffect(() => {
-    if (!toast) return
-    const t = setTimeout(() => setToast(null), 2500)
-    return () => clearTimeout(t)
-  }, [toast])
-
-  const handleAddToCart = () => {
-    if (product.stock < 1) return
-    addItem({ ...product, quantity })
-    setToast(`Added ${quantity} × ${product.name} to cart`)
-  }
-
-  const toggleWishlist = () => {
+    if (!message) return;
+    const timer = setTimeout(() => setMessage(""), 4000);
+    return () => clearTimeout(timer);
+  }, [message]);
+  const add = () => {
+    if (available < 1) return;
+    const count = Math.min(quantity, available);
+    addItem({ ...product, quantity: count });
+    setMessage(`Added ${count} × ${product.name} to cart`);
+  };
+  const save = () => {
     try {
-      const next = wishlisted ? saved.filter(id => id !== product.id) : [...saved, product.id]
-      writeWishlist(next)
-      setToast(wishlisted ? 'Removed from wishlist' : 'Added to wishlist')
+      writeWishlist(
+        wishlisted
+          ? saved.filter((id) => id !== product.id)
+          : [...saved, product.id],
+      );
+      setMessage(wishlisted ? "Removed from wishlist" : "Added to wishlist");
     } catch {
-      setToast('Could not update wishlist')
+      setMessage("Could not update wishlist. Please try again.");
     }
-  }
-
-  const handleShare = async () => {
-    try { await navigator.clipboard.writeText(window.location.href); setToast('Link copied to clipboard') }
-    catch { setToast('Copy the page address from your browser to share this product.') }
-  }
-
+  };
+  const share = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setMessage("Link copied to clipboard");
+    } catch {
+      setMessage(
+        "Copy the page address from your browser to share this product.",
+      );
+    }
+  };
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Quantity</span>
-        <div className="inline-flex items-center glass rounded-xl border border-primary-500/10">
+    <div className="sf-purchase">
+      <div className="sf-quantity-row">
+        <span>Quantity</span>
+        <div className="sf-quantity">
           <button
             type="button"
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            onClick={() => setQuantity((value) => Math.max(1, value - 1))}
             aria-label="Decrease quantity"
-            className="h-10 w-10 flex items-center justify-center hover:text-primary-500 disabled:opacity-40"
             disabled={quantity <= 1}
           >
             <Minus size={16} />
           </button>
-          <span className="w-10 text-center text-sm font-bold">{quantity}</span>
+          <span>{quantity}</span>
           <button
             type="button"
-            onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-            disabled={quantity >= product.stock}
+            onClick={() =>
+              setQuantity((value) => Math.min(available, value + 1))
+            }
             aria-label="Increase quantity"
-            className="h-10 w-10 flex items-center justify-center hover:text-primary-500"
+            disabled={quantity >= available}
           >
             <Plus size={16} />
           </button>
         </div>
       </div>
-
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Button
-          size="lg"
-          className="flex-grow h-16 gap-3 text-lg font-black uppercase tracking-widest shadow-2xl"
-          onClick={handleAddToCart}
-          disabled={product.stock < 1}
+      <div className="sf-purchase-actions">
+        <button className="sf-btn" onClick={add} disabled={available < 1}>
+          <ShoppingBag size={19} />
+          {product.stock < 1
+            ? "Out of stock"
+            : available < 1
+              ? "All available stock in cart"
+              : "Add to cart"}
+        </button>
+        <button
+          className="sf-btn sf-btn-secondary sf-square-btn"
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={wishlisted}
+          onClick={save}
         >
-          <ShoppingCart size={24} /> {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
-        </Button>
-        <div className="flex gap-4">
-          <Button
-            variant="secondary"
-            size="icon"
-            className={`h-16 w-16 rounded-2xl glass hover:bg-primary-500/10 ${wishlisted ? 'text-red-500' : ''}`}
-            aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            aria-pressed={wishlisted}
-            onClick={toggleWishlist}
-          >
-            <Heart size={24} fill={wishlisted ? 'currentColor' : 'none'} />
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            className="h-16 w-16 rounded-2xl glass hover:bg-primary-500/10"
-            onClick={handleShare}
-            aria-label="Share product"
-          >
-            <Share2 size={24} />
-          </Button>
-        </div>
+          <Heart size={20} fill={wishlisted ? "currentColor" : "none"} />
+        </button>
+        <button
+          className="sf-btn sf-btn-secondary sf-square-btn"
+          aria-label="Share product"
+          onClick={share}
+        >
+          <Share2 size={19} />
+        </button>
       </div>
-
-      {toast && (
-        <div className="flex items-center gap-2 text-xs text-primary-500 animate-reveal-up" role="status" aria-live="polite">
-          <Check size={14} />
-          <span>{toast}</span>
-        </div>
+      {message && (
+        <p role="status" className="sf-live-message">
+          {message}
+        </p>
       )}
     </div>
-  )
+  );
 }

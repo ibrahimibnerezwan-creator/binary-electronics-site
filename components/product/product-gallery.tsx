@@ -1,85 +1,78 @@
-'use client'
-
-import { useState } from 'react'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
-import { cn } from '@/lib/utils'
-
-export function ProductGallery({ images }: { images: string[] }) {
-  const [active, setActive] = useState(0)
-
-  // Fallback if no images
-  const displayImages = images.length > 0 ? images : ['/logo.png']
-
+"use client";
+import { useState } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+export function ProductGallery({
+  images,
+  name = "Product",
+}: {
+  images: string[];
+  name?: string;
+}) {
+  const [active, setActive] = useState(0);
+  const photos = images.length ? images : ["/logo.png"];
   return (
-    <div className="flex flex-col gap-6">
-      <div className="relative aspect-square glass border-primary-500/5 rounded-3xl overflow-hidden group cursor-zoom-in">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.4 }}
-            className="w-full h-full bg-bg-void/50"
-          >
-            <a href={displayImages[active]} target="_blank" rel="noopener noreferrer" aria-label="Open full-size product image">
-            <Image
-              src={displayImages[active]}
-              alt="Product"
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            /></a>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Zoom Icon */}
-        <div className="pointer-events-none absolute bottom-6 right-6 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-opacity">
-          <ZoomIn size={20} />
-        </div>
-
-        {/* Arrows */}
-        {displayImages.length > 1 && (
+    <div>
+      <div className="sf-gallery-photo">
+        <a
+          href={photos[active]}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open full-size product image"
+        >
+          <Image
+            src={photos[active]}
+            alt={name}
+            fill
+            priority
+            sizes="(max-width: 640px) 100vw, 50vw"
+          />
+        </a>
+        <span className="sf-gallery-zoom">
+          <ZoomIn size={19} />
+        </span>
+        {photos.length > 1 && (
           <>
             <button
-              onClick={() => setActive((active - 1 + displayImages.length) % displayImages.length)}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary-500 hover:text-white"
+              className="sf-gallery-arrow"
+              style={{ left: 12 }}
+              onClick={() =>
+                setActive((active - 1 + photos.length) % photos.length)
+              }
               aria-label="Previous image"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={20} />
             </button>
             <button
-              onClick={() => setActive((active + 1) % displayImages.length)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full glass border border-primary-500/10 text-primary-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-primary-500 hover:text-white"
+              className="sf-gallery-arrow"
+              style={{ right: 12 }}
+              onClick={() => setActive((active + 1) % photos.length)}
               aria-label="Next image"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={20} />
             </button>
           </>
         )}
       </div>
-
-      {/* Thumbnails */}
-      {displayImages.length > 1 && (
-        <div className="grid grid-cols-4 lg:grid-cols-6 gap-4">
-          {displayImages.map((img, i) => (
+      {photos.length > 1 && (
+        <div className="sf-gallery-thumbs">
+          {photos.map((photo, index) => (
             <button
-              key={i}
-              onClick={() => setActive(i)}
-              aria-label={`Show image ${i + 1}`}
-              aria-pressed={active === i}
-              className={cn(
-                'relative aspect-square glass rounded-xl overflow-hidden border-2 transition-all p-2',
-                active === i ? 'border-primary-500' : 'border-transparent opacity-60 hover:opacity-100'
-              )}
+              key={index}
+              onClick={() => setActive(index)}
+              aria-label={`Show image ${index + 1}`}
+              aria-pressed={index === active}
             >
-              <Image src={img} alt={`Product image ${i + 1}`} fill className="object-cover" />
+              <Image
+                src={photo}
+                alt={`${name}, view ${index + 1}`}
+                fill
+                sizes="72px"
+              />
             </button>
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }

@@ -1,21 +1,14 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-
+import Link from "next/link";
 export default function NotFound() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 text-center min-h-[60vh]">
-      <p className="text-primary-500 font-bold tracking-[0.22em] text-xs uppercase mb-4">
-        Page Not Found
-      </p>
-      <h1 className="text-5xl md:text-7xl font-display font-black text-white mb-6">404</h1>
-      <p className="text-text-secondary text-lg mb-10 max-w-md">
-        This page doesn&apos;t exist or the product may have been removed.
-      </p>
-      <Button asChild size="lg" className="rounded-full bg-primary-500 hover:bg-primary-600 text-black px-12 font-semibold">
-        <Link href="/products">
-          BROWSE PRODUCTS
+    <section className="sf-wrap sf-page">
+      <div className="sf-empty">
+        <h1 className="sf-section-title">This page has moved on.</h1>
+        <p>The page doesn’t exist, or the product may have been removed.</p>
+        <Link href="/products" className="sf-btn">
+          Browse products
         </Link>
-      </Button>
-    </div>
-  )
+      </div>
+    </section>
+  );
 }

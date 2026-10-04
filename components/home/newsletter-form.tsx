@@ -1,96 +1,81 @@
-'use client'
-
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Send, Cpu, ShieldCheck, AlertCircle } from 'lucide-react'
+"use client";
+import { useState } from "react";
+import { Loader2, Check } from "lucide-react";
 
 export function NewsletterForm() {
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [message, setMessage] = useState('')
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-
-    setStatus('loading')
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [message, setMessage] = useState("");
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+    setMessage("");
     try {
-      const response = await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setStatus('success')
-        setMessage("You are subscribed. Thank you!")
-        setEmail('')
-      } else {
-        throw new Error(data.error || 'Failed to subscribe')
-      }
+      });
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.error || "Could not subscribe. Please try again.");
+      setStatus("success");
+      setMessage("You’re subscribed. Thank you!");
+      setEmail("");
     } catch (error) {
-      setStatus('error')
-      setMessage(error instanceof Error ? error.message : 'Could not subscribe. Please retry.')
+      setStatus("error");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not subscribe. Please try again.",
+      );
     }
-
-    setTimeout(() => {
-      setStatus('idle')
-      setMessage('')
-    }, 8000)
   }
-
   return (
-    <div className="w-full max-w-lg flex flex-col gap-6 font-mono relative">
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-0 w-full group">
-        <div className="relative flex-grow">
-          <input
-            type="email"
-            aria-label="Newsletter email"
-            placeholder="IDENTIFIER@COMM_LINK.ORG"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={status === 'loading'}
-            className="w-full h-14 bg-black/40 border border-primary-500/20 px-8 text-xs uppercase tracking-widest text-white focus:outline-none focus:border-primary-500/60 focus:bg-primary-500/5 transition-all disabled:opacity-50 placeholder:text-text-muted/20"
-          />
-          {/* Internal corner decoration */}
-          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary-500/30" />
-        </div>
-
-        <Button
+    <div>
+      <form onSubmit={handleSubmit} className="sf-newsletter-form">
+        <input
+          className="sf-input"
+          type="email"
+          autoComplete="email"
+          aria-label="Newsletter email"
+          placeholder="Your email address"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            if (status === "success") setStatus("idle");
+          }}
+          required
+          disabled={status === "loading"}
+        />
+        <button
           type="submit"
-          disabled={status === 'loading' || status === 'success'}
-          className="h-14 px-10 bg-primary-500 text-black font-black text-xs uppercase tracking-[0.2em] hover:bg-white transition-all min-w-[160px] border-l-0 border border-primary-500/20 active:scale-[0.98] relative"
+          className="sf-btn"
+          disabled={status === "loading" || status === "success"}
         >
-          {status === 'loading' ? (
-            <span className="flex items-center gap-2"><Cpu className="animate-spin w-4 h-4" /> UPLINKING...</span>
-          ) : status === 'success' ? (
-            <span className="flex items-center gap-2 text-black"><ShieldCheck className="w-4 h-4" /> Subscribed</span>
-          ) : (
-            <span className="flex items-center gap-2 italic">Subscribe <Send className="w-3 h-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /></span>
-          )}
-        </Button>
+          {status === "loading" ? (
+            <Loader2 className="animate-spin" size={16} />
+          ) : status === "success" ? (
+            <Check size={16} />
+          ) : null}
+          {status === "success"
+            ? "Subscribed"
+            : status === "loading"
+              ? "Subscribing…"
+              : "Subscribe"}
+        </button>
       </form>
-
       {message && (
-        <div className="flex items-center gap-3 animate-reveal-up overflow-hidden">
-          {status === 'error' ? <AlertCircle className="text-red-500 w-4 h-4 shrink-0" /> : <ShieldCheck className="text-primary-500 w-4 h-4 shrink-0" /> }
-          <p className={`text-[10px] font-black uppercase tracking-[0.3em] ${status === 'error' ? 'text-red-500' : 'text-primary-500'}`}>
-            {message}
-          </p>
-          <div className="h-[1px] flex-grow bg-current/10" />
-        </div>
-      )}
-
-      {/* Background Decorative Data-Line */}
-      {!message && (
-        <div className="flex items-center gap-3 opacity-20 animate-pulse">
-           <div className="flex-grow h-[1px] bg-primary-500/20" />
-           <span className="text-[9px] font-black tracking-widest text-primary-500/30">PENDING_USER_IDENTIFICATION_V8</span>
-        </div>
+        <p
+          role={status === "error" ? "alert" : "status"}
+          className={status === "error" ? "sf-error" : "sf-live-message"}
+        >
+          {message}
+        </p>
       )}
     </div>
-  )
+  );
 }

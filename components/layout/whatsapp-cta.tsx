@@ -1,42 +1,30 @@
-'use client'
-
-import { whatsappNumber as normalizeWhatsapp } from '@/lib/commerce'
-import { motion } from 'framer-motion'
-import { MessageSquare } from 'lucide-react'
-import Link from 'next/link'
-import { useSettings } from '@/lib/settings-context'
-
+"use client";
+import { whatsappNumber } from "@/lib/commerce";
+import { MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSettings } from "@/lib/settings-context";
 export function WhatsAppCTA() {
-  const settings = useSettings()
-  const whatsappNumber = settings.whatsapp || settings.phone || ''
-  // Remove any non-numeric characters for the tel link
-  const cleanNumber = normalizeWhatsapp(whatsappNumber)
-
-  return (
-    <motion.div
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ delay: 1, type: 'spring' }}
-      className="fixed bottom-8 right-8 z-50"
-    >
-      <Link
-        href={cleanNumber ? `https://wa.me/${cleanNumber}` : "/contact"}
-        aria-label={cleanNumber ? "Contact us on WhatsApp" : "Contact the store"}
-        rel="noopener noreferrer"
-        target={cleanNumber ? "_blank" : undefined}
-        className="group relative flex items-center justify-center w-16 h-16 rounded-full bg-[#25D366] text-white shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:shadow-[0_0_30px_rgba(37,211,102,0.6)] transition-all duration-300"
-      >
-        <MessageSquare size={32} />
-        
-        {/* Pulsing rings */}
-        <span className="absolute inset-0 rounded-full border-2 border-[#25D366] animate-ping opacity-20" />
-        
-        {/* Tooltip */}
-        <div className="absolute right-full mr-4 bg-bg-elevated border border-primary-500/10 px-4 py-2 rounded-xl opacity-0 translate-x-10 group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none whitespace-nowrap">
-          <p className="text-sm font-bold text-text-primary">Chat with us</p>
-          <p className="text-[10px] text-text-muted">Send us an enquiry</p>
-        </div>
-      </Link>
-    </motion.div>
+  const settings = useSettings();
+  const pathname = usePathname();
+  const number = whatsappNumber(settings.whatsapp || settings.phone || "");
+  if (
+    ["/checkout", "/cart", "/login", "/register", "/contact"].includes(
+      pathname,
+    ) ||
+    pathname.startsWith("/order-confirmation/")
   )
+    return null;
+  return (
+    <Link
+      className="sf-contact-float"
+      href={number ? `https://wa.me/${number}` : "/contact"}
+      target={number ? "_blank" : undefined}
+      rel={number ? "noopener noreferrer" : undefined}
+      aria-label={number ? "Chat on WhatsApp" : "Contact the store"}
+    >
+      <MessageCircle size={21} />
+      <span>Need help?</span>
+    </Link>
+  );
 }

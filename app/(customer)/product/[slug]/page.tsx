@@ -1,28 +1,28 @@
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { Star, Shield, Truck, RefreshCcw, ShoppingCart, Zap, Heart, Share2 } from 'lucide-react'
-import { ProductGallery } from '@/components/product/product-gallery'
-import { AddToCartButton } from '@/components/product/add-to-cart-button'
-import { ReviewForm } from '@/components/product/review-form'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { formatPrice, cn } from '@/lib/utils'
-import { FeaturedProducts } from '@/components/home/featured-products'
+import { categoryLabel } from "@/lib/catalogue-labels";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Star, Shield, Truck, ChevronRight } from "lucide-react";
+import { ProductGallery } from "@/components/product/product-gallery";
+import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { ReviewForm } from "@/components/product/review-form";
+import { formatPrice } from "@/lib/utils";
+import { FeaturedProducts } from "@/components/home/featured-products";
+import {
+  getProductBySlug,
+  getRelatedProducts,
+  getProductReviews,
+} from "@/lib/data";
+import { getCurrentUser } from "@/lib/auth";
 
-import { getProductBySlug, getRelatedProducts, getProductReviews, getPublicStoreSettings } from '@/lib/data'
-import { getCurrentUser } from '@/lib/auth'
-
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const [product, settings] = await Promise.all([
-    getProductBySlug(slug),
-    getPublicStoreSettings()
-  ])
-  
-  const storeName = settings.storeName || 'Binary Electronics'
-  if (!product) return { title: `Product Not Found | ${storeName}` }
-  
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+  if (!product) return { title: "Product not found" };
   return {
     title: product.name,
     alternates: { canonical: `/product/${product.slug}` },
@@ -31,191 +31,163 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: `/product/${product.slug}`,
       images: product.images?.[0] ? [product.images[0]] : [],
     },
-  }
+  };
 }
-
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
-  const product = await getProductBySlug(slug)
-  if (!product) notFound()
-
-  const [relatedProducts, productReviews, currentUser] = await Promise.all([
-    getRelatedProducts(product.categoryId, product.id, 4),
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+  if (!product) notFound();
+  const [related, reviews, user] = await Promise.all([
+    getRelatedProducts(product.categoryId, product.id, 3),
     getProductReviews(product.id),
     getCurrentUser(),
-  ])
-
+  ]);
+  const discounted =
+    product.comparePrice && product.comparePrice > product.price;
   return (
-    <div className="flex flex-col">
-      <div className="container mx-auto px-4 pt-24 md:pt-32 pb-16 md:pb-24">
-        {/* Breadcrumbs Placeholder */}
-        <div className="flex items-center gap-2 text-[10px] md:text-xs text-text-muted mb-6 md:mb-8 uppercase tracking-widest font-bold overflow-x-auto whitespace-nowrap scrollbar-hide">
-          <Link href="/products" className="hover:text-primary-500 transition-colors shrink-0">Store</Link>
-          <span className="shrink-0">/</span>
-          <Link href={product.category?.slug ? `/category/${product.category.slug}` : "/products"} className="hover:text-primary-500 transition-colors uppercase shrink-0">{product.categoryName}</Link>
-          <span className="shrink-0">/</span>
-          <span className="text-text-primary truncate">{product.name}</span>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-start">
-          {/* Left: Gallery */}
-          <ProductGallery images={product.images} />
-
-          {/* Right: Info */}
-          <div className="flex flex-col gap-6 md:gap-8">
-            <div className="flex flex-col gap-3 md:gap-4">
-              <div className="flex items-center gap-3 md:gap-4">
-                {product.isFeatured && (
-                  <Badge variant="gold" className="px-2 py-0.5 md:px-3 md:py-1 text-[10px] md:text-xs">Featured</Badge>
-                )}
-                <div className="flex items-center gap-1">
-                  <div className="flex text-accent-500">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} fill={i < product.rating ? 'currentColor' : 'none'} />
-                    ))}
-                  </div>
-                  <span className="text-[10px] md:text-sm text-text-muted">({product.reviewsCount} reviews)</span>
-                </div>
-              </div>
-              
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-black leading-tight uppercase tracking-tight">
-                {product.name}
-              </h1>
-              
-              <div className="flex items-center gap-4 md:gap-6 mt-1 md:mt-2">
-                <span className="text-2xl md:text-3xl font-black text-primary-500">
-                  {formatPrice(product.price)}
-                </span>
-                {product.comparePrice && product.comparePrice > product.price && (
-                  <span className="text-lg md:text-xl text-text-muted line-through">
-                    {formatPrice(product.comparePrice)}
-                  </span>
-                )}
-                {product.comparePrice && product.comparePrice > product.price && (
-                  <Badge variant="destructive" className="rounded-md text-[9px] md:text-[10px]">
-                   -{Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)}%
-                  </Badge>
-                )}
+    <div className="sf-wrap sf-page">
+      <nav className="sf-breadcrumb" aria-label="Breadcrumb">
+        <Link href="/">Home</Link>
+        <ChevronRight size={12} />
+        <Link href="/products">Products</Link>
+        {product.category?.slug && (
+          <>
+            <ChevronRight size={12} />
+            <Link href={`/category/${product.category.slug}`}>
+              {categoryLabel(product.categoryName)}
+            </Link>
+          </>
+        )}
+        <ChevronRight size={12} />
+        <span>{product.name}</span>
+      </nav>
+      <div className="sf-detail-grid">
+        <ProductGallery images={product.images} name={product.name} />
+        <div className="sf-product-info">
+          <span
+            className={`sf-product-stock${product.stock > 0 ? "" : " is-unavailable"}`}
+          >
+            {product.stock > 0
+              ? "In stock and available to order"
+              : "Currently out of stock"}
+          </span>
+          <h1>{product.name}</h1>
+          {product.reviewsCount > 0 && (
+            <div className="sf-product-rating">
+              <Star size={15} fill="currentColor" />
+              {product.rating} · {product.reviewsCount} reviews
+            </div>
+          )}
+          <p className="sf-detail-price">
+            {formatPrice(product.price)}
+            {discounted ? (
+              <del>{formatPrice(product.comparePrice!)}</del>
+            ) : null}
+          </p>
+          <p className="sf-product-description">
+            {product.description.replace(/\\r?\\n/g, "\n")}
+          </p>
+          <AddToCartButton
+            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.images[0] || "/logo.png",
+              slug: product.slug,
+              stock: product.stock,
+            }}
+          />
+          <div className="sf-detail-facts">
+            <div>
+              <Truck size={21} />
+              <div>
+                Delivery in Bangladesh
+                <small>Charges calculated at checkout</small>
               </div>
             </div>
-
-            <p className="text-sm md:text-lg text-text-secondary leading-relaxed border-l-2 border-primary-500/20 pl-4 md:pl-6">
-              {product.description.replace(/\\r?\\n/g, '\n')}
-            </p>
-
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 p-4 md:p-6 glass rounded-2xl border-primary-500/10">
-              <div className="flex flex-col items-center text-center gap-1.5 md:gap-2">
-                 <Shield className="w-4 h-4 md:w-5 md:h-5 text-primary-500" />
-                 <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Warranty</span>
-                 <span className="text-[10px] md:text-xs font-bold">{product.warranty || 'Ask the store'}</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 md:gap-2 sm:border-l border-primary-500/10">
-                 <Truck className="w-4 h-4 md:w-5 md:h-5 text-accent-500" />
-                 <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Delivery</span>
-                 <span className="text-[10px] md:text-xs font-bold">At checkout</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 md:gap-2 md:border-l border-primary-500/10 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l">
-                 <RefreshCcw className="w-4 h-4 md:w-5 md:h-5 text-gold-500" />
-                 <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Returns</span>
-                 <span className="text-[10px] md:text-xs font-bold">Ask the store</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 md:gap-2 md:border-l border-primary-500/10 pt-4 sm:pt-0 border-t sm:border-t-0 sm:border-l">
-                 <Zap className="w-4 h-4 md:w-5 md:h-5 text-primary-500" />
-                 <span className="text-[8px] md:text-[10px] font-bold uppercase text-text-muted">Availability</span>
-                 <span className={cn("text-[10px] md:text-xs font-bold", product.stock > 0 ? "text-green-500" : "text-red-500")}>
-                   {product.stock > 0 ? `In Stock` : "Out of Stock"}
-                 </span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <AddToCartButton 
-              product={{
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.images[0],
-                slug: product.slug,
-                stock: product.stock
-              }} 
-            />
-
-            {/* Spec Cards */}
-            <div className="mt-4 md:mt-8">
-              <h3 className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary-500 mb-4 md:mb-6">Key Specifications</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                 {Object.entries(product.specs).map(([key, value]) => (
-                   <div key={key} className="flex flex-col p-3 md:p-4 bg-bg-elevated/30 border border-primary-500/5 rounded-xl">
-                     <span className="text-[8px] md:text-[10px] uppercase font-bold text-text-muted mb-1">{key}</span>
-                     <span className="text-[10px] md:text-sm font-bold">{value as string}</span>
-                   </div>
-                 ))}
+            <div>
+              <Shield size={21} />
+              <div>
+                Warranty information
+                <small>
+                  {product.warranty || "Contact us for product terms"}
+                </small>
               </div>
             </div>
           </div>
+          {Object.keys(product.specs).length > 0 && (
+            <section className="sf-specs">
+              <h2>Specifications</h2>
+              <dl>
+                {Object.entries(product.specs).map(([key, value]) => (
+                  <div key={key}>
+                    <dt>{key}</dt>
+                    <dd>{String(value)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
         </div>
       </div>
-
-      {/* Customer Reviews Section */}
-      <div className="container mx-auto px-4 py-16 md:py-20 border-t border-primary-500/5">
-        <div className="flex items-center gap-3 mb-8 md:mb-12">
-          <h3 className="text-2xl md:text-3xl font-display font-black uppercase">Customer <span className="text-gradient">Reviews</span></h3>
-          <span className="text-sm text-text-muted">({productReviews.length})</span>
-        </div>
-
-        {productReviews.length === 0 ? (
-          <p className="text-text-muted text-sm mb-8">No reviews yet. Be the first to review this product!</p>
-        ) : (
-          <div className="grid gap-4 md:gap-6 max-w-3xl">
-            {productReviews.map((review) => (
-              <div key={review.id} className="glass rounded-2xl p-4 md:p-6 border border-primary-500/5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-xs font-bold text-primary-500">
-                      {review.reviewerName.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <span className="text-sm font-bold">{review.reviewerName}</span>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} className="text-accent-500" fill={i < review.rating ? 'currentColor' : 'none'} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-[10px] text-text-muted">
-                    {new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                  </span>
-                </div>
-                {review.comment && (
-                  <p className="text-sm text-text-secondary leading-relaxed">{review.comment}</p>
-                )}
-                {review.adminReply && (
-                  <div className="mt-3 pl-4 border-l-2 border-primary-500/30">
-                    <span className="text-[10px] font-bold text-primary-500 uppercase tracking-wider">Store Reply</span>
-                    <p className="text-sm text-text-muted mt-1">{review.adminReply}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+      <section className="sf-detail-section">
+        <h2>Customer reviews ({reviews.length})</h2>
+        {!reviews.length && (
+          <p className="sf-results-note">
+            No reviews yet. Share your experience with this product.
+          </p>
         )}
-
-        <div className="mt-10">
+        {reviews.map((review) => (
+          <article key={review.id} className="sf-review">
+            <div className="sf-review-head">
+              <strong>{review.reviewerName}</strong>
+              <span>
+                {new Date(review.createdAt).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
+            <div
+              className="sf-product-rating"
+              aria-label={`${review.rating} out of 5 stars`}
+            >
+              {[1, 2, 3, 4, 5].map((value) => (
+                <Star
+                  key={value}
+                  size={13}
+                  fill={value <= review.rating ? "currentColor" : "none"}
+                />
+              ))}
+            </div>
+            {review.comment && <p>{review.comment}</p>}
+            {review.adminReply && (
+              <div className="sf-review-reply">
+                <strong>Reply from Binary Electronics</strong>
+                <p>{review.adminReply}</p>
+              </div>
+            )}
+          </article>
+        ))}
+        <div style={{ marginTop: 25 }}>
           <ReviewForm
             productId={product.id}
             productSlug={product.slug}
-            loggedInName={currentUser?.name}
+            loggedInName={user?.name}
           />
         </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-20 border-t border-primary-500/5">
-        <h3 className="text-2xl font-display font-black uppercase mb-12">Related <span className="text-gradient">Products</span></h3>
-        <FeaturedProducts products={relatedProducts} noLayout />
-      </div>
-
+      </section>
+      {related.length > 0 && (
+        <section className="sf-detail-section">
+          <h2>You might also need</h2>
+          <FeaturedProducts products={related} noLayout />
+        </section>
+      )}
     </div>
-  )
+  );
 }

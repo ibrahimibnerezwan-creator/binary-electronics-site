@@ -1,41 +1,20 @@
-import { Metadata } from 'next'
-import { getPublicStoreSettings } from '@/lib/data'
-import { RegisterForm } from '@/components/auth/register-form'
+import { Metadata } from "next";
+import { getPublicStoreSettings } from "@/lib/data";
+import { RegisterForm } from "@/components/auth/register-form";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getPublicStoreSettings()
-  const storeName = settings.storeName || 'Binary Electronics'
+  const settings = await getPublicStoreSettings();
+  const storeName = settings.storeName || "Binary Electronics";
   return {
     title: `Register | ${storeName}`,
     description: `Create your ${storeName} account and join the local tech revolution.`,
-  }
+  };
 }
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-[100vh] flex items-center justify-center container mx-auto px-4 py-20 relative overflow-hidden font-mono">
-      {/* Background Cyber Elements */}
-      <div className="absolute inset-0 bg-[#020408]" />
-      <div className="absolute inset-0 tech-grid opacity-[0.05]" />
-      
-      {/* Ambient Glowing Orbs */}
-      <div className="absolute top-1/3 -right-20 w-[600px] h-[600px] bg-primary-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-1/3 -left-20 w-[600px] h-[600px] bg-accent-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse delay-700" />
-
-      {/* Main Terminal Grid Structure */}
-      <div className="relative z-10 w-full flex flex-col items-center">
-        <RegisterForm />
-        
-        {/* Footer Technical Metadata */}
-        <div className="mt-12 flex gap-8 text-[9px] text-primary-500/20 uppercase tracking-[0.4em] font-bold">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 bg-primary-500 animate-pulse" />
-            SECURE_LINK_ACTIVE
-          </div>
-          <div className="hidden md:block">CONNECTION: HTTPS</div>
-          <div className="hidden md:block">BINARY ELECTRONICS</div>
-        </div>
-      </div>
-    </div>
-  )
+    <section className="sf-auth-page">
+      <RegisterForm />
+    </section>
+  );
 }
