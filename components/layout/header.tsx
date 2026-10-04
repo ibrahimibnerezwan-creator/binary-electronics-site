@@ -122,7 +122,7 @@ export function Header({ user }: HeaderProps = {}) {
             onClick={() => setOpen(false)}
           >
             <span className="sf-brand-image">
-              <Image src="/logo.png" alt="" fill sizes="43px" />
+              <Image src="/logo.png" alt="" fill sizes="78px" />
             </span>
             <span className="sf-brand-name">
               <strong>{settings.storeName?.split(" ")[0] || "Binary"}</strong>

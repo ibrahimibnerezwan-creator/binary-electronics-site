@@ -115,9 +115,12 @@
   width: 43px;
   height: 43px;
   position: relative;
-  border-radius: 10px;
+  border-radius: 50%;
   overflow: hidden;
-  background: #172b4d;
+}
+.sf-brand-image img {
+  /* Fill the circular mark with the original globe, excluding its square backdrop. */
+  transform: scale(1.8);
 }
 .sf-brand-name {
   display: flex;
@@ -1830,7 +1833,6 @@
   .sf-brand-image {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
   }
   .sf-brand {
     gap: 8px;
