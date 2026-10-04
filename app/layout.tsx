@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Sora, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import { Providers } from './providers'
+import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
 const sora = Sora({ subsets: ['latin'], variable: '--font-display' })
@@ -15,10 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicStoreSettings()
   const storeName = settings.storeName || 'Binary Electronics'
   const storeDescription = settings.storeDescription || 'Premium electronics and gadgets for the modern world. Quality guaranteed, innovation delivered. Best tech prices in Bangladesh.'
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://binaryelectronics.shopbd.app'
 
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase: new URL(SITE_URL),
+    alternates: { canonical: './' },
     title: {
       default: `${storeName} | Premium Gadgets & Parts in Bangladesh`,
       template: `%s | ${storeName}`
@@ -28,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: 'en_US',
-      url: siteUrl,
+      url: './',
       siteName: storeName,
       images: [
         {

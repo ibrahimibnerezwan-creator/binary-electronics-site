@@ -18,8 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!category) return { title: `Category Not Found | ${storeName}` }
   
   return {
-    title: `${category.name} | ${storeName}`,
+    title: category.name,
+    alternates: { canonical: `/category/${category.slug}` },
     openGraph: {
+      url: `/category/${category.slug}`,
       images: category.image ? [category.image] : [],
     },
   }

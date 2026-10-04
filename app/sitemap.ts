@@ -1,9 +1,12 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/db'
 import { products, categories } from '@/db/schema'
+import { SITE_URL } from '@/lib/site'
+
+export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://binaryelectronics.shopbd.app'
+  const baseUrl = SITE_URL
 
   // Fetch all products
   const allProducts = await db.select({ slug: products.slug, updatedAt: products.updatedAt }).from(products)
