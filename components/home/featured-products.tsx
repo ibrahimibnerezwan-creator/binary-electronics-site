@@ -133,7 +133,8 @@ export function ProductCard({ product, index }: { product: Product, index: numbe
                Details
              </Button>
            </Link>
-           <Button 
+           <Button
+            size="icon"
             className="w-12 h-10 bg-primary-500 hover:bg-primary-400 text-black border-0 transition-all rounded-none"
             onClick={handleAddToCart}
             disabled={product.stock < 1}
