@@ -25,6 +25,7 @@ const adminNav = [
   { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Categories', href: '/admin/categories', icon: Tag },
+  { name: 'Brands', href: '/admin/brands', icon: Tag },
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Reviews', href: '/admin/reviews', icon: Star },
   { name: 'Messages', href: '/admin/messages', icon: Users },

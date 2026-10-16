@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { updateProduct } from './actions'
+import { BrandSelect } from '@/components/admin/brand-select'
 
 interface EditProductFormProps {
   product: {
@@ -37,6 +38,8 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [images, setImages] = useState<string[]>(product.images)
+  const [brandSaving, setBrandSaving] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files=Array.from(e.target.files || [])
@@ -50,6 +53,8 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (loading || uploading || brandSaving) return
+    setError('')
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
@@ -59,14 +64,13 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
     try {
       const res = await updateProduct(product.id, formData)
       if (res.success) {
-        alert('Product updated successfully.')
         router.push('/admin/products')
         router.refresh()
       } else {
-        alert(res.error || 'Failed to update product')
+        setError(res.error || 'Failed to update product. Your entered details are still here.')
       }
     } catch {
-      alert('Failed to update product')
+      setError('Could not save changes. Your entered details are still here. Please retry.')
     } finally {
       setLoading(false)
     }
@@ -86,13 +90,15 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
           </div>
           <div className="flex gap-3 w-full md:w-auto">
             <Button type="button" variant="secondary" onClick={() => router.back()} className="flex-1 md:flex-none h-12 lg:h-14 px-6 lg:px-8 rounded-xl lg:rounded-2xl glass border-primary-500/10 text-xs lg:text-sm">Discard</Button>
-            <Button disabled={loading || uploading} className="flex-[2] md:flex-none h-12 lg:h-14 px-8 lg:px-10 rounded-xl lg:rounded-2xl shadow-xl shadow-primary-500/20 gap-2 text-xs lg:text-sm">
+            <Button disabled={loading || uploading || brandSaving} className="flex-[2] md:flex-none h-12 lg:h-14 px-8 lg:px-10 rounded-xl lg:rounded-2xl shadow-xl shadow-primary-500/20 gap-2 text-xs lg:text-sm">
               {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
               Save Changes
             </Button>
           </div>
         </div>
       </div>
+
+      {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">{error}</p>}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 flex flex-col gap-8">
@@ -160,12 +166,13 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
 
             <div className="grid grid-cols-1 xs:grid-cols-2 gap-6 lg:gap-8">
               <div className="flex flex-col gap-3">
-                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Regular Price (&#2547;)</label>
+                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Selling Price (&#2547;)</label>
                 <Input aria-label="Selling price" name="price" min="0.01" type="number" step="0.01" required defaultValue={product.price} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
               <div className="flex flex-col gap-3">
-                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Sale Price (&#2547;)</label>
-                <Input aria-label="Previous price" name="comparePrice" type="number" step="0.01" defaultValue={product.comparePrice ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Previous Price (&#2547;, optional)</label>
+                <Input aria-label="Previous price" aria-describedby="previous-price-help" name="comparePrice" type="number" min="0" max="10000000" step="0.01" defaultValue={product.comparePrice ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <p id="previous-price-help" className="text-xs text-text-secondary">Leave blank or enter 0 if there is no previous price.</p>
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">SKU Code</label>
@@ -201,13 +208,7 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
-              <div className="flex flex-col gap-3">
-                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Brand</label>
-                <select aria-label="Brand" name="brandId" defaultValue={product.brandId ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border border-primary-500/10 rounded-xl lg:rounded-2xl px-4 text-xs lg:text-sm font-bold focus:outline-none focus:border-primary-500">
-                  <option>Select Brand</option>
-                  {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-                </select>
-              </div>
+              <BrandSelect brands={brands} initialValue={product.brandId ?? ''} onSavingChange={setBrandSaving} />
             </div>
           </Card>
 

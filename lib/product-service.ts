@@ -1,4 +1,4 @@
-import { db, writeTransaction } from '@/db'
+import { writeTransaction } from '@/db'
 import { products, productImages, categories, brands } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { text, ValidationError } from './commerce'
@@ -16,15 +16,18 @@ export function imageUrl(value: unknown) {
 export function productInput(form: FormData) {
   const name = text(form.get('name'), 'product name', 200)
   const description = text(form.get('description'), 'description', 20000, false)
-  const numeric = (key: string, min: number, max: number, integer = false) => {
+  const numeric = (key: string, min: number, max: number, integer = false, label = key) => {
     const raw = form.get(key)
     const n = typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : NaN
-    if (!Number.isFinite(n) || n < min || n > max || (integer && !Number.isSafeInteger(n))) throw new ValidationError(`Invalid ${key}.`)
+    if (!Number.isFinite(n) || n < min || n > max || (integer && !Number.isSafeInteger(n))) throw new ValidationError(`Please enter a valid ${label} between ${min} and ${max}.`)
     return n
   }
-  const price = numeric('price', 0.01, 10000000)
-  const comparePrice = form.get('comparePrice') ? numeric('comparePrice', 0.01, 10000000) : null
-  const stock = numeric('stock', 0, 1000000, true)
+  const price = numeric('price', 0.01, 10000000, false, 'selling price')
+  const previousPrice = form.get('comparePrice')
+  const comparePrice = previousPrice === null || (typeof previousPrice === 'string' && previousPrice.trim() === '')
+    ? null
+    : numeric('comparePrice', 0, 10000000, false, 'previous price') || null
+  const stock = numeric('stock', 0, 1000000, true, 'stock quantity (a whole number)')
   const optional = (key: string, max: number) => form.has(key) ? text(form.get(key), key, max, false) : undefined
   const reference = (key: string) => {
     const value = optional(key, 100)

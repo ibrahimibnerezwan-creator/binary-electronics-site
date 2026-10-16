@@ -9,6 +9,8 @@ let client: Client
 let saveOrder: typeof import('../lib/order-service').saveOrder
 let changeOrderStatus: typeof import('../lib/order-service').changeOrderStatus
 let saveProduct: typeof import('../lib/product-service').saveProduct
+let createBrandRecord: typeof import('../lib/brand-service').createBrandRecord
+let deleteBrandRecord: typeof import('../lib/brand-service').deleteBrandRecord
 const directory=mkdtempSync(join(tmpdir(),'binary-unit-'))
 const order=(extra:Partial<CheckoutData>={}):CheckoutData=>({requestId:crypto.randomUUID(),customerName:'Audit Customer',customerPhone:'01700000000',address:'Audit address',shippingCity:'Dhaka',paymentMethod:'cod',items:[{id:'p1',quantity:2,price:1}],total:270,...extra})
 before(async()=>{
@@ -17,9 +19,10 @@ before(async()=>{
   await client.executeMultiple(readFileSync('drizzle/0000_careful_shiver_man.sql','utf8'))
   ;({saveOrder,changeOrderStatus}=await import('../lib/order-service'))
   ;({saveProduct}=await import('../lib/product-service'))
+  ;({createBrandRecord,deleteBrandRecord}=await import('../lib/brand-service'))
 })
 beforeEach(async()=>{
-  await client.batch(['DELETE FROM order_items','DELETE FROM orders','DELETE FROM product_images','DELETE FROM reviews','DELETE FROM products','DELETE FROM store_settings',"INSERT INTO products(id,name,slug,price,stock,created_at,updated_at) VALUES('p1','Audit component','audit-component',100,5,1,1)","INSERT INTO store_settings(key,value,updated_at) VALUES('shipping_inside_dhaka','60',1),('shipping_outside_dhaka','120',1),('vat_percentage','5',1)"],'write')
+  await client.batch(['DELETE FROM order_items','DELETE FROM orders','DELETE FROM product_images','DELETE FROM reviews','DELETE FROM products','DELETE FROM brands','DELETE FROM store_settings',"INSERT INTO products(id,name,slug,price,stock,created_at,updated_at) VALUES('p1','Audit component','audit-component',100,5,1,1)","INSERT INTO store_settings(key,value,updated_at) VALUES('shipping_inside_dhaka','60',1),('shipping_outside_dhaka','120',1),('vat_percentage','5',1)"],'write')
 })
 after(()=>{client.close();rmSync(directory,{recursive:true,force:true})})
 const stock=async()=>Number((await client.execute("SELECT stock FROM products WHERE id='p1'")).rows[0].stock)
@@ -95,4 +98,66 @@ test('malformed images cannot partially overwrite a product',async()=>{
 test('missing product edits and negative pricing are rejected',async()=>{
   await assert.rejects(saveProduct(form(),'missing'))
   const f=form();f.set('price','-1');await assert.rejects(saveProduct(f))
+})
+for (const previous of ['', '0', '0.00', '   ']) test(`optional previous price ${JSON.stringify(previous)} saves without a discount`, async () => {
+  const f = form(); f.set('comparePrice', previous)
+  const result = await saveProduct(f)
+  const row = (await client.execute({ sql: 'SELECT price,compare_price FROM products WHERE id=?', args: [result.id] })).rows[0]
+  assert.equal(row.price, 123)
+  assert.equal(row.compare_price, null)
+})
+test('editing can clear a previous price using zero or a blank value', async () => {
+  const f = form(); f.set('comparePrice', '150')
+  await saveProduct(f, 'p1')
+  for (const value of ['0', '']) {
+    f.set('comparePrice', value)
+    await saveProduct(f, 'p1')
+    assert.equal((await client.execute("SELECT compare_price FROM products WHERE id='p1'")).rows[0].compare_price, null)
+  }
+})
+for (const previous of ['-1', 'not-a-price', 'Infinity', '10000001']) test(`invalid previous price ${previous} cannot partially save a product`, async () => {
+  const f = form(); f.set('comparePrice', previous)
+  await assert.rejects(saveProduct(f, 'p1'), /previous price/i)
+  assert.equal((await client.execute("SELECT name FROM products WHERE id='p1'")).rows[0].name, 'Audit component')
+})
+test('brand creation normalizes whitespace and reuses existing names', async () => {
+  const first = await createBrandRecord('  Mean   Well  ')
+  const second = await createBrandRecord('mean well')
+  assert.equal(first.brand.name, 'Mean Well')
+  assert.equal(second.brand.id, first.brand.id)
+  assert.equal(second.created, false)
+  assert.equal((await client.execute('SELECT count(*) AS n FROM brands')).rows[0].n, 1)
+})
+test('brand names support Bangla and punctuation without conflating different brands', async () => {
+  const bangla = await createBrandRecord('বাংলা ইলেকট্রনিক্স')
+  assert.equal(bangla.brand.name, 'বাংলা ইলেকট্রনিক্স')
+  const plain = await createBrandRecord('ACME')
+  const punctuated = await createBrandRecord('ACME+')
+  assert.notEqual(plain.brand.id, punctuated.brand.id)
+  assert.equal((await createBrandRecord('acme+')).brand.id, punctuated.brand.id)
+})
+test('concurrent creation of the same brand does not create duplicates', async () => {
+  const results = await Promise.allSettled([createBrandRecord('Concurrent brand'), createBrandRecord('Concurrent brand')])
+  for (const result of results) assert.equal(result.status, 'fulfilled')
+  if (results[0].status === 'fulfilled' && results[1].status === 'fulfilled') assert.equal(results[0].value.brand.id, results[1].value.brand.id)
+  assert.equal((await client.execute('SELECT count(*) AS n FROM brands')).rows[0].n, 1)
+})
+test('a newly added brand is saved with the product and is protected from deletion', async () => {
+  const { brand } = await createBrandRecord('New brand')
+  const f = form(); f.set('brandId', brand.id); f.set('comparePrice', '0')
+  const saved = await saveProduct(f)
+  assert.equal((await client.execute({ sql: 'SELECT brand_id FROM products WHERE id=?', args: [saved.id] })).rows[0].brand_id, brand.id)
+  await assert.rejects(deleteBrandRecord(brand.id), /used by products/)
+  assert.equal((await client.execute('SELECT count(*) AS n FROM brands')).rows[0].n, 1)
+})
+test('unused brands can be deleted, while missing brands cannot be assigned', async () => {
+  const { brand } = await createBrandRecord('Unused brand')
+  await deleteBrandRecord(brand.id)
+  const f = form(); f.set('brandId', brand.id)
+  await assert.rejects(saveProduct(f), /existing brand/)
+  assert.equal((await client.execute('SELECT count(*) AS n FROM products')).rows[0].n, 1)
+})
+test('invalid brand names never create records', async () => {
+  for (const name of ['', '   ', '!!!', 'x'.repeat(151)]) await assert.rejects(createBrandRecord(name))
+  assert.equal((await client.execute('SELECT count(*) AS n FROM brands')).rows[0].n, 0)
 })
