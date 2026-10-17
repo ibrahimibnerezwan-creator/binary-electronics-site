@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppCTA } from "@/components/layout/whatsapp-cta";
+import { CartBar } from "@/components/layout/cart-bar";
 import { getPublicStoreSettings } from "@/lib/data";
 import { SettingsProvider } from "@/lib/settings-context";
 import { getCurrentUser } from "@/lib/auth";
@@ -29,6 +30,7 @@ export default async function CustomerLayout({
           {children}
         </main>
         <Footer />
+        <CartBar />
         <WhatsAppCTA />
       </div>
     </SettingsProvider>

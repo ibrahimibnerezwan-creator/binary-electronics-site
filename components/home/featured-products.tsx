@@ -1,10 +1,11 @@
 "use client";
 
 import { categoryLabel } from "@/lib/catalogue-labels";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { ShoppingBag, Star, Heart, Check, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/lib/cart-context";
 import { useWishlist, writeWishlist } from "@/lib/wishlist";
@@ -57,25 +58,32 @@ export function ProductCard({
   product: ProductForCard;
   index?: number;
 }) {
-  const { addItem, cart } = useCart();
+  const { addItem, orderNow, cart } = useCart();
+  const router = useRouter();
+  const [opening, startOpening] = useTransition();
   const saved = useWishlist();
   const wishlisted = saved.includes(product.id);
   const [message, setMessage] = useState("");
   const quantityInCart =
     cart.find((item) => item.id === product.id)?.quantity || 0;
   const atLimit = quantityInCart >= product.stock;
+  const line = {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    quantity: 1,
+    image: product.image,
+    slug: product.slug,
+    stock: product.stock,
+  };
   const handleAdd = () => {
     if (product.stock < 1 || atLimit) return;
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: 1,
-      image: product.image,
-      slug: product.slug,
-      stock: product.stock,
-    });
+    addItem(line);
     setMessage("Added to cart");
+  };
+  const handleOrderNow = () => {
+    if (!orderNow(line)) return;
+    startOpening(() => router.push("/checkout"));
   };
   const toggleSaved = () => {
     try {
@@ -142,23 +150,41 @@ export function ProductCard({
             {formatPrice(product.price)}
             {discounted ? <del>{formatPrice(product.oldPrice!)}</del> : null}
           </div>
-          <button
-            className="sf-cart-btn"
-            aria-label={`Add ${product.name} to cart`}
-            onClick={handleAdd}
-            disabled={product.stock < 1 || atLimit}
-          >
-            {message === "Added to cart" ? (
-              <Check size={16} />
+          <div className="sf-product-actions">
+            {product.stock < 1 ? (
+              <button
+                className="sf-cart-btn"
+                aria-label={`${product.name} is out of stock`}
+                disabled
+              >
+                Out of stock
+              </button>
             ) : (
-              <ShoppingBag size={16} />
+              <>
+                <button
+                  className="sf-cart-btn"
+                  aria-label={`Add ${product.name} to cart`}
+                  onClick={handleAdd}
+                  disabled={atLimit}
+                >
+                  {message === "Added to cart" ? (
+                    <Check size={16} />
+                  ) : (
+                    <ShoppingBag size={16} />
+                  )}
+                  {atLimit ? "Stock limit" : "Add to cart"}
+                </button>
+                <button
+                  className="sf-cart-btn sf-cart-btn-order"
+                  aria-label={`Order now: ${product.name}`}
+                  onClick={handleOrderNow}
+                  disabled={opening}
+                >
+                  {opening ? "Opening…" : "Order now"}
+                </button>
+              </>
             )}
-            {product.stock < 1
-              ? "Out of stock"
-              : atLimit
-                ? "Stock limit"
-                : "Add to cart"}
-          </button>
+          </div>
         </div>
         {message && (
           <p className="sf-live-message" role="status">

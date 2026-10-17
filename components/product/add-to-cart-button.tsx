@@ -1,6 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
-import { ShoppingBag, Heart, Share2, Minus, Plus } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ShoppingBag,
+  Heart,
+  Share2,
+  Minus,
+  Plus,
+  ArrowRight,
+} from "lucide-react";
 import { useWishlist, writeWishlist } from "@/lib/wishlist";
 import { useCart } from "@/lib/cart-context";
 interface Props {
@@ -14,7 +22,9 @@ interface Props {
   };
 }
 export function AddToCartButton({ product }: Props) {
-  const { addItem, cart } = useCart();
+  const { addItem, orderNow, cart } = useCart();
+  const router = useRouter();
+  const [opening, startOpening] = useTransition();
   const [quantity, setQuantity] = useState(1);
   const saved = useWishlist();
   const wishlisted = saved.includes(product.id);
@@ -34,6 +44,10 @@ export function AddToCartButton({ product }: Props) {
     const count = Math.min(quantity, available);
     addItem({ ...product, quantity: count });
     setMessage(`Added ${count} × ${product.name} to cart`);
+  };
+  const order = () => {
+    if (!orderNow({ ...product, quantity })) return;
+    startOpening(() => router.push("/checkout"));
   };
   const save = () => {
     try {
@@ -84,14 +98,31 @@ export function AddToCartButton({ product }: Props) {
         </div>
       </div>
       <div className="sf-purchase-actions">
-        <button className="sf-btn" onClick={add} disabled={available < 1}>
-          <ShoppingBag size={19} />
-          {product.stock < 1
-            ? "Out of stock"
-            : available < 1
-              ? "All available stock in cart"
-              : "Add to cart"}
-        </button>
+        {product.stock < 1 ? (
+          <button className="sf-btn sf-purchase-wide" disabled>
+            Out of stock
+          </button>
+        ) : (
+          <>
+            <button
+              className="sf-btn sf-btn-secondary"
+              onClick={add}
+              disabled={available < 1}
+            >
+              <ShoppingBag size={19} />
+              {available < 1 ? "All stock in cart" : "Add to cart"}
+            </button>
+            <button className="sf-btn" onClick={order} disabled={opening}>
+              {opening ? (
+                "Opening checkout…"
+              ) : (
+                <>
+                  Order now <ArrowRight size={19} />
+                </>
+              )}
+            </button>
+          </>
+        )}
         <button
           className="sf-btn sf-btn-secondary sf-square-btn"
           aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}

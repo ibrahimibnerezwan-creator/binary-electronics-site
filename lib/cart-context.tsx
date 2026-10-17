@@ -1,8 +1,9 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { orderNowQuantity } from './cart-quantity'
 export interface CartItem { id: string; name: string; price: number; quantity: number; image: string; slug: string; stock?: number }
 interface CartContextType {
-  cart: CartItem[]; addItem: (item: CartItem) => void; removeItem: (id: string) => void
+  cart: CartItem[]; addItem: (item: CartItem) => void; orderNow: (item: CartItem) => boolean; removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void; clearCart: () => void
   cartTotal: number; cartCount: number; ready: boolean; syncError: string | null
 }
@@ -53,12 +54,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return existing ? prev.map(i => i.id === item.id ? { ...item, quantity } : i) : [...prev, { ...item, quantity }]
     })
   }
+  // Puts the item in the cart at the chosen quantity (without stacking on top of an earlier add); false if it cannot be ordered.
+  const orderNow = (item: CartItem) => {
+    const quantity = orderNowQuantity(cart.find(i => i.id === item.id)?.quantity || 0, item.quantity, item.stock)
+    if (!quantity) return false
+    setCart(prev => prev.some(i => i.id === item.id) ? prev.map(i => i.id === item.id ? { ...item, quantity } : i) : [...prev, { ...item, quantity }])
+    return true
+  }
   const removeItem = (id: string) => setCart(prev => prev.filter(i => i.id !== id))
   const updateQuantity = (id: string, quantity: number) => {
     if (!Number.isSafeInteger(quantity)) return
     setCart(prev => prev.map(i => i.id === id ? { ...i, quantity: Math.max(1, Math.min(quantity, i.stock || 999, 999)) } : i))
   }
-  return <CartContext.Provider value={{ cart, addItem, removeItem, updateQuantity, clearCart: () => setCart([]),
+  return <CartContext.Provider value={{ cart, addItem, orderNow, removeItem, updateQuantity, clearCart: () => setCart([]),
     cartTotal: cart.reduce((n, i) => n + i.price * i.quantity, 0), cartCount: cart.reduce((n, i) => n + i.quantity, 0), ready, syncError }}>{children}</CartContext.Provider>
 }
 export function useCart() {
