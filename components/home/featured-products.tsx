@@ -176,11 +176,11 @@ export function ProductCard({
                 </button>
                 <button
                   className="sf-cart-btn sf-cart-btn-order"
-                  aria-label={`Order now: ${product.name}`}
+                  aria-label={`Buy now: ${product.name}`}
                   onClick={handleOrderNow}
                   disabled={opening}
                 >
-                  {opening ? "Opening…" : "Order now"}
+                  {opening ? "Opening…" : "Buy now"}
                 </button>
               </>
             )}

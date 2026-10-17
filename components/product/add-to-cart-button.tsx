@@ -117,7 +117,7 @@ export function AddToCartButton({ product }: Props) {
                 "Opening checkout…"
               ) : (
                 <>
-                  Order now <ArrowRight size={19} />
+                  Buy now <ArrowRight size={19} />
                 </>
               )}
             </button>
