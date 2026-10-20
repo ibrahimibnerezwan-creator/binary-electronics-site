@@ -62,12 +62,12 @@ export default function CartPage() {
           <div>
             {cart.map((item) => (
               <article key={item.id} className="sf-cart-item">
-                <Link href={`/product/${item.slug}`} className="sf-cart-image">
+                <Link href={`/product/${item.slug}`} prefetch={false} className="sf-cart-image">
                   <Image src={item.image} alt={item.name} fill sizes="108px" />
                 </Link>
                 <div className="sf-cart-item-info">
                   <h3>
-                    <Link href={`/product/${item.slug}`}>{item.name}</Link>
+                    <Link href={`/product/${item.slug}`} prefetch={false}>{item.name}</Link>
                   </h3>
                   <p>{formatPrice(item.price)} each</p>
                   <div className="sf-quantity">
@@ -148,6 +148,7 @@ export default function CartPage() {
             )}
             <Link
               href="/checkout"
+              prefetch={false}
               className="sf-btn"
               aria-disabled={!ready || !!syncError || invalidStock}
               onClick={(event) => {
