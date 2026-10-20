@@ -40,6 +40,16 @@ CREATE TABLE `coupons` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `coupons_code_unique` ON `coupons` (`code`);--> statement-breakpoint
+CREATE TABLE `item_requests` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`phone` text NOT NULL,
+	`note` text,
+	`image_keys` text NOT NULL,
+	`status` text DEFAULT 'NEW' NOT NULL,
+	`created_at` integer NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `newsletter` (
 	`id` text PRIMARY KEY NOT NULL,
 	`email` text NOT NULL,

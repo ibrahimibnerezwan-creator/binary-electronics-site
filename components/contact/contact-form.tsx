@@ -1,6 +1,7 @@
 "use client";
 
 import { whatsappNumber } from "@/lib/commerce";
+import Link from "next/link";
 import { useState } from "react";
 import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
 
@@ -94,6 +95,12 @@ export function ContactForm({ settings }: ContactFormProps) {
             </div>
           )}
         </div>
+        <p className="sf-contact-alt">
+          Looking for a part we don’t list?{" "}
+          <Link href="/request-item" prefetch={false}>
+            Send us a photo
+          </Link>
+        </p>
       </div>
       <div className="sf-contact-panel">
         <h2>Send us a message</h2>

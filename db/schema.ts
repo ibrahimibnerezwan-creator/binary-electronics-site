@@ -203,6 +203,16 @@ export const contactMessages = sqliteTable('contact_messages', {
   status: text('status').notNull().default('NEW'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 });
+// A customer's photo of a part the store does not list. `imageKeys` is a JSON list of R2 object keys.
+export const itemRequests = sqliteTable('item_requests', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  phone: text('phone').notNull(),
+  note: text('note'),
+  imageKeys: text('image_keys').notNull(),
+  status: text('status').notNull().default('NEW'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+});
 export const rateLimits = sqliteTable('rate_limits', {
   key: text('key').primaryKey(),
   count: integer('count').notNull(),

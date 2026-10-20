@@ -31,6 +31,13 @@ export default async function Home() {
             <Link href="/contact" className="sf-btn">
               Let’s talk about your project <ArrowUpRight size={16} />
             </Link>
+            <Link
+              href="/request-item"
+              prefetch={false}
+              className="sf-help-link"
+            >
+              Can’t find a part? Send us a photo
+            </Link>
           </div>
           <div className="sf-note">
             <SlidersHorizontal size={28} strokeWidth={1.5} />

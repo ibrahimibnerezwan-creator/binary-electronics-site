@@ -7,7 +7,14 @@ import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
 
 // Pages that already show the cart or have their own primary action.
-const HIDDEN_ON = ["/cart", "/checkout", "/login", "/register", "/contact"];
+const HIDDEN_ON = [
+  "/cart",
+  "/checkout",
+  "/login",
+  "/register",
+  "/contact",
+  "/request-item",
+];
 
 export function CartBar() {
   const { cart, cartCount, cartTotal, ready, syncError } = useCart();

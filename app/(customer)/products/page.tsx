@@ -1,6 +1,7 @@
 import { categoryLabel } from "@/lib/catalogue-labels";
 import { getAllProducts, getAllCategories } from "@/lib/data";
 import { ProductCard } from "@/components/home/featured-products";
+import { PartRequestBanner } from "@/components/request/part-request-banner";
 import { Search, ChevronRight } from "lucide-react";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
@@ -112,11 +113,21 @@ export default async function ProductsPage({
           <Search size={32} />
           <h2>No matching products</h2>
           <p>Try a different search or explore the full collection.</p>
-          <Link href="/products" className="sf-btn">
-            Clear filters
-          </Link>
+          <div className="sf-empty-actions">
+            <Link href="/products" className="sf-btn">
+              Clear filters
+            </Link>
+            <Link
+              href="/request-item"
+              prefetch={false}
+              className="sf-btn sf-btn-secondary"
+            >
+              Send us a photo of the part
+            </Link>
+          </div>
         </div>
       )}
+      {products.length > 0 && <PartRequestBanner />}
     </section>
   );
 }

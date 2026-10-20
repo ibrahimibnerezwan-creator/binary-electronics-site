@@ -9,9 +9,14 @@ export function WhatsAppCTA() {
   const pathname = usePathname();
   const number = whatsappNumber(settings.whatsapp || settings.phone || "");
   if (
-    ["/checkout", "/cart", "/login", "/register", "/contact"].includes(
-      pathname,
-    ) ||
+    [
+      "/checkout",
+      "/cart",
+      "/login",
+      "/register",
+      "/contact",
+      "/request-item",
+    ].includes(pathname) ||
     pathname.startsWith("/order-confirmation/")
   )
     return null;

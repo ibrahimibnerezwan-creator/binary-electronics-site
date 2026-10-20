@@ -1,6 +1,7 @@
 import { categoryLabel } from "@/lib/catalogue-labels";
 import { Metadata } from "next";
 import { ProductCard } from "@/components/home/featured-products";
+import { PartRequestBanner } from "@/components/request/part-request-banner";
 import { ChevronRight, PackageSearch, SlidersHorizontal } from "lucide-react";
 import { getCategoryBySlug, getProductsByCategory } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -63,6 +64,7 @@ export default async function CategoryPage({
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+          <PartRequestBanner />
         </>
       ) : (
         <div className="sf-empty">
@@ -71,9 +73,18 @@ export default async function CategoryPage({
           <p>
             Browse what’s available now, or contact us about a specific part.
           </p>
-          <Link href="/products" className="sf-btn">
-            Browse all products
-          </Link>
+          <div className="sf-empty-actions">
+            <Link href="/products" className="sf-btn">
+              Browse all products
+            </Link>
+            <Link
+              href="/request-item"
+              prefetch={false}
+              className="sf-btn sf-btn-secondary"
+            >
+              Send us a photo of the part
+            </Link>
+          </div>
         </div>
       )}
     </section>

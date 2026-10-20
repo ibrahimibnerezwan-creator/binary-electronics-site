@@ -89,6 +89,11 @@ export function Footer() {
                 <Link href="/contact">Contact us</Link>
               </li>
               <li>
+                <Link href="/request-item" prefetch={false}>
+                  Send a part photo
+                </Link>
+              </li>
+              <li>
                 <Link href="/shipping-policy">Delivery information</Link>
               </li>
               <li>
