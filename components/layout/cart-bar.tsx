@@ -39,12 +39,11 @@ export function CartBar() {
         </strong>
         {ready && !syncError ? <span>{formatPrice(cartTotal)}</span> : null}
       </p>
-      <Link href="/cart" prefetch={false} className="sf-cartbar-view">
+      <Link href="/cart" className="sf-cartbar-view">
         View cart
       </Link>
       <Link
         href="/checkout"
-        prefetch={false}
         className="sf-cartbar-checkout"
         aria-disabled={blocked}
         onClick={(event) => {

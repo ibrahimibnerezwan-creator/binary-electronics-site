@@ -115,7 +115,6 @@ export function ProductCard({
       ) : null}
       <Link
         href={`/product/${product.slug}`}
-        prefetch={false}
         className="sf-product-photo"
         aria-label={`View ${product.name}`}
       >
@@ -133,7 +132,7 @@ export function ProductCard({
             : categoryLabel(product.category)}
         </p>
         <h3>
-          <Link href={`/product/${product.slug}`} prefetch={false}>{product.name}</Link>
+          <Link href={`/product/${product.slug}`}>{product.name}</Link>
         </h3>
         <span
           className={`sf-product-stock${product.stock > 0 ? "" : " is-unavailable"}`}

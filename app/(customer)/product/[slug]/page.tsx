@@ -51,13 +51,13 @@ export default async function ProductPage({
   return (
     <div className="sf-wrap sf-page">
       <nav className="sf-breadcrumb" aria-label="Breadcrumb">
-        <Link href="/" prefetch={false}>Home</Link>
+        <Link href="/">Home</Link>
         <ChevronRight size={12} />
-        <Link href="/products" prefetch={false}>Products</Link>
+        <Link href="/products">Products</Link>
         {product.category?.slug && (
           <>
             <ChevronRight size={12} />
-            <Link href={`/category/${product.category.slug}`} prefetch={false}>
+            <Link href={`/category/${product.category.slug}`}>
               {categoryLabel(product.categoryName)}
             </Link>
           </>
