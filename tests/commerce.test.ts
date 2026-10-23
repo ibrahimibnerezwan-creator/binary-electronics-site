@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createClient, type Client } from '@libsql/client'
 import { publicSettings, orderTotals, validateCheckout, type CheckoutData } from '../lib/commerce'
+import { formatPartId } from '../lib/utils'
 let client: Client
 let saveOrder: typeof import('../lib/order-service').saveOrder
 let changeOrderStatus: typeof import('../lib/order-service').changeOrderStatus
@@ -160,4 +161,12 @@ test('unused brands can be deleted, while missing brands cannot be assigned', as
 test('invalid brand names never create records', async () => {
   for (const name of ['', '   ', '!!!', 'x'.repeat(151)]) await assert.rejects(createBrandRecord(name))
   assert.equal((await client.execute('SELECT count(*) AS n FROM brands')).rows[0].n, 0)
+})
+
+test('formatPartId prefers custom sku and falls back cleanly to short UUID', () => {
+  assert.equal(formatPartId('FL-817', '23dcdbb4-4348-4607-aa38-d2802d6762ff'), 'FL-817')
+  assert.equal(formatPartId('', '23dcdbb4-4348-4607-aa38-d2802d6762ff'), 'PID-23DCDBB4')
+  assert.equal(formatPartId(null, '9549f91f-bac4-4f23-8606-441b9273ad78'), 'PID-9549F91F')
+  assert.equal(formatPartId('  ', 'abc-def'), 'PID-ABCDEF')
+  assert.equal(formatPartId(null, null), 'PID-00000000')
 })

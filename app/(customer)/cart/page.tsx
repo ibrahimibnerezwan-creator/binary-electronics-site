@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useSettings } from "@/lib/settings-context";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, formatPartId } from "@/lib/utils";
 export default function CartPage() {
   const {
     cart,
@@ -66,6 +66,7 @@ export default function CartPage() {
                   <Image src={item.image} alt={item.name} fill sizes="108px" />
                 </Link>
                 <div className="sf-cart-item-info">
+                  <span className="sf-cart-partid">Parts ID: {formatPartId(item.sku, item.id)}</span>
                   <h3>
                     <Link href={`/product/${item.slug}`}>{item.name}</Link>
                   </h3>

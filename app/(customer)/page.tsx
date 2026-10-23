@@ -15,10 +15,10 @@ export default async function Home() {
   return (
     <>
       <Hero />
+      <CategoryGrid categories={categories} />
       <div id="new-arrivals" style={{ scrollMarginTop: 150 }}>
         <FeaturedProducts products={products} />
       </div>
-      <CategoryGrid categories={categories} />
       <section className="sf-section sf-wrap">
         <div className="sf-help-grid">
           <div className="sf-help">

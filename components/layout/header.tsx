@@ -86,8 +86,8 @@ export function Header({ user }: HeaderProps = {}) {
   }
   const links = [
     { name: "Home", href: "/" },
-    { name: "Shop all", href: "/products" },
     { name: "Categories", href: "/categories" },
+    { name: "Shop all", href: "/products" },
     { name: "New arrivals", href: "/#new-arrivals" },
     { name: "About us", href: "/about" },
     { name: "Contact", href: "/contact" },

@@ -529,6 +529,27 @@
   color: var(--sf-muted);
   margin-bottom: 8px;
 }
+.sf-product-meta-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.sf-product-meta-top .sf-product-category {
+  margin-bottom: 0;
+}
+.sf-product-partid {
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  color: var(--sf-blue);
+  background: #edf2fc;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
 .sf-product-body h3 {
   font-size: 18px;
   font-weight: 600;
@@ -658,6 +679,16 @@
   color: var(--sf-blue);
   background: #edf2fc;
   flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+.sf-category-icon img,
+.sf-category-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
 }
 .sf-category strong {
   display: block;
@@ -1014,6 +1045,25 @@
 }
 .sf-gallery-thumbs img {
   object-fit: contain;
+}
+.sf-detail-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.sf-detail-partid {
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  color: var(--sf-muted);
+  background: #f1f4f9;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.sf-detail-partid strong {
+  color: var(--sf-navy);
+  font-weight: 700;
+  letter-spacing: 0.3px;
 }
 .sf-product-info h1 {
   font-family: var(--font-display-family), sans-serif;
@@ -2003,6 +2053,10 @@
     font-size: 10px;
     margin-bottom: 7px;
   }
+  .sf-product-partid {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
   .sf-product-stock {
     font-size: 10px;
   }
@@ -2210,7 +2264,18 @@
   .sf-cart-item {
     grid-template-columns: 85px 1fr;
   }
-  .sf-cart-item h3 {
+.sf-cart-partid {
+  display: inline-block;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  color: var(--sf-blue);
+  background: #edf2fc;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+.sf-cart-item h3 {
     font-size: 15px;
   }
   .sf-cart-summary {

@@ -6,7 +6,7 @@ import { Star, Shield, Truck, ChevronRight } from "lucide-react";
 import { ProductGallery } from "@/components/product/product-gallery";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { ReviewForm } from "@/components/product/review-form";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, formatPartId } from "@/lib/utils";
 import { FeaturedProducts } from "@/components/home/featured-products";
 import {
   getProductBySlug,
@@ -68,13 +68,18 @@ export default async function ProductPage({
       <div className="sf-detail-grid">
         <ProductGallery images={product.images} name={product.name} />
         <div className="sf-product-info">
-          <span
-            className={`sf-product-stock${product.stock > 0 ? "" : " is-unavailable"}`}
-          >
-            {product.stock > 0
-              ? "In stock and available to order"
-              : "Currently out of stock"}
-          </span>
+          <div className="sf-detail-meta-top">
+            <span
+              className={`sf-product-stock${product.stock > 0 ? "" : " is-unavailable"}`}
+            >
+              {product.stock > 0
+                ? "In stock and available to order"
+                : "Currently out of stock"}
+            </span>
+            <span className="sf-detail-partid">
+              Parts ID: <strong>{formatPartId(product.sku, product.id)}</strong>
+            </span>
+          </div>
           <h1>{product.name}</h1>
           {product.reviewsCount > 0 && (
             <div className="sf-product-rating">
@@ -99,6 +104,7 @@ export default async function ProductPage({
               image: product.images[0] || "/logo.png",
               slug: product.slug,
               stock: product.stock,
+              sku: product.sku,
             }}
           />
           <div className="sf-detail-facts">

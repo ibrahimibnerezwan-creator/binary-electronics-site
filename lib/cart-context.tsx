@@ -1,7 +1,7 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { orderNowQuantity } from './cart-quantity'
-export interface CartItem { id: string; name: string; price: number; quantity: number; image: string; slug: string; stock?: number }
+export interface CartItem { id: string; name: string; price: number; quantity: number; image: string; slug: string; stock?: number; sku?: string | null }
 interface CartContextType {
   cart: CartItem[]; addItem: (item: CartItem) => void; orderNow: (item: CartItem) => boolean; removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void; clearCart: () => void
@@ -36,7 +36,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (!active) return
         setCart(previous => previous.map(item => {
           const live = data.products.find((p: CartItem) => p.id === item.id)
-          return live ? { ...item, name: live.name, price: live.price, image: live.image, slug: live.slug, stock: live.stock } : { ...item, stock: 0 }
+          return live ? { ...item, name: live.name, price: live.price, image: live.image, slug: live.slug, stock: live.stock, sku: live.sku ?? item.sku } : { ...item, stock: 0 }
         }))
         setSyncError(null)
       } catch { if (active) setSyncError('Could not verify current prices and stock. Please retry before checkout.') }

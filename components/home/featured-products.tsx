@@ -6,7 +6,7 @@ import { ShoppingBag, Star, Heart, Check, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, formatPartId } from "@/lib/utils";
 import { useCart } from "@/lib/cart-context";
 import { useWishlist, writeWishlist } from "@/lib/wishlist";
 import type { ProductForCard } from "@/lib/data";
@@ -75,6 +75,7 @@ export function ProductCard({
     image: product.image,
     slug: product.slug,
     stock: product.stock,
+    sku: product.sku,
   };
   const handleAdd = () => {
     if (product.stock < 1 || atLimit) return;
@@ -126,11 +127,16 @@ export function ProductCard({
         />
       </Link>
       <div className="sf-product-body">
-        <p className="sf-product-category">
-          {product.category === "Uncategorized"
-            ? "Electronics & components"
-            : categoryLabel(product.category)}
-        </p>
+        <div className="sf-product-meta-top">
+          <p className="sf-product-category">
+            {product.category === "Uncategorized"
+              ? "Electronics & components"
+              : categoryLabel(product.category)}
+          </p>
+          <span className="sf-product-partid">
+            ID: {formatPartId(product.sku, product.id)}
+          </span>
+        </div>
         <h3>
           <Link href={`/product/${product.slug}`}>{product.name}</Link>
         </h3>

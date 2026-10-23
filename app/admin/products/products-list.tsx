@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import Image from 'next/image'
 import Link from 'next/link'
-import { formatPrice, cn } from '@/lib/utils'
+import { formatPrice, formatPartId, cn } from '@/lib/utils'
 import { deleteProduct } from '@/app/admin/actions'
 
 export interface AdminProduct { id: string; name: string; slug: string; sku: string | null; price: number; stock: number; category: string; image: string; status: string }
@@ -34,6 +34,8 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
   const filteredProducts = products.filter(p => (!lowStock || p.stock < 5) && (
     p.name.toLowerCase().includes(search.toLowerCase()) || 
     p.sku?.toLowerCase().includes(search.toLowerCase()) ||
+    p.id.toLowerCase().includes(search.toLowerCase()) ||
+    formatPartId(p.sku, p.id).toLowerCase().includes(search.toLowerCase()) ||
     p.category.toLowerCase().includes(search.toLowerCase())
   ))
   if (sort === "Price: Low-High") filteredProducts.sort((a,b)=>a.price-b.price)
@@ -83,7 +85,7 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
             <thead>
               <tr className="bg-bg-elevated/50 border-b border-primary-500/10">
                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Product</th>
-                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">SKU</th>
+                <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Parts ID / SKU</th>
                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Category</th>
                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Price</th>
                 <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-text-muted">Stock</th>
@@ -105,7 +107,7 @@ export function AdminProductsList({ products }: AdminProductsListProps) {
                        </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-xs font-mono text-text-secondary">{product.sku}</td>
+                  <td className="px-6 py-4 text-xs font-mono font-bold text-primary-500">{formatPartId(product.sku, product.id)}</td>
                   <td className="px-6 py-4">
                     <Badge variant="secondary" className="bg-primary-500/5 text-primary-500 border-none rounded-md px-2 py-0.5 text-[10px] uppercase font-bold">
                       {product.category}

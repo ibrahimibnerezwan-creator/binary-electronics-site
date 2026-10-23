@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Sun, Truck, Wallet, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Cpu, Truck, Wallet, MessageCircle } from "lucide-react";
 
 export function Hero() {
   return (
@@ -11,7 +11,7 @@ export function Hero() {
       <div className="sf-hero-grid">
         <div className="sf-hero-copy">
           <span className="sf-hero-tag">
-            <Sun size={17} /> A little power. A lot of possibility.
+            <Cpu size={17} /> Modern Electronics & Robotics Solutions
           </span>
           <h1>
             Power your
@@ -19,34 +19,34 @@ export function Hero() {
             next idea.
           </h1>
           <p>
-            From solar charge controllers to everyday power supplies. Find the
-            right electronics to bring your next project to life.
+            From robotics and automation components to power supplies and ICs.
+            Find the right electronics to bring your next project to life.
           </p>
           <div className="sf-hero-actions">
-            <Link href="/products" className="sf-btn">
-              Shop all products <ArrowUpRight size={17} />
+            <Link href="/categories" className="sf-btn">
+              Explore categories <ArrowUpRight size={17} />
             </Link>
-            <Link href="/categories" className="sf-text-link">
-              Explore categories
+            <Link href="/products" className="sf-text-link">
+              Shop all products
             </Link>
           </div>
         </div>
         <div className="sf-hero-image">
           <Image
-            src="/images/solar-energy.jpg"
-            alt="Solar panels collecting energy beneath a blue sky"
+            src="/images/hero-robotics.png"
+            alt="Robotic hand clasping human hand representing modern electronics, robotics and technology"
             fill
             priority
             sizes="(max-width: 640px) 100vw, 50vw"
           />
           <div className="sf-hero-caption">
             <div>
-              <strong>More from every ray.</strong>
-              <span>Explore solar charge controllers</span>
+              <strong>Innovation in your hands.</strong>
+              <span>Explore robotics & electronic components</span>
             </div>
             <Link
-              href="/products?q=controller"
-              aria-label="Shop solar charge controllers"
+              href="/categories"
+              aria-label="Explore categories"
             >
               <ArrowUpRight size={23} />
             </Link>

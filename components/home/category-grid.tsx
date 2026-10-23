@@ -1,5 +1,6 @@
 import { categoryLabel } from "@/lib/catalogue-labels";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Cpu,
   BatteryCharging,
@@ -16,6 +17,7 @@ interface Category {
   id: string;
   slug: string;
   name: string;
+  image?: string | null;
   productCount: number;
 }
 function categoryIcon(name: string) {
@@ -40,7 +42,18 @@ export function CategoryTiles({ categories }: { categories: Category[] }) {
             className="sf-category"
           >
             <span className="sf-category-icon">
-              <Icon size={24} strokeWidth={1.5} />
+              {category.image ? (
+                <Image
+                  src={category.image}
+                  alt={category.name}
+                  width={46}
+                  height={46}
+                  className="sf-category-thumb"
+                  unoptimized={category.image.startsWith("http")}
+                />
+              ) : (
+                <Icon size={24} strokeWidth={1.5} />
+              )}
             </span>
             <div>
               <strong>{categoryLabel(category.name)}</strong>

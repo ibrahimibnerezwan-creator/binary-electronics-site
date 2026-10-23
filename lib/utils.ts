@@ -12,3 +12,10 @@ export function formatPrice(price: number) {
     minimumFractionDigits: 0,
   }).format(price)
 }
+
+export function formatPartId(sku?: string | null, id?: string | null): string {
+  if (sku && sku.trim()) return sku.trim();
+  if (id && id.trim()) return `PID-${id.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
+  return 'PID-00000000';
+}
+

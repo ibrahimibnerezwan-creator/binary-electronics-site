@@ -14,6 +14,7 @@ export interface ProductForCard {
   stock: number;
   rating: number;
   reviews: number;
+  sku?: string | null;
 }
 
 export async function getNewArrivals(limit = 4, featuredFirst = false): Promise<ProductForCard[]> {
@@ -23,6 +24,7 @@ export async function getNewArrivals(limit = 4, featuredFirst = false): Promise<
         id: products.id,
         name: products.name,
         slug: products.slug,
+        sku: products.sku,
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
@@ -47,6 +49,7 @@ export async function getNewArrivals(limit = 4, featuredFirst = false): Promise<
         id: row.id,
         name: row.name,
         slug: row.slug,
+        sku: row.sku,
         price: row.price,
         oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
@@ -70,6 +73,7 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         id: products.id,
         name: products.name,
         slug: products.slug,
+        sku: products.sku,
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
@@ -94,6 +98,7 @@ export async function getFlashSaleProducts(limit = 4): Promise<ProductForCard[]>
         id: row.id,
         name: row.name,
         slug: row.slug,
+        sku: row.sku,
         price: row.price,
         oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
@@ -117,6 +122,7 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         id: products.id,
         name: products.name,
         slug: products.slug,
+        sku: products.sku,
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
@@ -140,6 +146,7 @@ export async function getAllProducts(): Promise<ProductForCard[]> {
         id: row.id,
         name: row.name,
         slug: row.slug,
+        sku: row.sku,
         price: row.price,
         oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
@@ -186,6 +193,7 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         id: products.id,
         name: products.name,
         slug: products.slug,
+        sku: products.sku,
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
@@ -210,6 +218,7 @@ export async function getProductsByCategory(categoryId: string, limit = 20): Pro
         id: row.id,
         name: row.name,
         slug: row.slug,
+        sku: row.sku,
         price: row.price,
         oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
@@ -273,6 +282,7 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         id: products.id,
         name: products.name,
         slug: products.slug,
+        sku: products.sku,
         price: products.price,
         comparePrice: products.comparePrice,
         stock: products.stock,
@@ -297,6 +307,7 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         id: row.id,
         name: row.name,
         slug: row.slug,
+        sku: row.sku,
         price: row.price,
         oldPrice: row.comparePrice && row.comparePrice > row.price ? row.comparePrice : undefined,
         image: row.imageUrl || '/logo.png',
@@ -305,7 +316,6 @@ export async function getRelatedProducts(categoryId: string | null, currentProdu
         rating: Math.round(row.avgRating),
         reviews: row.reviewCount,
       });
-      if (result.length >= limit) break;
     }
     return result;
   } catch (e) {

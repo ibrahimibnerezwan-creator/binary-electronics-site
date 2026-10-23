@@ -175,8 +175,8 @@ export function EditProductForm({ product, categories, brands }: EditProductForm
                 <p id="previous-price-help" className="text-xs text-text-secondary">Leave blank or enter 0 if there is no previous price.</p>
               </div>
               <div className="flex flex-col gap-3">
-                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">SKU Code</label>
-                <Input aria-label="SKU" name="sku" defaultValue={product.sku ?? ''} className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
+                <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Parts ID / SKU Code</label>
+                <Input aria-label="Parts ID / SKU" name="sku" defaultValue={product.sku ?? ''} placeholder="e.g. PID-101 or 7805 (or leave blank to auto-generate)" className="h-12 lg:h-14 bg-bg-void/40 border-primary-500/10 text-sm" />
               </div>
               <div className="flex flex-col gap-3">
                 <label className="text-[8px] lg:text-[10px] font-bold uppercase tracking-widest text-text-muted ml-1">Stock Quantity</label>

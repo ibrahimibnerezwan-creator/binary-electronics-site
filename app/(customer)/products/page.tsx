@@ -2,6 +2,7 @@ import { categoryLabel } from "@/lib/catalogue-labels";
 import { getAllProducts, getAllCategories } from "@/lib/data";
 import { ProductCard } from "@/components/home/featured-products";
 import { PartRequestBanner } from "@/components/request/part-request-banner";
+import { formatPartId } from "@/lib/utils";
 import { Search, ChevronRight } from "lucide-react";
 import Link from "next/link";
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export default async function ProductsPage({
   const products = all.filter(
     (p) =>
       (!q ||
-        `${p.name} ${p.category} ${categoryLabel(p.category)}`
+        `${p.name} ${p.category} ${categoryLabel(p.category)} ${p.sku || ""} ${formatPartId(p.sku, p.id)} ${p.id}`
           .toLowerCase()
           .includes(q.toLowerCase())) &&
       (!category || (!!chosen && p.category === chosen.name)) &&
@@ -54,7 +55,7 @@ export default async function ProductsPage({
             name="q"
             defaultValue={q}
             type="search"
-            placeholder="Search by name or category"
+            placeholder="Search by name, category or Parts ID"
           />
         </label>
         <label className="sf-field">

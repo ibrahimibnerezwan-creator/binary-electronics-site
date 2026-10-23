@@ -19,6 +19,7 @@ interface Props {
     image: string;
     slug: string;
     stock: number;
+    sku?: string | null;
   };
 }
 export function AddToCartButton({ product }: Props) {
